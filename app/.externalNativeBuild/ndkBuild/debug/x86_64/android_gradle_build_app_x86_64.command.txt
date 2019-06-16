@@ -1,0 +1,13 @@
+Executable : /Users/kasper/Library/Android/sdk/ndk-bundle/ndk-build
+arguments : 
+NDK_PROJECT_PATH=null
+APP_BUILD_SCRIPT=/Users/kasper/Documents/scripts/Authydra/app/Android.mk
+APP_ABI=x86_64
+NDK_ALL_ABIS=x86_64
+NDK_DEBUG=1
+APP_PLATFORM=android-24
+NDK_OUT=/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/obj
+NDK_LIBS_OUT=/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib
+/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/obj/local/x86_64/libapp.so
+jvmArgs : 
+

@@ -1,0 +1,15 @@
+rm -f /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/x86_64/*
+rm -f /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdbserver
+rm -f /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdb.setup
+mkdir -p /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/x86_64
+echo [x86_64] "Gdbserver      ": "[x86_64-linux-android] /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdbserver"
+install -p /Users/kasper/Library/Android/sdk/ndk-bundle/prebuilt/android-x86_64/gdbserver/gdbserver /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdbserver
+echo [x86_64] "Gdbsetup       ": "/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdb.setup"
+echo "set solib-search-path /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/obj/local/x86_64" > /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdb.setup
+echo "directory /Users/kasper/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/sysroot /Users/kasper/Documents/scripts/Authydra/app/src/main/jniLibs /Users/kasper/Library/Android/sdk/ndk-bundle/sources/cxx-stl/system" >> /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdb.setup
+mkdir -p /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/obj/local/x86_64
+echo [x86_64] "SharedLibrary  ": "libapp.so"
+/Users/kasper/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ -Wl,-soname,libapp.so -shared -lgcc -Wl,--exclude-libs,libgcc.a -latomic -Wl,--exclude-libs,libatomic.a -target x86_64-none-linux-android24 -no-canonical-prefixes    -Wl,--build-id -Wl,--build-id -stdlib=libstdc++ -Wl,--no-undefined -Wl,-z,noexecstack -Wl,--warn-shared-textrel -Wl,--fatal-warnings  -lc -lm -o /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/obj/local/x86_64/libapp.so
+echo [x86_64] "Install        ": "libapp.so => /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/x86_64/libapp.so"
+install -p /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/obj/local/x86_64/libapp.so /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/x86_64/libapp.so
+/Users/kasper/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/x86_64-linux-android-strip --strip-unneeded  /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/x86_64/libapp.so

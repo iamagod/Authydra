@@ -1,0 +1,16 @@
+{
+  "buildFiles": [
+    "/Users/kasper/Documents/scripts/Authydra/app/Android.mk"
+  ],
+  "cleanCommands": [
+    "/Users/kasper/Library/Android/sdk/ndk-bundle/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/kasper/Documents/scripts/Authydra/app/Android.mk APP_ABI\u003dx86_64 NDK_ALL_ABIS\u003dx86_64 NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-24 NDK_OUT\u003d/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/release/lib clean"
+  ],
+  "libraries": {
+    "app-release-x86_64": {
+      "artifactName": "app",
+      "buildCommand": "/Users/kasper/Library/Android/sdk/ndk-bundle/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/kasper/Documents/scripts/Authydra/app/Android.mk APP_ABI\u003dx86_64 NDK_ALL_ABIS\u003dx86_64 NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-24 NDK_OUT\u003d/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/release/lib /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/release/obj/local/x86_64/libapp.so",
+      "abi": "x86_64",
+      "output": "/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/release/obj/local/x86_64/libapp.so"
+    }
+  }
+}

@@ -1,0 +1,1 @@
+make: `/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/obj/local/armeabi-v7a/libapp.so' is up to date.
