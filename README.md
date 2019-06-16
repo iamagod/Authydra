@@ -2,6 +2,8 @@
 
 **Authydra**
 
+![alt text](https://raw.githubusercontent.com/iamagod/Authydra/blob/master/pngkit_dragon-silhouette-png_4333979.png)
+
 *VFX automatic HDR capture plugin*
 
 
