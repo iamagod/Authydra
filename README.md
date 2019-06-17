@@ -2,6 +2,8 @@
 
 **Authydra**
 
+![alt text](https://www.pngkit.com/png/full/433-4333979_hydra-dragon-vector-silhouette-public-domain-vectors-hydra.png)
+
 *VFX automatic HDR capture plugin*
 
 
