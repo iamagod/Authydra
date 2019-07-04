@@ -426,7 +426,8 @@ public void onCreate(Bundle savedInstanceState)
         @Override
         public void onKeyDown(int keyCode, KeyEvent event) {
                 if (keyCode == KeyReceiver.KEYCODE_CAMERA) {
-                // If on second run we need to reset everything.
+                // If on second run we need to reset everything
+                notificationLedBlink(LedTarget.LED3, LedColor.GREEN, 300);
 
                 log("TAG","5 seconds delay to run away.");
                 //5sec delay timer to run away
@@ -688,7 +689,8 @@ public void surfaceCreated(SurfaceHolder holder) {
             {
                 String name = uri.split("=")[1];
                 Log.i("web","Selected file is of files found: "+name);
-                msg =   "\"<html><body style='background-color:black;'><font color='white'>"+
+                msg =   "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">" +
+                        "\"<html><body style='background-color:black;'><font color='white'>"+
                         "<h1>Delete " + name + "??</h1>"+
                 "<a href='http://192.168.1.1:8888/delyes=" + name + "'> <input type='button' value='YES'>------" +
                 "<a href='http://192.168.1.1:8888/files'> <input type='button' value='NO'>" +
@@ -798,8 +800,9 @@ public void surfaceCreated(SurfaceHolder holder) {
                 makePicture();
                 taking_pics = true;
                 message_log = "";
-                msg = "<html><body style='background-color:black;'><font color='white'><h1>Busy taking pictures</h1><br>" +
-                "<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form></font></body></html>";
+                msg = "<meta http-equiv='refresh' content='0.5; URL=http://192.168.1.1:8888/refresh'>"+
+                        "<html><body style='background-color:black;'><font color='white'><h1>Busy taking pictures</h1><br>Doing:<br>" ;
+                //"<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form></font></body></html>";
                 return newFixedLengthResponse(msg );
             }
 
@@ -814,9 +817,10 @@ public void surfaceCreated(SurfaceHolder holder) {
             {
 
                 Log.i("web", "refresh taking pics is true");
-                msg =   "<html><body style='background-color:black;'><font color='white'>" +
-                        "<h1>Busy taking pictures</h1><br>" +
-                        "<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form>";
+                msg =   "<meta http-equiv='refresh' content='0.5; URL=http://192.168.1.1:8888/refresh'>"+
+                        "<html><body style='background-color:black;'><font color='white'>" +
+                        "<h1>Busy taking pictures</h1><br>Doing:<br>" ;
+                        //"<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form>";
                 msg += message_log + "</font></body></html>";
                 return newFixedLengthResponse(msg);
 
@@ -1024,7 +1028,7 @@ public void surfaceCreated(SurfaceHolder holder) {
                 for (Integer j = 0; j < number_of_noise_pics; j++)
                 {
                     //notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
-                    log("avg","---> Working on image: "+filename_array.get(i * number_of_noise_pics + j));
+                    //log("avg","---> Working on image: "+filename_array.get(i * number_of_noise_pics + j));
                     temp_pic3 = imread(filename_array.get(i * number_of_noise_pics + j));
                     temp_pic3.convertTo(temp_pic3, CvType.CV_32FC3);
                     Core.add(average_pic, temp_pic3, average_pic);
@@ -1039,13 +1043,13 @@ public void surfaceCreated(SurfaceHolder holder) {
 
                 String opath = filename_array.get(i * number_of_noise_pics + number_of_noise_pics - 1);
                 opath = opath.replace("c1", "avg");
-                log("avg", "---> Saving Averaged file as " + opath + ".");
+                log("avg", "---> Saving denoised file as " + opath + ".");
                 //notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
                 imwrite(opath, average_pic);
                 average_pic.release();
                 images_filename_array.add(opath);
             }
-            log("avg","---> Done average on image "+Integer.toString(i+1));
+            log("avg","---> Done denoise on image "+Integer.toString(i+1));
         }
 
 
@@ -1229,10 +1233,10 @@ public void surfaceCreated(SurfaceHolder holder) {
         //    Average_pics(i);
         while (images_filename_array.size() != numberOfPictures)
         {
-        log("avg","Number of average files not ready yet, we wait. Done "+images_filename_array.size() +" of "+ numberOfPictures);
+        log("avg","Denoising of images not ready yet, we wait. Already done "+images_filename_array.size() +" of "+ numberOfPictures+" images.");
         try
         {
-        Thread.sleep(100);
+        Thread.sleep(500);
         }
         catch(InterruptedException ex)
         {
@@ -1263,7 +1267,7 @@ public void surfaceCreated(SurfaceHolder holder) {
         Scalar mean =  org.opencv.core.Core.mean(hdrDebevec);
         Log.d(TAG,"Mean: " + mean.toString());
         double new_mean = (mean.val[0]*2 + mean.val[1]*2 +mean.val[2]*2 )/3.0;
-        log(TAG,"Average Mean: " + Double.toString(new_mean));
+        //log(TAG,"Average Mean: " + Double.toString(new_mean));
         org.opencv.core.Core.divide(hdrDebevec,new Scalar(new_mean,new_mean,new_mean,0),hdrDebevec);
 
 
@@ -1361,7 +1365,7 @@ public void surfaceCreated(SurfaceHolder holder) {
 
 
         opath = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name + ".EXR";
-        log(TAG,"Saving EXR Y file as " + opath + ".");
+        log(TAG,"Saving EXR file as " + opath + ".");
         //notificationLedBlink(LedTarget.LED3, LedColor.RED, 150);
         imwrite(opath, hdrDebevecY,compressParams);
 
@@ -1693,8 +1697,8 @@ public void surfaceCreated(SurfaceHolder holder) {
         String opath_new = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" +
         session_name + "/" + extra +
         "_iso" +exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) +
-        "_shutter" + shutter_speed_string +
-        "sec.jpg";
+        "_shttr" + shutter_speed_string +
+        "s.jpg";
         //File filenew = ;
 
         if (!extra.contains("auto_pic")) // save filename for easy retrieve later on
@@ -1716,7 +1720,7 @@ public void surfaceCreated(SurfaceHolder holder) {
         Scalar mean = org.opencv.core.Core.mean(temp_pic2);
         temp_pic2.release();
         double new_mean = (mean.val[0] + mean.val[1] + mean.val[2]) / 3.0;
-        log(TAG, "Average Mean: " + Double.toString(new_mean));
+        //log(TAG, "Average Mean: " + Double.toString(new_mean));
         if (new_mean == 255.0)
         {
         // We can skip these images and replace them with resource white jpg
