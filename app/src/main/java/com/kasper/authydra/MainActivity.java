@@ -16,30 +16,30 @@
  *
  *
  * TODO v2.1
- * - log counter of progress
- * - calibrate auto stop jumps
- * - better layout of webinterface
- * - turn sound on/off
- * - turn iso looping on/off
- * - name session
- * - viewer
- * - dng support
- * - disk space warnings
+ * log counter of progress
+ * calibrate auto stop jumps
+ * better layout of webinterface
+ * turn sound on/off
+ * turn iso looping on/off
+ * name session
+ * viewer
+ * dng support
+ * disk space warnings
+ * divider in file menu between shots
+ * divider per day in file menu
+ * log text simpeler showing where we are in progress
+ * better css for buttons
+ * total time calculator
+ * very dark settings error
  */
 
-
-
-//package com.theta360.pluginapplication;
 package com.kasper.authydra;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
-import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
@@ -49,19 +49,9 @@ import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.support.media.ExifInterface;
-import android.view.ViewDebug;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.AssetManager;
-import android.os.Bundle;
-import android.os.Environment;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.KeyEvent;
-
 import org.opencv.android.OpenCVLoader;
 
+import static android.provider.ContactsContract.Directory.PACKAGE_NAME;
 import static org.opencv.core.CvType.typeToString;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
@@ -78,61 +68,41 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.lang.String;
-
-import java.nio.file.DirectoryStream;
-import java.nio.file.LinkOption;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.io.IOException;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-
 import fi.iki.elonen.NanoHTTPD;
-import fi.iki.elonen.NanoHTTPD.Response.Status;
-import com.samskivert.mustache.Mustache;
 
 import org.opencv.core.MatOfInt;
 import org.opencv.core.Scalar;
 
-
-
 import com.theta360.pluginlibrary.activity.PluginActivity;
 import com.theta360.pluginlibrary.callback.KeyCallback;
 import com.theta360.pluginlibrary.receiver.KeyReceiver;
+import com.theta360.pluginlibrary.values.ExitStatus;
 import com.theta360.pluginlibrary.values.LedColor;
 import com.theta360.pluginlibrary.values.LedTarget;
 
 import java.io.FileOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.StringTokenizer;
 import java.text.DecimalFormat;
-
-import java.nio.channels.FileChannel;
-
-
-import static java.lang.Thread.sleep;
 import java.util.ArrayList;
-import java.util.function.DoubleToIntFunction;
+import static java.lang.Thread.sleep;
+
 import java.util.zip.ZipOutputStream;
 import java.util.zip.ZipEntry;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 
-public class MainActivity extends PluginActivity implements SurfaceHolder.Callback {
+public class MainActivity extends PluginActivity implements SurfaceHolder.Callback
+{
 
     //#################################################################################################
     private int numberOfPictures = 11;    // number of pictures for the bracket          #
@@ -177,8 +147,6 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     String message_log ="";
     int pics_count =0;
 
-
-
     // Set exr file to half float --> smaller files
     private MatOfInt compressParams = new MatOfInt(org.opencv.imgcodecs.Imgcodecs.CV_IMWRITE_EXR_TYPE, org.opencv.imgcodecs.Imgcodecs.IMWRITE_EXR_TYPE_HALF);
 
@@ -208,7 +176,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
     private static final String TAG = "MainActivity";
 
-    static {
+    static
+    {
         if (OpenCVLoader.initDebug()) {
             Log.i(TAG,"OpenCV initialize success");
         } else {
@@ -216,42 +185,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         }
     }
 
-    private void copyWithChannels(File source, File target, boolean append) {
-        //Log.i("Copying files with channels.");
-        //ensureTargetDirectoryExists(target.getParentFile());
-        FileChannel inChannel = null;
-        FileChannel outChannel = null;
-        FileInputStream inStream = null;
-        FileOutputStream outStream = null;
-        try{
-            try {
-                inStream = new FileInputStream(source);
-                inChannel = inStream.getChannel();
-                outStream = new  FileOutputStream(target, append);
-                outChannel = outStream.getChannel();
-                long bytesTransferred = 0;
-                //defensive loop - there's usually only a single iteration :
-                while(bytesTransferred < inChannel.size()){
-                    bytesTransferred += inChannel.transferTo(0, inChannel.size(), outChannel);
-                }
-            }
-            finally {
-                //being defensive about closing all channels and streams
-                if (inChannel != null) inChannel.close();
-                if (outChannel != null) outChannel.close();
-                if (inStream != null) inStream.close();
-                if (outStream != null) outStream.close();
-            }
-        }
-        catch (FileNotFoundException ex){
-            Log.d(TAG,"File not found: " + ex);
-        }
-        catch (IOException ex){
-            Log.d(TAG,"Error"+ex);
-        }
-    }
-
-    void deleteDir(File file) {
+    void deleteDir(File file)
+    {
         File[] contents = file.listFiles();
         if (contents != null) {
             for (File f : contents) {
@@ -261,7 +196,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         file.delete();
     }
 
-    public boolean zipFileAtPath(String sourcePath, String toLocation) {
+    public boolean zipFileAtPath(String sourcePath, String toLocation)
+    {
         final int BUFFER = 2048;
 
         File sourceFile = new File(sourcePath);
@@ -292,9 +228,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         return true;
     }
 
-
-    private void zipSubFolder(ZipOutputStream out, File folder,
-                              int basePathLength) throws IOException {
+    private void zipSubFolder(ZipOutputStream out, File folder, int basePathLength) throws IOException
+    {
 
         final int BUFFER = 2048;
 
@@ -322,15 +257,14 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         }
     }
 
-
-    public String getLastPathComponent(String filePath) {
+    public String getLastPathComponent(String filePath)
+    {
         String[] segments = filePath.split("/");
         if (segments.length == 0)
             return "";
         String lastPathComponent = segments[segments.length - 1];
         return lastPathComponent;
     }
-
 
     private void makePicture()
     {
@@ -402,113 +336,127 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
          }
          }
 
-@Override
-public void onCreate(Bundle savedInstanceState)
-{
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_main);
         mcontext = this;
 
         this.webServer = new WebServer(this.mcontext);
-        try {
-        this.webServer.start();
-        } catch (IOException e) {
-        e.printStackTrace();
+        try
+        {
+            this.webServer.start();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
 
         SurfaceView preview = (SurfaceView)findViewById(R.id.preview_id);
         SurfaceHolder holder = preview.getHolder();
         holder.addCallback(this);
+
         setKeyCallback(new KeyCallback()
         {
-
-        @Override
-        public void onKeyDown(int keyCode, KeyEvent event) {
-                if (keyCode == KeyReceiver.KEYCODE_CAMERA) {
-                // If on second run we need to reset everything
-                notificationLedBlink(LedTarget.LED3, LedColor.GREEN, 300);
-
-                log("TAG","5 seconds delay to run away.");
-                //5sec delay timer to run away
-                try{
-                sleep(5000);
-                } catch (InterruptedException e) {
-                //e.printStackTrace();
-                Log.i(TAG,"Sleep error.");
-                }
-                makePicture();
-
-                }
-                else if(keyCode == KeyReceiver.KEYCODE_WLAN_ON_OFF){ // Old code
-                notificationLedBlink(LedTarget.LED3, LedColor.MAGENTA, 2000);
-
+            //@Override
+            public void onKeyDown(int keyCode, KeyEvent event)
+            {
+                if (keyCode == KeyReceiver.KEYCODE_CAMERA)
+                {
+                    // If on second run we need to reset everything
+                    notificationLedBlink(LedTarget.LED3, LedColor.GREEN, 300);
+                    log("TAG","5 seconds delay to run away.");
+                    //5sec delay timer to run away
+                    try
+                    {
+                        sleep(5000);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        //e.printStackTrace();
+                        Log.i(TAG,"Sleep error.");
+                    }
+                    makePicture();
                 }
             }
 
-        @Override
-        public void onKeyUp(int keyCode, KeyEvent event) {
-                /*
-                 * You can control the LED of the camera.
-                 * It is possible to change the way of lighting, the cycle of blinking, the color of light emission.
-                 * Light emitting color can be changed only LED3.
-                 */
-                }
-
-        @Override
-        public void onKeyLongPress(int keyCode, KeyEvent event) {
-                notificationError("theta debug: " + Integer.toString(keyCode) + " was pressed too long");
-                }
-            });
+            //@Override
+            public void onKeyUp(int keyCode, KeyEvent event) { }
+            //@Override
+            public void onKeyLongPress(int keyCode, KeyEvent event) { }
+        });
 
     }
 
-@Override
-public void onResume() {
+    @Override
+    public void onResume()
+    {
         super.onResume();
-        if(m_is_bracket){
-        notificationLedBlink(LedTarget.LED3, LedColor.MAGENTA, 2000);
-        notificationLedHide(LedTarget.LED3);
-        notificationLedShow(LedTarget.LED3);
-        notificationLed3Show(LedColor.MAGENTA);
+        if(m_is_bracket)
+        {
+            notificationLedBlink(LedTarget.LED3, LedColor.MAGENTA, 2000);
+            notificationLedHide(LedTarget.LED3);
+            notificationLedShow(LedTarget.LED3);
+            notificationLed3Show(LedColor.MAGENTA);
         }
-        else {
-        notificationLedBlink(LedTarget.LED3, LedColor.CYAN, 2000);
+        else
+        {
+            notificationLedBlink(LedTarget.LED3, LedColor.CYAN, 2000);
         }
-        }
+    }
 
-public void onPause() {
+    public void onPause()
+    {
         super.onPause();
-        }
 
-protected void onDestroy() {
+    }
+
+    protected void onDestroy()
+    {
+
+        if (this.webServer != null)
+        {
+            this.webServer.stop();
+        }
+        if (mCamera!= null) {
+            mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
+            mCamera.setErrorCallback(null);
+            mCamera.release();
+            mCamera = null;
+        }
+        //Intent intent = new Intent("com.theta360.plugin.ACTION_FINISH_PLUGIN");
+        //intent.putExtra(PACKAGE_NAME, getPackageName());
+        //intent.putExtra("exitStatus", ExitStatus.SUCCESS.toString());
+        //sendBroadcast(intent);
+        //finishAndRemoveTask();
+        sendBroadcast(new Intent("com.theta360.plugin.ACTION_MAIN_CAMERA_OPEN"));
         super.onDestroy();
-        if (this.webServer != null) {
-        this.webServer.stop();
-        }
-        }
+    }
 
-@Override
-public void surfaceCreated(SurfaceHolder holder) {
-
+    @Override
+    public void surfaceCreated(SurfaceHolder holder)
+    {
         Log.i(TAG,"Camera opened");
         //LoadText(R.raw.master_crc_kasper);
-
-        Intent intent = new Intent("com.theta360.plugin.ACTION_MAIN_CAMERA_CLOSE");
-        sendBroadcast(intent);
+        sendBroadcast(new Intent("com.theta360.plugin.ACTION_MAIN_CAMERA_CLOSE"));
         mCamera = Camera.open();
-        try {
-
-        mCamera.setPreviewDisplay(holder);
-        } catch (IOException e) {
-
-        //e.printStackTrace();
-        Log.i(TAG,"Camera opening error.");
+        try
+        {
+            mCamera.setPreviewDisplay(holder);
         }
+        catch (IOException e)
+        {
+            //e.printStackTrace();
+            Log.i(TAG,"Camera opening error.");
         }
+    }
 
-        @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
+    {
 
         mCamera.stopPreview();
         Camera.Parameters params = mCamera.getParameters();
@@ -516,1372 +464,1269 @@ public void surfaceCreated(SurfaceHolder holder) {
 
         List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
         Camera.Size size = previewSizes.get(0);
-        for(int i = 0; i < previewSizes.size(); i++) {
-        size = previewSizes.get(i);
-        Log.d(TAG,"preview size = " + size.width + "x" + size.height);
+        for(int i = 0; i < previewSizes.size(); i++)
+        {
+            size = previewSizes.get(i);
+            Log.d(TAG,"preview size = " + size.width + "x" + size.height);
         }
         params.setPreviewSize(size.width, size.height);
         mCamera.setParameters(params);
         mCamera.startPreview();
-        }
+    }
 
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder)
+    {
         Log.d(TAG,"camera closed");
+
         notificationLedHide(LedTarget.LED3);
-        mCamera.stopPreview();
-        mCamera.release();
-        mCamera = null;
-        Intent intent = new Intent("com.theta360.plugin.ACTION_MAIN_CAMERA_OPEN");
+        if (mCamera!= null) {
+            mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
+            mCamera.setErrorCallback(null);
+            mCamera.release();
+            mCamera = null;
+        }
+        Intent intent = new Intent("com.theta360.plugin.ACTION_FINISH_PLUGIN");
+        intent.putExtra(PACKAGE_NAME, getPackageName());
+        intent.putExtra("exitStatus", ExitStatus.SUCCESS.toString());
         sendBroadcast(intent);
-        }
+        finishAndRemoveTask();
+        //Intent intent = new Intent("com.theta360.plugin.ACTION_MAIN_CAMERA_OPEN");
+        //sendBroadcast(intent);
+        //if (this.webServer != null)
+        //    {
+        //    this.webServer.stop();
+        //    }
+        //*/
+    }
 
+    private class WebServer extends NanoHTTPD
+    {
 
-        private class WebServer extends NanoHTTPD {
+    private static final int PORT = 8888;
+    private Context context;
 
-        private static final int PORT = 8888;
-        private Context context;
+    private static final String INDEX_TEMPLATE_FILE_NAME = "index_template.html";
+    private static final String INDEX_OUTPUT_FILE_NAME = "index_out.html";
+    private static final String HTML_SELECTOR_ID_COLOR = "color";
+    private static final String HTML_SELECTOR_ID_BRACKET = "brackets";
+    private static final String HTML_SELECTOR_ID_DENOISE = "denoise";
 
-        private static final String INDEX_TEMPLATE_FILE_NAME = "index_template.html";
-        private static final String INDEX_OUTPUT_FILE_NAME = "index_out.html";
-        private static final String HTML_SELECTOR_ID_COLOR = "color";
-        private static final String HTML_SELECTOR_ID_BRACKET = "brackets";
-        private static final String HTML_SELECTOR_ID_DENOISE = "denoise";
-
-        public WebServer(Context context) {
-        super(PORT);
-        this.context = context;
-        }
-
-
-        @Override
-        public Response serve(IHTTPSession session)
-        {
-            String uri = session.getUri();
-            String msg = "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">" +
-                    "<html><body style='background-color:black;'><font color='white'>"+
-                    "<h1>Welcome to Authydra.</h1>"+
-                    "<svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\n" +
-                    "\t viewBox=\"0 0 885.22 720\" style=\"enable-background:new 0 0 885.22 720;\" xml:space=\"preserve\">\n" +
-                    "<style type=\"text/css\">\n" +
-                    "\t.st0{fill:#FFFFFF;}\n" +
-                    "</style>\n" +
-                    "<g>\n" +
-                    "\t<path class=\"st0\" d=\"M37.44,695.38c-3,1.99-6.25,3.12-7.78,5.4c-2.31,3.45-2.32,7.45,3.26,8.13c10.66,1.32,20.55-1.42,29.49-7.05\n" +
-                    "\t\tc2.04-1.29,3.44-4.48,4.02-7.05c2.15-9.4,2.82-9.69,11.93-5.98c8.73,3.56,17.46,7.8,26.6,9.48c7.23,1.33,15.33,0.12,22.57-1.76\n" +
-                    "\t\tc3.47-0.9,6.47-5.65,8.41-9.33c0.73-1.39-1.93-6.58-3.37-6.73c-3.92-0.4-8.33,0.27-11.96,1.86c-3.51,1.54-6.29,4.75-9.5,7.31\n" +
-                    "\t\tc5.81-24.99,31.29-44.14,56.38-37.85c4.16,1.04,7.79,4.41,11.53,6.89c9,5.97,17.89,12.1,26.91,18.03c1.38,0.91,3.18,1.48,4.84,1.61\n" +
-                    "\t\tc6.61,0.52,14.28,1.69,17.45-5.68c3.05-7.08-3.34-11.4-7.95-15.45c-3.38-2.97-7.45-5.15-12.08-8.26c14.56-7.76,28.25-5.14,42.7-1.6\n" +
-                    "\t\tc-3.9-2.82-7.72-5.77-11.73-8.44c-4.28-2.86-8.54-5.88-13.15-8.11c-39.88-19.32-61.41-52.91-69.87-94.61\n" +
-                    "\t\tc-4.12-20.3-2.87-41.77,8.34-60.99c10.25-17.57,15.35-36.19,11.82-56.81c-3.49-20.42-21.7-31.64-40.72-24.46\n" +
-                    "\t\tc-11.2,4.23-14.91,12.61-10.67,24.11c5.67,15.38,4.64,16.67-9.77,24.49c-13,7.05-25.74,14.77-37.73,23.41\n" +
-                    "\t\tc-10.7,7.72-14.66,20.07-16.97,32.56c-15.93-1.54-26.55-10.11-29.8-24.57c-0.71-3.18,0.51-7.46,2.27-10.36\n" +
-                    "\t\tc2.79-4.6,6.93-8.36,10.23-12.68c6.61-8.66,13.89-17.21,11.84-29.29c-2.75-16.18,4.99-28.11,15.25-39.17\n" +
-                    "\t\tc13.01-14.04,20.85-30.84,24.49-49.38c2.72-13.88-4.06-23.55-17.07-29.54c9.92-2.53,24.74,2.57,29.78,12.65\n" +
-                    "\t\tc4.75,9.5,6.22,20.65,9.05,30.8c19.46-21.38,44.61-34.48,75.35-36.41c-13.94,8.96-31.2,12.9-41.68,27.42\n" +
-                    "\t\tc43.27-2.45,65.96,6,88.65,33.48c-15.24-5.19-28.79-13.72-45.36-11.25c35.13,4.93,50.41,31.18,66.39,59.95\n" +
-                    "\t\tc-9.6-6.36-17.34-11.49-25.07-16.61c-0.7,0.53-1.4,1.07-2.1,1.6c2.51,4.82,4.93,9.68,7.55,14.44c16.08,29.15,13,57.17-4.9,84.32\n" +
-                    "\t\tc-0.86,1.3-2.15,2.31-3.01,3.22c0.93-12.62,1.85-25.16,2.93-39.81c-3.15,2.17-4.42,2.57-4.79,3.38\n" +
-                    "\t\tc-9.98,21.81-15.16,44.22-4.43,67.12c7.87,16.79,22.98,26.1,39.5,32.69c30.71,12.26,63.33,15.59,95.83,19.12\n" +
-                    "\t\tc8.45,0.92,10.33-5.49,11.32-12.08c2.33-15.45-4-27.26-15.6-36.83c-13.68-11.29-28.17-21.77-40.85-34.09\n" +
-                    "\t\tc-35.19-34.2-53.46-76.47-57.57-125.26c-3.16-37.6,6.65-72.55,19.32-107.3c7.58-20.8,12.19-42.42,8.44-64.95\n" +
-                    "\t\tc-6.24-37.53-40-60.83-76.14-59.41c-2.89,0.11-5.95,1.75-8.5,3.37c-3.37,2.14-6.24,5.04-9.45,7.45\n" +
-                    "\t\tc-10.97,8.26-18.73,7.43-28.15-2.14c-9.65-9.8-19.15-19.87-29.71-28.62c-13.04-10.79-27.92-17.94-45.69-16.47\n" +
-                    "\t\tc-4.24,0.35-8.54,0.05-12.68,0.05c-4.62-17.54,3.15-36.01,19.31-42.84c4.98-2.11,12.36-0.94,17.84,1\n" +
-                    "\t\tc12.9,4.58,24.94,11.91,39.4,10.51c2.53-0.24,5.48-0.17,7.44-1.45c16.73-10.96,33.57-7.91,49.76,0.3\n" +
-                    "\t\tc23.79,12.07,46.22,7.19,68.19-4.1c5.62-2.89,10.03-8.16,15.24-12.54c1.84,17.67-10.15,32.96-34.23,42.8\n" +
-                    "\t\tc6.85,2.51,12.43,4.62,18.06,6.61c25.63,9.03,51.27,18.01,76.88,27.09c2,0.71,3.78,2.03,5.85,3.16\n" +
-                    "\t\tc-15.57-1.48-30.62-2.92-45.67-4.35c-0.35,1.03-0.7,2.07-1.06,3.1c34.59,15.3,60.49,38.76,72.38,75.55\n" +
-                    "\t\tc-11.33-14.52-21.44-30.77-43.74-29.39c14.31,12.23,28.01,24.85,31.03,44.38c2.83,18.26,1.62,36.5-3.5,56.78\n" +
-                    "\t\tc-4.52-16.46-3.77-32.53-14.31-45.32c1.22,18.93,3.26,36.95,3.31,54.97c0.04,18.47-6.61,35.08-19.36,50.27c0-15.47,0-29.74,0-44.42\n" +
-                    "\t\tc-0.86,0.51-1.88,0.74-2.09,1.29c-13.18,34.73-20.71,70.04-7.81,106.52c10.82,30.59,31.18,54.54,58.2,71.41\n" +
-                    "\t\tc28.31,17.68,58.43,32.47,88.58,47.48c-1.97-29.92-22.36-48.81-37.37-70.68c-1.12,0.27-2.24,0.54-3.36,0.81\n" +
-                    "\t\tc2.52,16,5.04,32.01,7.45,47.33c-11.53-6.17-25.75-37.81-28.27-66.03c-2.33-26.13,10.68-48.05,20.62-71.27\n" +
-                    "\t\tc-13.69,4.51-23.43,14.36-34.41,22.75c9.89-22.2,22.53-42.34,40.07-59.5c17.82-17.44,39.31-27.25,63.28-32.69\n" +
-                    "\t\tc0.24-0.92,0.49-1.85,0.73-2.77c-5.07-1.98-10-5.05-15.24-5.74c-17.87-2.36-34.65,2.45-50.92,9.46c-3.09,1.33-6.27,2.42-9.66,3.09\n" +
-                    "\t\tc12.85-14.2,30.21-20.39,47.52-26.53c-14.78-14.03-29.33-27.83-43.89-41.65c3.36,15,7.03,31.41,10.72,47.88\n" +
-                    "\t\tc-19.58-18.41-32.16-40.82-33.76-68.23c-1.46-24.99,0.78-49.85,7.3-74.18c0.35-1.29,0.19-2.72,0.39-6.31\n" +
-                    "\t\tc-13.59,8.01-25.8,15.2-37.39,22.03c16.59-33.46,55.2-80.11,125.46-84.16c-14.55-4.98-29.03-11.01-44.9-9.07\n" +
-                    "\t\tc-15.22,1.86-30.3,4.84-44,7.1c19.5-19.79,75.49-27.71,141.06-5.67c2.68-8.97-1.8-15.8-7.4-21.2\n" +
-                    "\t\tc-10.02-9.67-20.94-18.4-31.93-27.92c11.71-0.09,21.5,4.97,30.51,11.05c6.78,4.58,13.07,10.28,18.47,16.45\n" +
-                    "\t\tc16.71,19.08,37.62,32.31,59.35,44.13c-4.9-14.49-10.7-29.01-14.63-44.02c-3.84-14.67-7.51-29.94,3.22-46.66\n" +
-                    "\t\tc-0.79,32.67,13.24,57.5,29.94,80.8c6.45,9,16.08,15.84,24.74,23.11c8.07,6.78,17.59,12.01,24.92,19.46\n" +
-                    "\t\tc5.13,5.22,9.93,12.7,10.87,19.72c2.44,18.14,13.16,29.29,27.3,38.52c5.76,3.76,11.72,7.22,17.47,11\n" +
-                    "\t\tc11.04,7.27,13.57,13.43,11.01,26.11c-0.45,2.25-1.25,4.46-1.42,6.72c-1.2,15.94-11.6,23.41-26.01,28.17\n" +
-                    "\t\tc-10.68-22.92-29.06-37.41-52.85-44.32c-15.34-4.45-31.3-6.92-47.11-9.52c-16.99-2.8-23.67-8.23-21.54-25.21\n" +
-                    "\t\tc2.93-23.34-8.61-35.72-27.28-45.21c-19.89-10.11-40.02-14.75-62.08-7.54c-14.37,4.7-24.64,22.62-25.1,35.57\n" +
-                    "\t\tc-0.92,25.65,11.6,44.85,26.14,63.59c3.69,4.75,7.4,9.72,12.02,13.45c5.85,4.72,12.2,9.46,19.13,12.1\n" +
-                    "\t\tc24.09,9.19,48.38,18.06,74.78,17.79c2.28-0.02,4.57,0.43,6.86,0.58c0.45,0.03,0.93-0.33,1.98-0.73\n" +
-                    "\t\tc-15.5-15.14-37.78-26.23-32.91-54.77c14.95,34.43,44.03,43.25,75.76,48.24c11.19,1.76,22.66,3.53,33.12,7.57\n" +
-                    "\t\tc6.43,2.48,12.3,8.47,16.45,14.29c6.67,9.37,15.35,14.57,26.1,16.55c10.41,1.92,20.97,3.08,31.49,4.39\n" +
-                    "\t\tc11.12,1.38,16.32,5.68,19.2,16.45c0.59,2.21,0.65,4.6,1.46,6.71c5.59,14.64,0.71,26.55-8.86,35.88\n" +
-                    "\t\tc-11.63-4.63-22.84-10.7-34.81-13.49c-20.7-4.83-40.98,0.16-60.75,6.78c-5.71,1.91-11.32,4.11-17.04,5.98\n" +
-                    "\t\tc-11.49,3.74-18.08,1.39-24.68-8.83c-1.54-2.39-2.71-5.05-3.83-7.68c-8.77-20.49-18.79-26.24-41.68-23.62\n" +
-                    "\t\tc4.6,10.14,9.61,20.03,13.64,30.31c7.95,20.27,11.67,41.33,9.83,63.16c-2.9,34.56-4.6,69.28-9.26,103.61\n" +
-                    "\t\tc-4.75,35.04-18.39,67.27-38.74,96.43c-1.78,2.54-3.38,5.2-6.22,9.59c8.41-0.82,15.42-0.85,22.13-2.28\n" +
-                    "\t\tc17.6-3.75,35.61-6.6,52.47-12.58c25.85-9.16,33.9-29.17,23.96-55.08c-3.1-8.08-7.74-15.57-11.68-23.33\n" +
-                    "\t\tc-0.78,0.31-1.56,0.63-2.34,0.94c2.57,11.77,5.14,23.53,8.19,37.51c-26.36-27.21-29.22-56.5-17.88-89.09\n" +
-                    "\t\tc-5.49,7.93-10.97,15.85-16.46,23.78c9.27-28.22,20.93-54.75,49.35-69.57c-0.6-0.94-1.19-1.88-1.79-2.82\n" +
-                    "\t\tc-11.79,5.44-23.58,10.89-36.58,16.89c17.54-26.33,41.03-39.52,73.3-39.93c-12.63-10.89-26.8-13.37-40.95-17.26\n" +
-                    "\t\tc14.32-7.02,38.56,0.35,74.41,22.29c-3.37-12.94-3.93-25.5,5.38-35.04c5.38-5.52,13.33-8.54,20.73-11.65\n" +
-                    "\t\tc-15.21,16.11-17.02,26.58-3.94,45.01c8.85,12.47,20.71,22.77,30.02,34.95c4.59,6.01,8.42,13.89,9.13,21.27\n" +
-                    "\t\tc1,10.38,5.49,17.78,12.54,24.43c1.46,1.38,3.07,2.59,4.59,3.9c13.79,11.79,15.21,21.41,3.76,35.89\n" +
-                    "\t\tc-2.96,3.74-9.17,4.89-13.28,6.93c-5.22-7.7-9.25-15.36-14.88-21.59c-11.45-12.67-27.52-16.97-43.22-21.62\n" +
-                    "\t\tc-13.03-3.86-14.51-6.47-11.2-19.64c2.87-11.44-5.48-21.24-18.1-21.21c-15.65,0.04-26.92,11.44-27.38,28.12\n" +
-                    "\t\tc-0.41,14.76,3.16,28.81,12.2,40.41c21.53,27.63,20.14,56.08,4.15,85.11c-12.74,23.13-30.32,41.6-54.76,52.79\n" +
-                    "\t\tc-2.32,1.06-4.51,2.41-6.38,4.84c3.96-1.27,7.89-2.62,11.88-3.78c4.66-1.37,9.31-2.91,14.07-3.76c4.38-0.78,8.91-0.75,15.67-1.24\n" +
-                    "\t\tc-5.04,5.88-9.18,9.71-11.95,14.35c-1.62,2.71-1.03,6.73-1.44,10.17c3.45-0.04,6.95,0.27,10.33-0.26c1.82-0.28,3.73-1.69,5.06-3.1\n" +
-                    "\t\tc8.82-9.35,18.15-7.75,28.96-3.19c21.09,8.89,42.47,17.22,64.18,24.43c8.71,2.89,18.6,2.74,27.97,2.94\n" +
-                    "\t\tc3.99,0.08,8.45-1.83,11.96-4.01c6.44-4.01,7.04-11.61,0.6-15.47c-5.61-3.37-12.58-4.84-19.16-6.02c-2.14-0.39-6.66,2.49-6.97,4.37\n" +
-                    "\t\tc-0.38,2.34,1.93,6.32,4.17,7.46c1.68,0.85,5.12-1.56,7.67-2.76c0.94-0.44,1.54-1.59,2.3-2.42c0.78,0.33,1.55,0.66,2.33,0.99\n" +
-                    "\t\tc-1.27,3.04-1.93,8.13-3.93,8.72c-6,1.78-13.33,3.89-18.56,1.85c-4.1-1.6-7-8.91-8.38-14.21c-2.34-9.01,5.68-11.79,11.71-12.79\n" +
-                    "\t\tc16.36-2.7,32.04-0.55,44.74,11.72c6.75,6.52,8.94,18.68,5.08,27.87c-4,9.5-10.52,13.67-21.53,13.68\n" +
-                    "\t\tc-273.11,0.12-546.23,0.23-819.34,0.3c-5.83,0-12.57,1.49-15.12-6.39c-2.34-7.24,0.91-12.67,5.82-17.61\n" +
-                    "\t\tC25.79,690.53,31.22,692.25,37.44,695.38z M548.74,484.04c12.4-20.83,19.35-43.36,21.81-67.68c2.79-27.63-6.42-51.14-22.41-72.66\n" +
-                    "\t\tc-1.17-1.57-5.95-2.48-7.48-1.42c-9.62,6.66-19.53,13.19-27.98,21.21c-22.54,21.41-24.37,46.62-5.17,71.26\n" +
-                    "\t\tC520.48,451.38,534.56,467.16,548.74,484.04z M688.48,164.44c1.14-8.7-2.84-17.35-13.94-27.41c-3.27-2.97-8.2-4.1-12.38-6.07\n" +
-                    "\t\tc-1.77,3.95-3.54,7.9-4.48,10C669,149.59,678.75,157.03,688.48,164.44z M725.37,303.63c-8.04-12.56-18.35-17.89-30.31-20.4\n" +
-                    "\t\tc-2.76-0.58-7.15-0.36-8.53,1.34c-1.5,1.83-1.34,6.37-0.05,8.69c1.06,1.9,4.76,2.64,7.44,3.24c4.67,1.05,9.5,1.39,14.18,2.43\n" +
-                    "\t\tC713.27,300.08,718.34,301.69,725.37,303.63z M160.12,99c10.98,3.94,20.38,7.76,30.11,10.4c1.86,0.5,5.45-3.33,7.25-5.86\n" +
-                    "\t\tc0.59-0.83-1.5-5.15-3.13-5.73C183.4,93.91,172.38,93.46,160.12,99z M69.56,430.09c5.31-7.37,8.58-13.4,13.25-18.02\n" +
-                    "\t\tc5.46-5.4,4.36-8.94-1.56-13.38C71.81,406.27,69.21,416.23,69.56,430.09z M813.22,476.58c-2.22-11.74-5.34-20.41-16.77-26.54\n" +
-                    "\t\tc-0.46,4.35-2.18,8.54-0.84,10.09C800.33,465.58,806.1,470.11,813.22,476.58z\"/>\n" +
-                    "</g>\n" +
-                    "</svg><br>";
-
-
-            File[] arrayfile;
-            Log.i("web", "Uri is " + uri);
-
-
-
-            try {
-            session.parseBody(new HashMap<String, String>());
-            } catch (ResponseException | IOException r) {
-            r.printStackTrace();
-            }
-
-
-            Map<String, String> parms = session.getParms();
-            for (String key : parms.keySet()) {
-            Log.d("web", key + "=" + parms.get(key));
-            }
-
-            //msg += "<a href='/Open_rap'>Open Image</a><br><br>";
-            msg += "<br><form action='/files'>" +
-            "<input type='submit' value='Manage Files'></form>";
-            msg += "<br>Please select your settings:<br><form action='/pic'>" +
-            //"Number of Brackets    : <input type='number' name='brackets' value = '1' step='2' min='1' max='11'><br>" +
-            "Number of bracket pictures    : <select name='brackets'>" +
-            "<option value='1'>1</option>" +
-            "<option value='2'>2</option>" +
-            "<option value='3'>3</option>" +
-            "<option value='4'>4</option>" +
-            "<option value='5'>5</option>" +
-            "<option value='6'>6</option>" +
-            "<option value='7'>7</option>" +
-            "<option value='8'>8</option>" +
-            "<option value='9'>9</option>" +
-            "<option value='10'>10</option>" +
-            "<option value='11'>11</option>" +
-            "<option selected='selected'>11</option>"+
-            "</select><br>" +
-            //"Number of denoise pics: <input type='number' name='denoise'  value = '1'  step='1' min='1' max='5' ><br>" +
-            "Number of denoise pictures: <select name='denoise'>" +
-            "<option value='1'>1</option>" +
-            "<option value='2'>2</option>" +
-            "<option value='3'>3</option>" +
-            "<option value='4'>4</option>" +
-            "<option value='5'>5</option>" +
-            "<option selected='selected'>3</option>"+
-            "</select><br>" +
-            "Number stop jumps between brackets: <select name='stopjump'>" +
-            "<option value='auto'>auto</option>" +
-            "<option value='0.5'>0.5</option>" +
-            "<option value='1.0'>1.0</option>" +
-            "<option value='1.5'>1.5</option>" +
-            "<option value='2.0'>2.0</option>" +
-            "<option value='2.5'>2.5</option>" +
-            "</select><br>" +
-            "<input type='submit' value='Take picture'></form>";
-
-
-            //msg += "<br><br><a href='/pic'> <input type='button' value='Click to take PICTURE'></a><br><br>";
-
-            //msg += "<div id='submit_button_box'> <button id='submit_button' type='submit' name='action' value='send'>take picture</button></div>";
-            /*if (uri.equals("/toZIP"))
-            {
-                Log.i("web","Doing folder convert");
-                File[] contents = new File("/storage/emulated/0/DCIM/100RICOH/").listFiles();
-                for (File f: contents)
-                {
-                    if (f.isDirectory())
-                    {
-                        Log.i("web","Converting folder "+f.getAbsolutePath()+" to ZIP.");
-                        zipFileAtPath(f.getAbsolutePath(),f.getAbsolutePath()+".ZIP");
-                    }
-                }
-                Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
-                r.addHeader("Location", "http://192.168.1.1:8888/files");
-                return r;
-
-            }*/
-            if (uri.equals("/files"))
-            {
-                File[] contents = new File("/storage/emulated/0/DCIM/100RICOH/").listFiles();
-                Arrays.sort(contents);
-                Log.i("web","number of files found: "+contents.length);
-                msg = "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">"+
-                        "<html><body style='background-color:black;'><font color='white'><h1>Manage Files</h1>";
-                for (File f: contents)
-                {
-                    Log.d("web","File found: "+f.getName());
-                    String size_dir_text ="";
-                    if (f.isDirectory())
-                    {
-                        size_dir_text = "folder";
-                    }
-                    else
-                    {
-                        long size = f.length();
-                        if (size > 1000000000) {
-                            // Gigabyte
-                            size_dir_text = java.lang.Math.floor(size / 1000000000) + " Gb";
-                        } else if (size > 1000000) {
-                            // Megabyte
-                            size_dir_text = java.lang.Math.floor(size / 1000000) + " Mb";
-                        } else if (size > 1000) {
-                            // Kilobyte
-                            size_dir_text = java.lang.Math.floor(size / 1000000000) + " Kb";
-                        } else {
-                            // byte
-                            size_dir_text = java.lang.Math.floor(size) + " b";
-                        }
-                    }
-
-
-                    msg += "<form action=\"http://192.168.1.1:8888/download="+f.getName()+"\" method=\"get\">" +
-                    "  <button type=\"Download\">Download</button>" +
-                    f.getName()+
-                    "  <button type=\"Delete\" formaction=\"http://192.168.1.1:8888/delete="+f.getName()+"\">Delete</button>" + size_dir_text+
-                    "</form>";
-                }
-                msg += "<br><a href='http://192.168.1.1:8888'> <input type='button' value='Return'>" +
-                //msg +=  "<br><a href='http://192.168.1.1:8888/toZIP'> <input type='button' value='convert folders to ZIP'>" +
-                        "</font></body></html>";
-                return newFixedLengthResponse(msg );
-            }
-
-            else if (uri.contains("/delete="))
-            {
-                String name = uri.split("=")[1];
-                Log.i("web","Selected file is of files found: "+name);
-                msg =   "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">" +
-                        "\"<html><body style='background-color:black;'><font color='white'>"+
-                        "<h1>Delete " + name + "??</h1>"+
-                "<a href='http://192.168.1.1:8888/delyes=" + name + "'> <input type='button' value='YES'>------" +
-                "<a href='http://192.168.1.1:8888/files'> <input type='button' value='NO'>" +
-                "</font></body></html>";
-
-                return newFixedLengthResponse(msg );
-
-            }
-            else if (uri.contains("/delyes="))
-            {
-                String name = uri.split("=")[1];
-                Log.i("web", "Deleting: " + name);
-                File file = new File("/storage/emulated/0/DCIM/100RICOH/" + name);
-                if (file.isDirectory())
-                {
-                    deleteDir(file);
-                }
-                else
-                {
-                    file.delete();
-                }
-                Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
-                r.addHeader("Location", "http://192.168.1.1:8888/files");
-                return r;
-            }
-            else if (uri.contains("/download="))
-            {
-                String name = uri.split("=")[1];
-                Log.i("web","Download file is : "+name);
-                FileInputStream fis = null;
-                String path = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/"+name;
-                File file = new File(path);
-
-                if (file.isDirectory())
-                {
-                    Log.i("web","Converting folder "+file.getAbsolutePath()+" to ZIP.");
-                    zipFileAtPath(file.getAbsolutePath(),file.getAbsolutePath()+".ZIP");
-                    file = new File(file.getAbsolutePath()+".ZIP");
-                }
-                try
-                {
-                    if (file.exists())
-                    {
-                        Log.d("web", "Downloading " + file.getName());
-                        fis = new FileInputStream(file);
-                    }
-                    else
-                    {
-                        Log.d("web", "File Not exists: ");
-                        Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
-                        r.addHeader("Location", "http://192.168.1.1:8888/files");
-                        return r;
-                    }
-
-                }
-                catch (FileNotFoundException e)
-                {
-                    e.printStackTrace();
-                }
-
-                String extension ="";
-                int i = path.lastIndexOf('.');
-                if (i > 0)
-                {
-                    extension = path.substring(i+1);
-                }
-
-                String mimetype = "application/octet-stream";
-                if (extension.toLowerCase() == "jpg" || extension.toLowerCase() == "jpeg")
-                {
-                    mimetype = "image/jpeg";
-                }
-                else if (extension.toLowerCase() == "zip" )
-                {
-                    mimetype = "application/zip";
-                }
-                else if (extension.toLowerCase() == "mp4" )
-                {
-                    mimetype = "video/mp4";
-                }
-
-                return newFixedLengthResponse(Response.Status.OK, mimetype, fis, file.length());
-
-            }
-
-
-            else if (uri.equals("/pic"))
-            {
-            if (parms.get("brackets") == null || parms.get("brackets").isEmpty()
-               || parms.get("denoise") == null || parms.get("denoise").isEmpty()
-               || parms.get("stopjump") == null || parms.get("stopjump").isEmpty())
-            {
-                Log.i("web", "Taking picture. With brackets at 1 and denoise at 1. Web simple.");
-                numberOfPictures = 1;
-                number_of_noise_pics = 1;
-                stopjump ="auto";
-            }
-            else
-            {
-                Log.i("web", "Taking picture. With brackets at " + parms.get("brackets") + " and denoise at " + parms.get("denoise"));
-                numberOfPictures = Integer.parseInt(parms.get("brackets"));
-                number_of_noise_pics = Integer.parseInt(parms.get("denoise"));
-                stopjump = parms.get("stopjump");
-            }
-            if (!taking_pics)
-            {
-                makePicture();
-                taking_pics = true;
-                message_log = "";
-                msg = "<meta http-equiv='refresh' content='0.5; URL=http://192.168.1.1:8888/refresh'>"+
-                        "<html><body style='background-color:black;'><font color='white'><h1>Busy taking pictures</h1><br>Doing:<br>" ;
-                //"<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form></font></body></html>";
-                return newFixedLengthResponse(msg );
-            }
-
-                else
-                {
-                    Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
-                    r.addHeader("Location", "http://192.168.1.1:8888/refresh");
-                    return r;
-                }
-            }
-            else if (uri.equals("/refresh") && taking_pics)
-            {
-
-                Log.i("web", "refresh taking pics is true");
-                msg =   "<meta http-equiv='refresh' content='0.5; URL=http://192.168.1.1:8888/refresh'>"+
-                        "<html><body style='background-color:black;'><font color='white'>" +
-                        "<h1>Busy taking pictures</h1><br>Doing:<br>" ;
-                        //"<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form>";
-                msg += message_log + "</font></body></html>";
-                return newFixedLengthResponse(msg);
-
-            }
-            else
-            {
-                return newFixedLengthResponse(msg + "</font></body></html>\n");
-            }
-        }
+    public WebServer(Context context) {
+    super(PORT);
+    this.context = context;
     }
 
 
-    /*
-            @Override
-            public Response serve(IHTTPSession session) {
-                Method method = session.getMethod();
-                String uri = session.getUri();
-                switch (method) {
-                    case GET:
-                        return this.serveFile(uri);
-                    case POST:
-                        Map<String, List<String>> parameters = this.parseBodyParameters(session);
-                        this.updatePreferences(uri, parameters);
-                        return this.serveFile(uri);
-                    default:
-                        return newFixedLengthResponse(Status.METHOD_NOT_ALLOWED, "text/plain",
-                                "Method [" + method + "] is not allowed.");
-                }
-            }
-
-            private Response serveFile(String uri) {
-                switch (uri) {
-                    case "/":
-                        return this.newHtmlResponse(this.generateIndexHtmlContext(), INDEX_TEMPLATE_FILE_NAME, INDEX_OUTPUT_FILE_NAME);
-                    default:
-                        return newFixedLengthResponse(Status.NOT_FOUND, "text/plain", "URI [" + uri + "] is not found.");
-                }
-            }
-
-            private Response newHtmlResponse(Map<String, Object> data, String templateFileName, String outFileName) {
-                AssetManager assetManager = context.getAssets();
-                try(InputStreamReader template = new InputStreamReader(assetManager.open(templateFileName));
-                    OutputStreamWriter output = new OutputStreamWriter(openFileOutput(outFileName, Context.MODE_PRIVATE))) {
-                    Mustache.compiler().compile(template).execute(data, output);
-                    return newChunkedResponse(Status.OK, "text/html", openFileInput(outFileName));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return newFixedLengthResponse(Status.INTERNAL_ERROR, "text/plain", e.getMessage());
-                }
-            }
-
-            private Map<String, List<String>> parseBodyParameters(IHTTPSession session) {
-                Map<String, String> tmpRequestFile = new HashMap<>();
-                try {
-                    session.parseBody(tmpRequestFile);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ResponseException e) {
-                    e.printStackTrace();
-                }
-                return session.getParameters();
-            }
-
-            private void updatePreferences(String uri, Map<String, List<String>> parameters) {
-                if(parameters == null) return;
-                //Log.d("VFX","URI is "+uri);
-                switch (uri) {
-                    case "/":
-                        //this.updateLedColor(parameters);
-                        this.updateBracket(parameters);
-                        this.updateDenoise(parameters);
-                        //new TakePictureTask(mTakePictureTaskCallback).execute();
-                        makePicture();
-                        if (!taking_pics)
-                        {
-                            makePicture();
-    /*
-                            while(taking_pics)
-                            {
-                                newFixedLengthResponse(Status.OK, "text/plain", Integer.toString(pics_count));
-                                try{
-                                    Thread.sleep(1000);
-                                }catch(InterruptedException ex)
-                                {
-                                    Thread.currentThread().interrupt();
-                                }
-                            }*/
-    /*
-                        }
-
-                        return;
-                    default:
-                        //Log.d("VFX","URI is "+uri);
-                        return;
-                }
-            }
-
-
-
-            private void updateBracket(Map<String, List<String>> parameters) {
-                if (parameters.get(HTML_SELECTOR_ID_BRACKET) == null || parameters.get(HTML_SELECTOR_ID_BRACKET).isEmpty()) { return; }
-                String bracket = parameters.get(HTML_SELECTOR_ID_BRACKET).get(0);
-                Log.i("VFX", "received bracket parameter from web UI: " + bracket);
-                numberOfPictures = Integer.parseInt(bracket);
-            }
-
-            private void updateDenoise(Map<String, List<String>> parameters) {
-                if (parameters.get(HTML_SELECTOR_ID_DENOISE) == null || parameters.get(HTML_SELECTOR_ID_DENOISE).isEmpty()) { return; }
-                String denoise = parameters.get(HTML_SELECTOR_ID_DENOISE).get(0);
-                Log.i("VFX", "received denoise parameter from web UI: " + denoise);
-                number_of_noise_pics = Integer.parseInt(denoise);
-            }
-
-            private Map<String, Object> generateIndexHtmlContext() {
-                Map<String, Object> context = new HashMap<>();
-                context.putAll(this.generateLedColorContext());
-                return context;
-            }
-
-            private Map<String, Object> generateLedColorContext() {
-                Map<String, Object> ledContext = new HashMap<>();
-                LedColor ledColor = loadLedColor();
-                switch (ledColor) {
-                    case BLUE:
-                        ledContext.put("isBlue", true);
-                        break;
-                    case RED:
-                        ledContext.put("isRed", true);
-                        break;
-                    case WHITE:
-                        ledContext.put("isWhite", true);
-                        break;
-                    default:
-                        ledContext.put("isBlue", true);
-                }
-                return ledContext;
-            }
-
-        }*/
+    @Override
+    public Response serve(IHTTPSession session)
+    {
+        String uri = session.getUri();
+        String msg = "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">" +
+                "<html><body style='background-color:black;'><font color='white'>"+
+                "<h1>Welcome to Authydra.</h1>"+
+                "<svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\n" +
+                "\t viewBox=\"0 0 885.22 720\" style=\"enable-background:new 0 0 885.22 720;\" xml:space=\"preserve\">\n" +
+                "<style type=\"text/css\">\n" +
+                "\t.st0{fill:#FFFFFF;}\n" +
+                "</style>\n" +
+                "<g>\n" +
+                "\t<path class=\"st0\" d=\"M37.44,695.38c-3,1.99-6.25,3.12-7.78,5.4c-2.31,3.45-2.32,7.45,3.26,8.13c10.66,1.32,20.55-1.42,29.49-7.05\n" +
+                "\t\tc2.04-1.29,3.44-4.48,4.02-7.05c2.15-9.4,2.82-9.69,11.93-5.98c8.73,3.56,17.46,7.8,26.6,9.48c7.23,1.33,15.33,0.12,22.57-1.76\n" +
+                "\t\tc3.47-0.9,6.47-5.65,8.41-9.33c0.73-1.39-1.93-6.58-3.37-6.73c-3.92-0.4-8.33,0.27-11.96,1.86c-3.51,1.54-6.29,4.75-9.5,7.31\n" +
+                "\t\tc5.81-24.99,31.29-44.14,56.38-37.85c4.16,1.04,7.79,4.41,11.53,6.89c9,5.97,17.89,12.1,26.91,18.03c1.38,0.91,3.18,1.48,4.84,1.61\n" +
+                "\t\tc6.61,0.52,14.28,1.69,17.45-5.68c3.05-7.08-3.34-11.4-7.95-15.45c-3.38-2.97-7.45-5.15-12.08-8.26c14.56-7.76,28.25-5.14,42.7-1.6\n" +
+                "\t\tc-3.9-2.82-7.72-5.77-11.73-8.44c-4.28-2.86-8.54-5.88-13.15-8.11c-39.88-19.32-61.41-52.91-69.87-94.61\n" +
+                "\t\tc-4.12-20.3-2.87-41.77,8.34-60.99c10.25-17.57,15.35-36.19,11.82-56.81c-3.49-20.42-21.7-31.64-40.72-24.46\n" +
+                "\t\tc-11.2,4.23-14.91,12.61-10.67,24.11c5.67,15.38,4.64,16.67-9.77,24.49c-13,7.05-25.74,14.77-37.73,23.41\n" +
+                "\t\tc-10.7,7.72-14.66,20.07-16.97,32.56c-15.93-1.54-26.55-10.11-29.8-24.57c-0.71-3.18,0.51-7.46,2.27-10.36\n" +
+                "\t\tc2.79-4.6,6.93-8.36,10.23-12.68c6.61-8.66,13.89-17.21,11.84-29.29c-2.75-16.18,4.99-28.11,15.25-39.17\n" +
+                "\t\tc13.01-14.04,20.85-30.84,24.49-49.38c2.72-13.88-4.06-23.55-17.07-29.54c9.92-2.53,24.74,2.57,29.78,12.65\n" +
+                "\t\tc4.75,9.5,6.22,20.65,9.05,30.8c19.46-21.38,44.61-34.48,75.35-36.41c-13.94,8.96-31.2,12.9-41.68,27.42\n" +
+                "\t\tc43.27-2.45,65.96,6,88.65,33.48c-15.24-5.19-28.79-13.72-45.36-11.25c35.13,4.93,50.41,31.18,66.39,59.95\n" +
+                "\t\tc-9.6-6.36-17.34-11.49-25.07-16.61c-0.7,0.53-1.4,1.07-2.1,1.6c2.51,4.82,4.93,9.68,7.55,14.44c16.08,29.15,13,57.17-4.9,84.32\n" +
+                "\t\tc-0.86,1.3-2.15,2.31-3.01,3.22c0.93-12.62,1.85-25.16,2.93-39.81c-3.15,2.17-4.42,2.57-4.79,3.38\n" +
+                "\t\tc-9.98,21.81-15.16,44.22-4.43,67.12c7.87,16.79,22.98,26.1,39.5,32.69c30.71,12.26,63.33,15.59,95.83,19.12\n" +
+                "\t\tc8.45,0.92,10.33-5.49,11.32-12.08c2.33-15.45-4-27.26-15.6-36.83c-13.68-11.29-28.17-21.77-40.85-34.09\n" +
+                "\t\tc-35.19-34.2-53.46-76.47-57.57-125.26c-3.16-37.6,6.65-72.55,19.32-107.3c7.58-20.8,12.19-42.42,8.44-64.95\n" +
+                "\t\tc-6.24-37.53-40-60.83-76.14-59.41c-2.89,0.11-5.95,1.75-8.5,3.37c-3.37,2.14-6.24,5.04-9.45,7.45\n" +
+                "\t\tc-10.97,8.26-18.73,7.43-28.15-2.14c-9.65-9.8-19.15-19.87-29.71-28.62c-13.04-10.79-27.92-17.94-45.69-16.47\n" +
+                "\t\tc-4.24,0.35-8.54,0.05-12.68,0.05c-4.62-17.54,3.15-36.01,19.31-42.84c4.98-2.11,12.36-0.94,17.84,1\n" +
+                "\t\tc12.9,4.58,24.94,11.91,39.4,10.51c2.53-0.24,5.48-0.17,7.44-1.45c16.73-10.96,33.57-7.91,49.76,0.3\n" +
+                "\t\tc23.79,12.07,46.22,7.19,68.19-4.1c5.62-2.89,10.03-8.16,15.24-12.54c1.84,17.67-10.15,32.96-34.23,42.8\n" +
+                "\t\tc6.85,2.51,12.43,4.62,18.06,6.61c25.63,9.03,51.27,18.01,76.88,27.09c2,0.71,3.78,2.03,5.85,3.16\n" +
+                "\t\tc-15.57-1.48-30.62-2.92-45.67-4.35c-0.35,1.03-0.7,2.07-1.06,3.1c34.59,15.3,60.49,38.76,72.38,75.55\n" +
+                "\t\tc-11.33-14.52-21.44-30.77-43.74-29.39c14.31,12.23,28.01,24.85,31.03,44.38c2.83,18.26,1.62,36.5-3.5,56.78\n" +
+                "\t\tc-4.52-16.46-3.77-32.53-14.31-45.32c1.22,18.93,3.26,36.95,3.31,54.97c0.04,18.47-6.61,35.08-19.36,50.27c0-15.47,0-29.74,0-44.42\n" +
+                "\t\tc-0.86,0.51-1.88,0.74-2.09,1.29c-13.18,34.73-20.71,70.04-7.81,106.52c10.82,30.59,31.18,54.54,58.2,71.41\n" +
+                "\t\tc28.31,17.68,58.43,32.47,88.58,47.48c-1.97-29.92-22.36-48.81-37.37-70.68c-1.12,0.27-2.24,0.54-3.36,0.81\n" +
+                "\t\tc2.52,16,5.04,32.01,7.45,47.33c-11.53-6.17-25.75-37.81-28.27-66.03c-2.33-26.13,10.68-48.05,20.62-71.27\n" +
+                "\t\tc-13.69,4.51-23.43,14.36-34.41,22.75c9.89-22.2,22.53-42.34,40.07-59.5c17.82-17.44,39.31-27.25,63.28-32.69\n" +
+                "\t\tc0.24-0.92,0.49-1.85,0.73-2.77c-5.07-1.98-10-5.05-15.24-5.74c-17.87-2.36-34.65,2.45-50.92,9.46c-3.09,1.33-6.27,2.42-9.66,3.09\n" +
+                "\t\tc12.85-14.2,30.21-20.39,47.52-26.53c-14.78-14.03-29.33-27.83-43.89-41.65c3.36,15,7.03,31.41,10.72,47.88\n" +
+                "\t\tc-19.58-18.41-32.16-40.82-33.76-68.23c-1.46-24.99,0.78-49.85,7.3-74.18c0.35-1.29,0.19-2.72,0.39-6.31\n" +
+                "\t\tc-13.59,8.01-25.8,15.2-37.39,22.03c16.59-33.46,55.2-80.11,125.46-84.16c-14.55-4.98-29.03-11.01-44.9-9.07\n" +
+                "\t\tc-15.22,1.86-30.3,4.84-44,7.1c19.5-19.79,75.49-27.71,141.06-5.67c2.68-8.97-1.8-15.8-7.4-21.2\n" +
+                "\t\tc-10.02-9.67-20.94-18.4-31.93-27.92c11.71-0.09,21.5,4.97,30.51,11.05c6.78,4.58,13.07,10.28,18.47,16.45\n" +
+                "\t\tc16.71,19.08,37.62,32.31,59.35,44.13c-4.9-14.49-10.7-29.01-14.63-44.02c-3.84-14.67-7.51-29.94,3.22-46.66\n" +
+                "\t\tc-0.79,32.67,13.24,57.5,29.94,80.8c6.45,9,16.08,15.84,24.74,23.11c8.07,6.78,17.59,12.01,24.92,19.46\n" +
+                "\t\tc5.13,5.22,9.93,12.7,10.87,19.72c2.44,18.14,13.16,29.29,27.3,38.52c5.76,3.76,11.72,7.22,17.47,11\n" +
+                "\t\tc11.04,7.27,13.57,13.43,11.01,26.11c-0.45,2.25-1.25,4.46-1.42,6.72c-1.2,15.94-11.6,23.41-26.01,28.17\n" +
+                "\t\tc-10.68-22.92-29.06-37.41-52.85-44.32c-15.34-4.45-31.3-6.92-47.11-9.52c-16.99-2.8-23.67-8.23-21.54-25.21\n" +
+                "\t\tc2.93-23.34-8.61-35.72-27.28-45.21c-19.89-10.11-40.02-14.75-62.08-7.54c-14.37,4.7-24.64,22.62-25.1,35.57\n" +
+                "\t\tc-0.92,25.65,11.6,44.85,26.14,63.59c3.69,4.75,7.4,9.72,12.02,13.45c5.85,4.72,12.2,9.46,19.13,12.1\n" +
+                "\t\tc24.09,9.19,48.38,18.06,74.78,17.79c2.28-0.02,4.57,0.43,6.86,0.58c0.45,0.03,0.93-0.33,1.98-0.73\n" +
+                "\t\tc-15.5-15.14-37.78-26.23-32.91-54.77c14.95,34.43,44.03,43.25,75.76,48.24c11.19,1.76,22.66,3.53,33.12,7.57\n" +
+                "\t\tc6.43,2.48,12.3,8.47,16.45,14.29c6.67,9.37,15.35,14.57,26.1,16.55c10.41,1.92,20.97,3.08,31.49,4.39\n" +
+                "\t\tc11.12,1.38,16.32,5.68,19.2,16.45c0.59,2.21,0.65,4.6,1.46,6.71c5.59,14.64,0.71,26.55-8.86,35.88\n" +
+                "\t\tc-11.63-4.63-22.84-10.7-34.81-13.49c-20.7-4.83-40.98,0.16-60.75,6.78c-5.71,1.91-11.32,4.11-17.04,5.98\n" +
+                "\t\tc-11.49,3.74-18.08,1.39-24.68-8.83c-1.54-2.39-2.71-5.05-3.83-7.68c-8.77-20.49-18.79-26.24-41.68-23.62\n" +
+                "\t\tc4.6,10.14,9.61,20.03,13.64,30.31c7.95,20.27,11.67,41.33,9.83,63.16c-2.9,34.56-4.6,69.28-9.26,103.61\n" +
+                "\t\tc-4.75,35.04-18.39,67.27-38.74,96.43c-1.78,2.54-3.38,5.2-6.22,9.59c8.41-0.82,15.42-0.85,22.13-2.28\n" +
+                "\t\tc17.6-3.75,35.61-6.6,52.47-12.58c25.85-9.16,33.9-29.17,23.96-55.08c-3.1-8.08-7.74-15.57-11.68-23.33\n" +
+                "\t\tc-0.78,0.31-1.56,0.63-2.34,0.94c2.57,11.77,5.14,23.53,8.19,37.51c-26.36-27.21-29.22-56.5-17.88-89.09\n" +
+                "\t\tc-5.49,7.93-10.97,15.85-16.46,23.78c9.27-28.22,20.93-54.75,49.35-69.57c-0.6-0.94-1.19-1.88-1.79-2.82\n" +
+                "\t\tc-11.79,5.44-23.58,10.89-36.58,16.89c17.54-26.33,41.03-39.52,73.3-39.93c-12.63-10.89-26.8-13.37-40.95-17.26\n" +
+                "\t\tc14.32-7.02,38.56,0.35,74.41,22.29c-3.37-12.94-3.93-25.5,5.38-35.04c5.38-5.52,13.33-8.54,20.73-11.65\n" +
+                "\t\tc-15.21,16.11-17.02,26.58-3.94,45.01c8.85,12.47,20.71,22.77,30.02,34.95c4.59,6.01,8.42,13.89,9.13,21.27\n" +
+                "\t\tc1,10.38,5.49,17.78,12.54,24.43c1.46,1.38,3.07,2.59,4.59,3.9c13.79,11.79,15.21,21.41,3.76,35.89\n" +
+                "\t\tc-2.96,3.74-9.17,4.89-13.28,6.93c-5.22-7.7-9.25-15.36-14.88-21.59c-11.45-12.67-27.52-16.97-43.22-21.62\n" +
+                "\t\tc-13.03-3.86-14.51-6.47-11.2-19.64c2.87-11.44-5.48-21.24-18.1-21.21c-15.65,0.04-26.92,11.44-27.38,28.12\n" +
+                "\t\tc-0.41,14.76,3.16,28.81,12.2,40.41c21.53,27.63,20.14,56.08,4.15,85.11c-12.74,23.13-30.32,41.6-54.76,52.79\n" +
+                "\t\tc-2.32,1.06-4.51,2.41-6.38,4.84c3.96-1.27,7.89-2.62,11.88-3.78c4.66-1.37,9.31-2.91,14.07-3.76c4.38-0.78,8.91-0.75,15.67-1.24\n" +
+                "\t\tc-5.04,5.88-9.18,9.71-11.95,14.35c-1.62,2.71-1.03,6.73-1.44,10.17c3.45-0.04,6.95,0.27,10.33-0.26c1.82-0.28,3.73-1.69,5.06-3.1\n" +
+                "\t\tc8.82-9.35,18.15-7.75,28.96-3.19c21.09,8.89,42.47,17.22,64.18,24.43c8.71,2.89,18.6,2.74,27.97,2.94\n" +
+                "\t\tc3.99,0.08,8.45-1.83,11.96-4.01c6.44-4.01,7.04-11.61,0.6-15.47c-5.61-3.37-12.58-4.84-19.16-6.02c-2.14-0.39-6.66,2.49-6.97,4.37\n" +
+                "\t\tc-0.38,2.34,1.93,6.32,4.17,7.46c1.68,0.85,5.12-1.56,7.67-2.76c0.94-0.44,1.54-1.59,2.3-2.42c0.78,0.33,1.55,0.66,2.33,0.99\n" +
+                "\t\tc-1.27,3.04-1.93,8.13-3.93,8.72c-6,1.78-13.33,3.89-18.56,1.85c-4.1-1.6-7-8.91-8.38-14.21c-2.34-9.01,5.68-11.79,11.71-12.79\n" +
+                "\t\tc16.36-2.7,32.04-0.55,44.74,11.72c6.75,6.52,8.94,18.68,5.08,27.87c-4,9.5-10.52,13.67-21.53,13.68\n" +
+                "\t\tc-273.11,0.12-546.23,0.23-819.34,0.3c-5.83,0-12.57,1.49-15.12-6.39c-2.34-7.24,0.91-12.67,5.82-17.61\n" +
+                "\t\tC25.79,690.53,31.22,692.25,37.44,695.38z M548.74,484.04c12.4-20.83,19.35-43.36,21.81-67.68c2.79-27.63-6.42-51.14-22.41-72.66\n" +
+                "\t\tc-1.17-1.57-5.95-2.48-7.48-1.42c-9.62,6.66-19.53,13.19-27.98,21.21c-22.54,21.41-24.37,46.62-5.17,71.26\n" +
+                "\t\tC520.48,451.38,534.56,467.16,548.74,484.04z M688.48,164.44c1.14-8.7-2.84-17.35-13.94-27.41c-3.27-2.97-8.2-4.1-12.38-6.07\n" +
+                "\t\tc-1.77,3.95-3.54,7.9-4.48,10C669,149.59,678.75,157.03,688.48,164.44z M725.37,303.63c-8.04-12.56-18.35-17.89-30.31-20.4\n" +
+                "\t\tc-2.76-0.58-7.15-0.36-8.53,1.34c-1.5,1.83-1.34,6.37-0.05,8.69c1.06,1.9,4.76,2.64,7.44,3.24c4.67,1.05,9.5,1.39,14.18,2.43\n" +
+                "\t\tC713.27,300.08,718.34,301.69,725.37,303.63z M160.12,99c10.98,3.94,20.38,7.76,30.11,10.4c1.86,0.5,5.45-3.33,7.25-5.86\n" +
+                "\t\tc0.59-0.83-1.5-5.15-3.13-5.73C183.4,93.91,172.38,93.46,160.12,99z M69.56,430.09c5.31-7.37,8.58-13.4,13.25-18.02\n" +
+                "\t\tc5.46-5.4,4.36-8.94-1.56-13.38C71.81,406.27,69.21,416.23,69.56,430.09z M813.22,476.58c-2.22-11.74-5.34-20.41-16.77-26.54\n" +
+                "\t\tc-0.46,4.35-2.18,8.54-0.84,10.09C800.33,465.58,806.1,470.11,813.22,476.58z\"/>\n" +
+                "</g>\n" +
+                "</svg><br>";
 
 
-        private void customShutter()
-        {
-            Intent intent = new Intent("com.theta360.plugin.ACTION_AUDIO_SH_OPEN");
-            sendBroadcast(intent);
-
-            Camera.Parameters params = mCamera.getParameters();
-            //Log.d("shooting mode", params.flatten());
-            params.set("RIC_SHOOTING_MODE", "RicStillCaptureStd");
-
-            //params.set("RIC_PROC_STITCHING", "RicNonStitching");
-            //params.setPictureSize(5792, 2896); // no stiching
-
-            params.setPictureFormat(ImageFormat.JPEG);
-            params.set("jpeg-quality",100);
-            //params.setPictureSize(5376, 2688); // stiched
-            params.setPictureSize(cols, rows);
+        File[] arrayfile;
+        Log.i("web", "Uri is " + uri);
 
 
-            // https://api.ricoh/docs/theta-plugin-reference/camera-api/
-            //Shutter speed. To convert this value to ordinary 'Shutter Speed';
-            // calculate this value's power of 2, then reciprocal. For example,
-            // if value is '4', shutter speed is 1/(2^4)=1/16 second.
-            //params.set("RIC_EXPOSURE_MODE", "RicManualExposure");
 
-            //params.set("RIC_MANUAL_EXPOSURE_TIME_REAR", -1);
-            //params.set("RIC_MANUAL_EXPOSURE_ISO_REAR", -1);
-
-
-            // So here we take our first picture on full auto settings to get
-            // proper lighting settings to use a our middle exposure value
-            params.set("RIC_EXPOSURE_MODE", "RicAutoExposureP");
-
-            bcnt = numberOfPictures * number_of_noise_pics;
-            mCamera.setParameters(params);
-            //params = mCamera.getParameters();
-            session_name = getSessionName();
-
-            Log.i(TAG,"Starting new session with name: " + session_name);
-            Log.i(TAG,"About to take first auto picture to measure lighting settings.");
-            new File(Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/"+session_name).mkdir();
-
-            //Log.d("get", params.get("RIC_MANUAL_EXPOSURE_ISO_BACK"));
-
-            intent = new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER");
-            sendBroadcast(intent);
-            mCamera.takePicture(null,null, null, pictureListener);
+        try {
+        session.parseBody(new HashMap<String, String>());
+        } catch (ResponseException | IOException r) {
+        r.printStackTrace();
         }
 
-        private void Average_pics(int i)
-        {
-            Mat average_pic = new Mat();
-            Mat temp_pic3 = new Mat();
 
-            log("avg","---> Starting average on image "+Integer.toString(i+1));
-            if (number_of_noise_pics==1)
+        Map<String, String> parms = session.getParms();
+        for (String key : parms.keySet()) {
+        Log.d("web", key + "=" + parms.get(key));
+        }
+
+        //msg += "<a href='/Open_rap'>Open Image</a><br><br>";
+        msg += "<br><form action='/files'>" +
+        "<input type='submit' value='Manage Files'></form>";
+        msg += "<br>Please select your settings:<br><form action='/pic'>" +
+        //"Number of Brackets    : <input type='number' name='brackets' value = '1' step='2' min='1' max='11'><br>" +
+        "Number of bracket pictures    : <select name='brackets'>" +
+        "<option value='1'>1</option>" +
+        "<option value='2'>2</option>" +
+        "<option value='3'>3</option>" +
+        "<option value='4'>4</option>" +
+        "<option value='5'>5</option>" +
+        "<option value='6'>6</option>" +
+        "<option value='7'>7</option>" +
+        "<option value='8'>8</option>" +
+        "<option value='9'>9</option>" +
+        "<option value='10'>10</option>" +
+        "<option value='11'>11</option>" +
+        "<option selected='selected'>11</option>"+
+        "</select><br>" +
+        //"Number of denoise pics: <input type='number' name='denoise'  value = '1'  step='1' min='1' max='5' ><br>" +
+        "Number of denoise pictures: <select name='denoise'>" +
+        "<option value='1'>1</option>" +
+        "<option value='2'>2</option>" +
+        "<option value='3'>3</option>" +
+        "<option value='4'>4</option>" +
+        "<option value='5'>5</option>" +
+        "<option selected='selected'>3</option>"+
+        "</select><br>" +
+        "Number stop jumps between brackets: <select name='stopjump'>" +
+        "<option value='auto'>auto</option>" +
+        "<option value='0.5'>0.5</option>" +
+        "<option value='1.0'>1.0</option>" +
+        "<option value='1.5'>1.5</option>" +
+        "<option value='2.0'>2.0</option>" +
+        "<option value='2.5'>2.5</option>" +
+        "</select><br>" +
+        "<input type='submit' value='Take picture'></form>";
+
+
+        //msg += "<br><br><a href='/pic'> <input type='button' value='Click to take PICTURE'></a><br><br>";
+
+        //msg += "<div id='submit_button_box'> <button id='submit_button' type='submit' name='action' value='send'>take picture</button></div>";
+        if (uri.equals("/toZIP"))
+        {
+            Log.i("web","Doing folder convert");
+            File[] contents = new File("/storage/emulated/0/DCIM/100RICOH/").listFiles();
+            for (File f: contents)
             {
-                //images_filename_array = filename_array;
-                images_filename_array.add(filename_array.get(i * number_of_noise_pics + number_of_noise_pics - 1));
+                if (f.isDirectory())
+                {
+                    Log.i("web","Converting folder "+f.getAbsolutePath()+" to ZIP.");
+                    zipFileAtPath(f.getAbsolutePath(),f.getAbsolutePath()+".ZIP");
                 }
+            }
+            Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
+            r.addHeader("Location", "http://192.168.1.1:8888/files");
+            return r;
+
+        }
+
+        if (uri.equals("/files"))
+        {
+            File[] contents = new File("/storage/emulated/0/DCIM/100RICOH/").listFiles();
+            Arrays.sort(contents);
+            Log.i("web","number of files found: "+contents.length);
+            msg = "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">"+
+                    "<html><body style='background-color:black;'><font color='white'><h1>Manage Files</h1>";
+            for (File f: contents)
+            {
+                Log.d("web","File found: "+f.getName());
+                String size_dir_text ="";
+                if (f.isDirectory())
+                {
+                    size_dir_text = "folder";
+                }
+                else
+                {
+                    long size = f.length();
+                    if (size > 1000000000) {
+                        // Gigabyte
+                        size_dir_text = java.lang.Math.floor(size / 1000000000) + " Gb";
+                    } else if (size > 1000000) {
+                        // Megabyte
+                        size_dir_text = java.lang.Math.floor(size / 1000000) + " Mb";
+                    } else if (size > 1000) {
+                        // Kilobyte
+                        size_dir_text = java.lang.Math.floor(size / 1000000000) + " Kb";
+                    } else {
+                        // byte
+                        size_dir_text = java.lang.Math.floor(size) + " b";
+                    }
+                }
+
+
+                msg += "<form action=\"http://192.168.1.1:8888/download="+f.getName()+"\" method=\"get\">" +
+                "  <button type=\"Download\">Download</button>" +
+                f.getName()+
+                "  <button type=\"Delete\" formaction=\"http://192.168.1.1:8888/delete="+f.getName()+"\">Delete</button>" + size_dir_text+
+                "</form>";
+            }
+            msg += "<br><a href='http://192.168.1.1:8888'> <input type='button' value='Return'>" +
+            //msg +=  "<br><a href='http://192.168.1.1:8888/toZIP'> <input type='button' value='convert folders to ZIP'>" +
+                    "</font></body></html>";
+            return newFixedLengthResponse(msg );
+        }
+
+        else if (uri.contains("/delete="))
+        {
+            String name = uri.split("=")[1];
+            Log.i("web","Selected file is of files found: "+name);
+            msg =   "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">" +
+                    "\"<html><body style='background-color:black;'><font color='white'>"+
+                    "<h1>Delete " + name + "??</h1>"+
+            "<a href='http://192.168.1.1:8888/delyes=" + name + "'> <input type='button' value='YES'>------" +
+            "<a href='http://192.168.1.1:8888/files'> <input type='button' value='NO'>" +
+            "</font></body></html>";
+
+            return newFixedLengthResponse(msg );
+
+        }
+        else if (uri.contains("/delyes="))
+        {
+            String name = uri.split("=")[1];
+            Log.i("web", "Deleting: " + name);
+            File file = new File("/storage/emulated/0/DCIM/100RICOH/" + name);
+            if (file.isDirectory())
+            {
+                deleteDir(file);
+            }
             else
             {
-                average_pic = new Mat(rows, cols, CvType.CV_32FC3, new Scalar((float) (0.0), (float) (0.0), (float) (0.0)));
-
-                for (Integer j = 0; j < number_of_noise_pics; j++)
-                {
-                    //notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
-                    //log("avg","---> Working on image: "+filename_array.get(i * number_of_noise_pics + j));
-                    temp_pic3 = imread(filename_array.get(i * number_of_noise_pics + j));
-                    temp_pic3.convertTo(temp_pic3, CvType.CV_32FC3);
-                    Core.add(average_pic, temp_pic3, average_pic);
-                    temp_pic3.release();
-                    //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
-
-                }
-                org.opencv.core.Core.divide(average_pic, new Scalar(((float) number_of_noise_pics + 0.0),
-                ((float) number_of_noise_pics + 0.0),
-                ((float) number_of_noise_pics + 0.0)), average_pic);
-                Log.d(TAG, "Total average value " + Double.toString(average_pic.get(1, 1)[0]));
-
-                String opath = filename_array.get(i * number_of_noise_pics + number_of_noise_pics - 1);
-                opath = opath.replace("c1", "avg");
-                log("avg", "---> Saving denoised file as " + opath + ".");
-                //notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
-                imwrite(opath, average_pic);
-                average_pic.release();
-                images_filename_array.add(opath);
+                file.delete();
             }
-            log("avg","---> Done denoise on image "+Integer.toString(i+1));
+            Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
+            r.addHeader("Location", "http://192.168.1.1:8888/files");
+            return r;
         }
-
-
-        private void tone_map(Mat hdrDebevecY)
+        else if (uri.contains("/download="))
         {
-        log(TAG,"Starting Tonemapping.");
+            String name = uri.split("=")[1];
+            Log.i("web","Download file is : "+name);
+            FileInputStream fis = null;
+            String path = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/"+name;
+            File file = new File(path);
 
-        Mat ldrDrago = new Mat();
-        org.opencv.photo.TonemapDrago tonemapDrago = org.opencv.photo.Photo.createTonemapDrago((float)1.0,(float)0.7);
-        log(TAG,"done creating tonemap.");
+            if (file.isDirectory())
+            {
+                Log.i("web","Converting folder "+file.getAbsolutePath()+" to ZIP.");
+                zipFileAtPath(file.getAbsolutePath(),file.getAbsolutePath()+".ZIP");
+                file = new File(file.getAbsolutePath()+".ZIP");
+            }
+            try
+            {
+                if (file.exists())
+                {
+                    Log.d("web", "Downloading " + file.getName());
+                    fis = new FileInputStream(file);
+                }
+                else
+                {
+                    Log.d("web", "File Not exists: ");
+                    Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
+                    r.addHeader("Location", "http://192.168.1.1:8888/files");
+                    return r;
+                }
 
-        tonemapDrago.process(hdrDebevecY, ldrDrago);
-        //ldrMantiuk = 3 * ldrMantiuk;
-        log(TAG,"Multiplying tonemap.");
+            }
+            catch (FileNotFoundException e)
+            {
+                e.printStackTrace();
+            }
 
-        org.opencv.core.Core.multiply(ldrDrago, new Scalar(3*255,3*255,3*255), ldrDrago);
+            String extension ="";
+            int i = path.lastIndexOf('.');
+            if (i > 0)
+            {
+                extension = path.substring(i+1);
+            }
 
-        //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
+            String mimetype = "application/octet-stream";
+            if (extension.toLowerCase() == "jpg" || extension.toLowerCase() == "jpeg")
+            {
+                mimetype = "image/jpeg";
+            }
+            else if (extension.toLowerCase() == "zip" )
+            {
+                mimetype = "application/zip";
+            }
+            else if (extension.toLowerCase() == "mp4" )
+            {
+                mimetype = "video/mp4";
+            }
 
-        //StringBuilder sb = new StringBuilder(session_name);
-        //sb.deleteCharAt(2);
-        //String resultString = sb.toString();
+            return newFixedLengthResponse(Response.Status.OK, mimetype, fis, file.length());
 
-        String opath = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name + ".JPG";
-        log(TAG,"Saving tonemapped file as " + opath + ".");
-        //org.opencv.core.Core.multiply(ldrMantiuk, new Scalar(255,255,255), ldrMantiuk);
-        imwrite(opath, ldrDrago );
-        ldrDrago.release();
         }
-        private void nextShutter(){
-        //restart preview
-        Camera.Parameters params = mCamera.getParameters();
-        params.set("RIC_SHOOTING_MODE", "RicMonitoring");
-        mCamera.setParameters(params);
-        mCamera.startPreview();
 
-        //shutter speed based bracket
-        if(bcnt > 0) {
-        params = mCamera.getParameters();
+
+        else if (uri.equals("/pic"))
+        {
+        if (parms.get("brackets") == null || parms.get("brackets").isEmpty()
+           || parms.get("denoise") == null || parms.get("denoise").isEmpty()
+           || parms.get("stopjump") == null || parms.get("stopjump").isEmpty())
+        {
+            Log.i("web", "Taking picture. With brackets at 1 and denoise at 1. Web simple.");
+            numberOfPictures = 1;
+            number_of_noise_pics = 1;
+            stopjump ="auto";
+        }
+        else
+        {
+            Log.i("web", "Taking picture. With brackets at " + parms.get("brackets") + " and denoise at " + parms.get("denoise"));
+            numberOfPictures = Integer.parseInt(parms.get("brackets"));
+            number_of_noise_pics = Integer.parseInt(parms.get("denoise"));
+            stopjump = parms.get("stopjump");
+        }
+        if (!taking_pics)
+        {
+            makePicture();
+            taking_pics = true;
+            message_log = "";
+            msg = "<meta http-equiv='refresh' content='0.5; URL=http://192.168.1.1:8888/refresh'>"+
+                    "<html><body style='background-color:black;'><font color='white'><h1>Busy taking pictures</h1><br>Doing:<br>" ;
+            //"<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form></font></body></html>";
+            return newFixedLengthResponse(msg );
+        }
+
+            else
+            {
+                Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
+                r.addHeader("Location", "http://192.168.1.1:8888/refresh");
+                return r;
+            }
+        }
+        else if (uri.equals("/refresh") && taking_pics)
+        {
+
+            Log.i("web", "refresh taking pics is true");
+            msg =   "<meta http-equiv='refresh' content='0.5; URL=http://192.168.1.1:8888/refresh'>"+
+                    "<html><body style='background-color:black;'><font color='white'>" +
+                    "<h1>Busy taking pictures</h1><br>Doing:<br>" ;
+                    //"<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form>";
+            msg += message_log + "</font></body></html>";
+            return newFixedLengthResponse(msg);
+
+        }
+        else
+        {
+            return newFixedLengthResponse(msg + "</font></body></html>\n");
+        }
+    }
+}
+
+    private void customShutter()
+    {
+        Intent intent = new Intent("com.theta360.plugin.ACTION_AUDIO_SH_OPEN");
+        sendBroadcast(intent);
+
+        Camera.Parameters params = mCamera.getParameters();
+        //Log.d("shooting mode", params.flatten());
         params.set("RIC_SHOOTING_MODE", "RicStillCaptureStd");
-        //shutterSpeedValue = shutterSpeedValue + shutterSpeedSpacing;
-        if (m_is_auto_pic) {
+
+        //params.set("RIC_PROC_STITCHING", "RicNonStitching");
+        //params.setPictureSize(5792, 2896); // no stiching
+
+        params.setPictureFormat(ImageFormat.JPEG);
+        params.set("jpeg-quality",100);
+        //params.setPictureSize(5376, 2688); // stiched
+        params.setPictureSize(cols, rows);
+
+
+        // https://api.ricoh/docs/theta-plugin-reference/camera-api/
+        //Shutter speed. To convert this value to ordinary 'Shutter Speed';
+        // calculate this value's power of 2, then reciprocal. For example,
+        // if value is '4', shutter speed is 1/(2^4)=1/16 second.
+        //params.set("RIC_EXPOSURE_MODE", "RicManualExposure");
+
+        //params.set("RIC_MANUAL_EXPOSURE_TIME_REAR", -1);
+        //params.set("RIC_MANUAL_EXPOSURE_ISO_REAR", -1);
+
+
         // So here we take our first picture on full auto settings to get
         // proper lighting settings to use a our middle exposure value
         params.set("RIC_EXPOSURE_MODE", "RicAutoExposureP");
-        } else {
-        params.set("RIC_EXPOSURE_MODE", "RicManualExposure");
-        params.set("RIC_MANUAL_EXPOSURE_TIME_REAR", bracket_array[current_count][1].intValue());
-        params.set("RIC_MANUAL_EXPOSURE_ISO_REAR", bracket_array[current_count][0].intValue());
-        // for future possibilities we add this but it turns out to be discarded
-        params.set("RIC_MANUAL_EXPOSURE_TIME_FRONT", bracket_array[current_count][1].intValue());
-        params.set("RIC_MANUAL_EXPOSURE_ISO_FRONT", bracket_array[current_count][0].intValue());
 
-        // always fic wb to 6500 to make sure pictures are taken in same way
-        // exif info doesn't take this value. so you can only visually verify
-        //params.set("RIC_WB_MODE",  "RicWbPrefixTemperature");
-        //params.set("RIC_WB_TEMPERATURE",  "5100");
-
-
-        }
-
-        bcnt = bcnt - 1;
-        if (bracket_array[current_count][4] == 1.0)
-        {
+        bcnt = numberOfPictures * number_of_noise_pics;
         mCamera.setParameters(params);
-        Intent intent = new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER");
+        //params = mCamera.getParameters();
+        session_name = getSessionName();
+
+        Log.i(TAG,"Starting new session with name: " + session_name);
+        Log.i(TAG,"About to take first auto picture to measure lighting settings.");
+        new File(Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/"+session_name).mkdir();
+
+        //Log.d("get", params.get("RIC_MANUAL_EXPOSURE_ISO_BACK"));
+
+        intent = new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER");
         sendBroadcast(intent);
-        mCamera.takePicture(null, null, null, pictureListener);
-        }
+        mCamera.takePicture(null,null, null, pictureListener);
+    }
+
+    private void Average_pics(int i)
+    {
+        Mat average_pic = new Mat();
+        Mat temp_pic3 = new Mat();
+
+        log("avg","---> Starting average on image "+Integer.toString(i+1));
+        if (number_of_noise_pics==1)
+        {
+            //images_filename_array = filename_array;
+            images_filename_array.add(filename_array.get(i * number_of_noise_pics + number_of_noise_pics - 1));
+            }
         else
         {
-        // full white going on
-        log(TAG,"Full white picture copy.");
-        pictureListener.onPictureTaken(saved_white_data,mCamera);
+            average_pic = new Mat(rows, cols, CvType.CV_32FC3, new Scalar((float) (0.0), (float) (0.0), (float) (0.0)));
 
+            for (Integer j = 0; j < number_of_noise_pics; j++)
+            {
+                //notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
+                //log("avg","---> Working on image: "+filename_array.get(i * number_of_noise_pics + j));
+                temp_pic3 = imread(filename_array.get(i * number_of_noise_pics + j));
+                temp_pic3.convertTo(temp_pic3, CvType.CV_32FC3);
+                Core.add(average_pic, temp_pic3, average_pic);
+                temp_pic3.release();
+                //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
+
+            }
+            org.opencv.core.Core.divide(average_pic, new Scalar(((float) number_of_noise_pics + 0.0),
+            ((float) number_of_noise_pics + 0.0),
+            ((float) number_of_noise_pics + 0.0)), average_pic);
+            Log.d(TAG, "Total average value " + Double.toString(average_pic.get(1, 1)[0]));
+
+            String opath = filename_array.get(i * number_of_noise_pics + number_of_noise_pics - 1);
+            opath = opath.replace("c1", "avg");
+            log("avg", "---> Saving denoised file as " + opath + ".");
+            //notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
+            imwrite(opath, average_pic);
+            average_pic.release();
+            images_filename_array.add(opath);
         }
-        }
+        log("avg","---> Done denoise on image "+Integer.toString(i+1));
+    }
 
-        else{
-        //////////////////////////////////////////////////////////////////////////
-        //                                                                      //
-        //                          HDR MERGE                                   //
-        //                                                                      //
-        //////////////////////////////////////////////////////////////////////////
+    private void tone_map(Mat hdrDebevecY)
+    {
+    log(TAG,"Starting Tonemapping.");
 
-        log(TAG,"Done with picture taking, let's start with the HDR merge.");
+    Mat ldrDrago = new Mat();
+    org.opencv.photo.TonemapDrago tonemapDrago = org.opencv.photo.Photo.createTonemapDrago((float)1.0,(float)0.7);
+    log(TAG,"done creating tonemap.");
 
-        //Log.d(TAG,"images is: "+Integer.toString(images_before_avg.size()) );
-        Log.d(TAG,"times length is: " + Long.toString(times.total()));
-        ColorThread = true;
-        new Thread(new LedChange()).start();
-        //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
-        String opath ="";
+    tonemapDrago.process(hdrDebevecY, ldrDrago);
+    //ldrMantiuk = 3 * ldrMantiuk;
+    log(TAG,"Multiplying tonemap.");
 
-        log(TAG,"Starting calibration.");
-        //notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
-        Mat responseDebevec = new Mat(256,1,CvType.CV_32FC3,new Scalar((float) (0.0), (float) (0.0), (float) (0.0)));
-        //org.opencv.photo.CalibrateDebevec calibrateDebevec = org.opencv.photo.Photo.createCalibrateDebevec(70,100,false);
-        //calibrateDebevec.process(images, responseDebevec, times);
+    org.opencv.core.Core.multiply(ldrDrago, new Scalar(3*255,3*255,3*255), ldrDrago);
 
+    //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
 
-        // The InputStream opens the resourceId and sends it to the buffer
-        InputStream is = this.getResources().openRawResource(R.raw.master_crc_kasper);
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        String readLine = null;
+    //StringBuilder sb = new StringBuilder(session_name);
+    //sb.deleteCharAt(2);
+    //String resultString = sb.toString();
 
-        try {
-        // While the BufferedReader readLine is not null
-        Integer i =0;
-        double[] data = new double[3];
-        while ((readLine = br.readLine()) != null) {
-        //Log.d(TAG, readLine);
-        data[0] = Double.valueOf(readLine.split(" ")[0]);
-        data[1] = Double.valueOf(readLine.split(" ")[1]);
-        data[2] = Double.valueOf(readLine.split(" ")[2]);
-        responseDebevec.put(i,0,data);
-        i++;
-        }
+    String opath = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name + ".JPG";
+    log(TAG,"Saving tonemapped file as " + opath + ".");
+    //org.opencv.core.Core.multiply(ldrMantiuk, new Scalar(255,255,255), ldrMantiuk);
+    imwrite(opath, ldrDrago );
+    ldrDrago.release();
+    }
 
-        // Close the InputStream and BufferedReader
-        is.close();
-        br.close();
+    private void nextShutter()
+    {
+    //restart preview
+    Camera.Parameters params = mCamera.getParameters();
+    params.set("RIC_SHOOTING_MODE", "RicMonitoring");
+    mCamera.setParameters(params);
+    mCamera.startPreview();
 
-        } catch (IOException e) {
-        e.printStackTrace();
-        }
+    //shutter speed based bracket
+    if(bcnt > 0) {
+    params = mCamera.getParameters();
+    params.set("RIC_SHOOTING_MODE", "RicStillCaptureStd");
+    //shutterSpeedValue = shutterSpeedValue + shutterSpeedSpacing;
+    if (m_is_auto_pic) {
+    // So here we take our first picture on full auto settings to get
+    // proper lighting settings to use a our middle exposure value
+    params.set("RIC_EXPOSURE_MODE", "RicAutoExposureP");
+    } else {
+    params.set("RIC_EXPOSURE_MODE", "RicManualExposure");
+    params.set("RIC_MANUAL_EXPOSURE_TIME_REAR", bracket_array[current_count][1].intValue());
+    params.set("RIC_MANUAL_EXPOSURE_ISO_REAR", bracket_array[current_count][0].intValue());
+    // for future possibilities we add this but it turns out to be discarded
+    params.set("RIC_MANUAL_EXPOSURE_TIME_FRONT", bracket_array[current_count][1].intValue());
+    params.set("RIC_MANUAL_EXPOSURE_ISO_FRONT", bracket_array[current_count][0].intValue());
 
-
-
-        log(TAG,"Calibration done, start saving curves.");
-        //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
-
-        try
-        {
-        // We save the Camera Curve to disk
-        String filename = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name + "/CameraCurve.txt";
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
-        for( Integer i=0; i<responseDebevec.rows(); i++)
-        {
-        for( Integer j=0; j<responseDebevec.cols(); j++)
-        {
-        writer.write(Double.toString(responseDebevec.get(i,j)[0])+" "+
-        Double.toString(responseDebevec.get(i,j)[1])+" "+
-        Double.toString(responseDebevec.get(i,j)[2])+"\n");
-
-        }
-        }
-        writer.close();
-        log(TAG,"Calibration done saving times.");
-
-        // We save the exposure times to disk
-        filename = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name + "/Times.txt";
-        writer = new BufferedWriter(new FileWriter(filename));
-        for( Integer i=0; i<numberOfPictures; i++)
-        {
-        writer.write(Double.toString(times.get(i,0)[0])+"\n");
-        }
-        writer.close();
-        }
-        catch(IOException e)
-        {
-        log(TAG,"IO error");
-        }
-        //notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
-
-        log(TAG,"Preping merge.");
-        Mat hdrDebevec = new Mat();
-        org.opencv.photo.MergeDebevec mergeDebevec = org.opencv.photo.Photo.createMergeDebevec();
+    // always fic wb to 6500 to make sure pictures are taken in same way
+    // exif info doesn't take this value. so you can only visually verify
+    //params.set("RIC_WB_MODE",  "RicWbPrefixTemperature");
+    //params.set("RIC_WB_TEMPERATURE",  "5100");
 
 
+    }
 
-        //Log.d(TAG,"starting align");
-        //org.opencv.photo.AlignMTB align = org.opencv.photo.Photo.createAlignMTB();
-        //align.process(images,images);
-        if (number_of_noise_pics==1){
-        images_filename_array = filename_array;
-        }
-        else {
-        log(TAG, "Merging average pics for denoise.");
-        //for (Integer i = 0; i < numberOfPictures; i++) {
-        //    Average_pics(i);
-        while (images_filename_array.size() != numberOfPictures)
-        {
-        log("avg","Denoising of images not ready yet, we wait. Already done "+images_filename_array.size() +" of "+ numberOfPictures+" images.");
-        try
-        {
-        Thread.sleep(500);
-        }
-        catch(InterruptedException ex)
-        {
-        Thread.currentThread().interrupt();
-        }
-        }
-        }
-        //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
-        images = new ArrayList<Mat>(numberOfPictures);
-        for (Integer i=0;i<numberOfPictures; i++)
-        {
-        String name = images_filename_array.get(i);
-        Log.d(TAG,"Adding file "+ name);
-        images.add(imread(name));
-        }
+    bcnt = bcnt - 1;
+    if (bracket_array[current_count][4] == 1.0)
+    {
+    mCamera.setParameters(params);
+    Intent intent = new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER");
+    sendBroadcast(intent);
+    mCamera.takePicture(null, null, null, pictureListener);
+    }
+    else
+    {
+    // full white going on
+    log(TAG,"Full white picture copy.");
+    pictureListener.onPictureTaken(saved_white_data,mCamera);
 
+    }
+    }
 
+    else{
+    //////////////////////////////////////////////////////////////////////////
+    //                                                                      //
+    //                          HDR MERGE                                   //
+    //                                                                      //
+    //////////////////////////////////////////////////////////////////////////
 
+    log(TAG,"Done with picture taking, let's start with the HDR merge.");
 
-        log(TAG,"Starting merge.");
-        mergeDebevec.process(images, hdrDebevec, times, responseDebevec);
+    //Log.d(TAG,"images is: "+Integer.toString(images_before_avg.size()) );
+    Log.d(TAG,"times length is: " + Long.toString(times.total()));
+    ColorThread = true;
+    new Thread(new LedChange()).start();
+    //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
+    String opath ="";
 
-        // Start Saving HDR Files.
-
-        // We divide by the mean value of the whole picture to get the exposure values with a proper range.
-        // Multiplied by 2 to get average value around 0.5 and 1.0, this has a better starting point.
-
-        Scalar mean =  org.opencv.core.Core.mean(hdrDebevec);
-        Log.d(TAG,"Mean: " + mean.toString());
-        double new_mean = (mean.val[0]*2 + mean.val[1]*2 +mean.val[2]*2 )/3.0;
-        //log(TAG,"Average Mean: " + Double.toString(new_mean));
-        org.opencv.core.Core.divide(hdrDebevec,new Scalar(new_mean,new_mean,new_mean,0),hdrDebevec);
+    log(TAG,"Starting calibration.");
+    //notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
+    Mat responseDebevec = new Mat(256,1,CvType.CV_32FC3,new Scalar((float) (0.0), (float) (0.0), (float) (0.0)));
+    //org.opencv.photo.CalibrateDebevec calibrateDebevec = org.opencv.photo.Photo.createCalibrateDebevec(70,100,false);
+    //calibrateDebevec.process(images, responseDebevec, times);
 
 
-        log(TAG,"Doing White balance.");
-        //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
-        // Do white balance thing, we take the auto_pic detect in that one all the white pixels.
-        // Save those positions
-        // then check those pixels in the HDR merge en compensate the average value to be white again.
+    // The InputStream opens the resourceId and sends it to the buffer
+    InputStream is = this.getResources().openRawResource(R.raw.master_crc_kasper);
+    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+    String readLine = null;
 
+    try {
+    // While the BufferedReader readLine is not null
+    Integer i =0;
+    double[] data = new double[3];
+    while ((readLine = br.readLine()) != null) {
+    //Log.d(TAG, readLine);
+    data[0] = Double.valueOf(readLine.split(" ")[0]);
+    data[1] = Double.valueOf(readLine.split(" ")[1]);
+    data[2] = Double.valueOf(readLine.split(" ")[2]);
+    responseDebevec.put(i,0,data);
+    i++;
+    }
 
-        int low_value = 80;
-        int high_value = 128;
+    // Close the InputStream and BufferedReader
+    is.close();
+    br.close();
 
-        Mat mask = new Mat();
-        Mat coord = new Mat();
-        Mat mask_pic_w = new Mat(rows, cols, CvType.CV_8UC3, new Scalar(255, 255, 255));
-        Mat mask_pic = new Mat(rows, cols, CvType.CV_8UC3, new Scalar(0, 0, 0));
-
-        temp_pic = imread(auto_pic);
-
-        log(TAG,"Going through all white pixels.");
-        for (int i = low_value; i < high_value; i++)
-        {
-        Core.inRange(temp_pic,new Scalar(i,i,i),new Scalar(i+3,i+3,i+3),mask);
-        Core.bitwise_or(mask_pic_w,mask_pic,mask_pic,mask);
-        }
-
-
-        temp_pic.release();
-        org.opencv.imgproc.Imgproc.cvtColor(mask_pic, temp_pic, org.opencv.imgproc.Imgproc.COLOR_RGB2GRAY);
-
-        Core.findNonZero(temp_pic,coord);
-
-        temp_pic.release();
-        mask.release();
-        mask_pic.release();
-        mask_pic_w.release();
-
-
-        Mat avg = new Mat(1, 1, CvType.CV_32FC3, new Scalar(0.0, 0.0, 0.0));
-
-        log(TAG,"Found "+Integer.toString(coord.rows())+" white pixels.");
-        for (Integer j = 0; j < coord.rows(); j++)
-        {
-        org.opencv.core.Core.add(avg, new Scalar(   hdrDebevec.get((int)coord.get(j,0)[1], (int)coord.get(j,0)[0])[0],
-        hdrDebevec.get((int)coord.get(j,0)[1], (int)coord.get(j,0)[0])[1],
-        hdrDebevec.get((int)coord.get(j,0)[1], (int)coord.get(j,0)[0])[2],
-        0.0),avg);
-        }
-        org.opencv.core.Core.divide((double)coord.rows(),avg,avg);
-
-        Log.d(TAG,"Average of white pixels is: " + String.valueOf(avg.get(0,0)[0])
-        + " " +String.valueOf(avg.get(0,0)[1])
-        +" "+String.valueOf(avg.get(0,0)[2]));
+    } catch (IOException e) {
+    e.printStackTrace();
+    }
 
 
 
-        double Y = (0.2126 * avg.get(0,0)[2] + 0.7152 * avg.get(0,0)[1] + 0.0722 * avg.get(0,0)[0]);
-        Scalar multY = new Scalar(Y/avg.get(0,0)[0], Y/avg.get(0,0)[1], Y/avg.get(0,0)[2], 0.0);
+    log(TAG,"Calibration done, start saving curves.");
+    //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
 
-        Log.d(TAG,"Brightness value is: " + String.valueOf(Y));
-        Log.d(TAG,"Multiplying by: " + multY.toString());
+    try
+    {
+    // We save the Camera Curve to disk
+    String filename = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name + "/CameraCurve.txt";
+    BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+    for( Integer i=0; i<responseDebevec.rows(); i++)
+    {
+    for( Integer j=0; j<responseDebevec.cols(); j++)
+    {
+    writer.write(Double.toString(responseDebevec.get(i,j)[0])+" "+
+    Double.toString(responseDebevec.get(i,j)[1])+" "+
+    Double.toString(responseDebevec.get(i,j)[2])+"\n");
+
+    }
+    }
+    writer.close();
+    log(TAG,"Calibration done saving times.");
+
+    // We save the exposure times to disk
+    filename = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name + "/Times.txt";
+    writer = new BufferedWriter(new FileWriter(filename));
+    for( Integer i=0; i<numberOfPictures; i++)
+    {
+    writer.write(Double.toString(times.get(i,0)[0])+"\n");
+    }
+    writer.close();
+    }
+    catch(IOException e)
+    {
+    log(TAG,"IO error");
+    }
+    //notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
+
+    log(TAG,"Preping merge.");
+    Mat hdrDebevec = new Mat();
+    org.opencv.photo.MergeDebevec mergeDebevec = org.opencv.photo.Photo.createMergeDebevec();
 
 
-        org.opencv.core.Core.divide(hdrDebevec,multY,hdrDebevecY); // Why divide and not mult? works better don't understand.
 
-        double B1 = hdrDebevec.get((int)coord.get(0,0)[1], (int)coord.get(0,0)[0])[0];
-        double G1 = hdrDebevec.get((int)coord.get(0,0)[1], (int)coord.get(0,0)[0])[1];
-        double R1 = hdrDebevec.get((int)coord.get(0,0)[1], (int)coord.get(0,0)[0])[2];
-        Log.d(TAG,"Before: " + String.valueOf(B1) +" "+ String.valueOf(G1) +" "+ String.valueOf(R1));
+    //Log.d(TAG,"starting align");
+    //org.opencv.photo.AlignMTB align = org.opencv.photo.Photo.createAlignMTB();
+    //align.process(images,images);
+    if (number_of_noise_pics==1){
+    images_filename_array = filename_array;
+    }
+    else {
+    log(TAG, "Merging average pics for denoise.");
+    //for (Integer i = 0; i < numberOfPictures; i++) {
+    //    Average_pics(i);
+    while (images_filename_array.size() != numberOfPictures)
+    {
+    log("avg","Denoising of images not ready yet, we wait. Already done "+images_filename_array.size() +" of "+ numberOfPictures+" images.");
+    try
+    {
+    Thread.sleep(500);
+    }
+    catch(InterruptedException ex)
+    {
+    Thread.currentThread().interrupt();
+    }
+    }
+    }
+    //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
+    images = new ArrayList<Mat>(numberOfPictures);
+    for (Integer i=0;i<numberOfPictures; i++)
+    {
+    String name = images_filename_array.get(i);
+    Log.d(TAG,"Adding file "+ name);
+    images.add(imread(name));
+    }
 
-        B1 = hdrDebevecY.get((int)coord.get(0,0)[1], (int)coord.get(0,0)[0])[0];
-        G1 = hdrDebevecY.get((int)coord.get(0,0)[1], (int)coord.get(0,0)[0])[1];
-        R1 = hdrDebevecY.get((int)coord.get(0,0)[1], (int)coord.get(0,0)[0])[2];
-        Log.d(TAG,"After Y: " + String.valueOf(B1) +" "+ String.valueOf(G1) +" "+ String.valueOf(R1));
-
-        B1 = hdrDebevec.get((int)coord.get(coord.rows()-1,0)[1], (int)coord.get(coord.rows()-1,0)[0])[0];
-        G1 = hdrDebevec.get((int)coord.get(coord.rows()-1,0)[1], (int)coord.get(coord.rows()-1,0)[0])[1];
-        R1 = hdrDebevec.get((int)coord.get(coord.rows()-1,0)[1], (int)coord.get(coord.rows()-1,0)[0])[2];
-        Log.d(TAG,"Before end: " + String.valueOf(B1) +" "+ String.valueOf(G1) +" "+ String.valueOf(R1));
-
-        B1 = hdrDebevecY.get((int)coord.get(coord.rows()-1,0)[1], (int)coord.get(coord.rows()-1,0)[0])[0];
-        G1 = hdrDebevecY.get((int)coord.get(coord.rows()-1,0)[1], (int)coord.get(coord.rows()-1,0)[0])[1];
-        R1 = hdrDebevecY.get((int)coord.get(coord.rows()-1,0)[1], (int)coord.get(coord.rows()-1,0)[0])[2];
-        Log.d(TAG,"After Y end: " + String.valueOf(B1) +" "+ String.valueOf(G1) +" "+ String.valueOf(R1));
-
-            /*
-            opath = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name + "_nY.EXR";
-            log(TAG,"Saving EXR file as " + opath + ".");
-            notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
-            imwrite(opath, hdrDebevec,compressParams);
-            */
-
-        new Thread(new tonemap_thread()).start();
 
 
-        opath = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name + ".EXR";
+
+    log(TAG,"Starting merge.");
+    mergeDebevec.process(images, hdrDebevec, times, responseDebevec);
+
+    // Start Saving HDR Files.
+
+    // We divide by the mean value of the whole picture to get the exposure values with a proper range.
+    // Multiplied by 2 to get average value around 0.5 and 1.0, this has a better starting point.
+
+    Scalar mean =  org.opencv.core.Core.mean(hdrDebevec);
+    Log.d(TAG,"Mean: " + mean.toString());
+    double new_mean = (mean.val[0]*2 + mean.val[1]*2 +mean.val[2]*2 )/3.0;
+    //log(TAG,"Average Mean: " + Double.toString(new_mean));
+    org.opencv.core.Core.divide(hdrDebevec,new Scalar(new_mean,new_mean,new_mean,0),hdrDebevec);
+
+
+    log(TAG,"Doing White balance.");
+    //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
+    // Do white balance thing, we take the auto_pic detect in that one all the white pixels.
+    // Save those positions
+    // then check those pixels in the HDR merge en compensate the average value to be white again.
+
+
+    int low_value = 80;
+    int high_value = 128;
+
+    Mat mask = new Mat();
+    Mat coord = new Mat();
+    Mat mask_pic_w = new Mat(rows, cols, CvType.CV_8UC3, new Scalar(255, 255, 255));
+    Mat mask_pic = new Mat(rows, cols, CvType.CV_8UC3, new Scalar(0, 0, 0));
+
+    temp_pic = imread(auto_pic);
+
+    log(TAG,"Going through all white pixels.");
+    for (int i = low_value; i < high_value; i++)
+    {
+    Core.inRange(temp_pic,new Scalar(i,i,i),new Scalar(i+3,i+3,i+3),mask);
+    Core.bitwise_or(mask_pic_w,mask_pic,mask_pic,mask);
+    }
+
+
+    temp_pic.release();
+    org.opencv.imgproc.Imgproc.cvtColor(mask_pic, temp_pic, org.opencv.imgproc.Imgproc.COLOR_RGB2GRAY);
+
+    Core.findNonZero(temp_pic,coord);
+
+    temp_pic.release();
+    mask.release();
+    mask_pic.release();
+    mask_pic_w.release();
+
+
+    Mat avg = new Mat(1, 1, CvType.CV_32FC3, new Scalar(0.0, 0.0, 0.0));
+
+    log(TAG,"Found "+Integer.toString(coord.rows())+" white pixels.");
+    for (Integer j = 0; j < coord.rows(); j++)
+    {
+    org.opencv.core.Core.add(avg, new Scalar(   hdrDebevec.get((int)coord.get(j,0)[1], (int)coord.get(j,0)[0])[0],
+    hdrDebevec.get((int)coord.get(j,0)[1], (int)coord.get(j,0)[0])[1],
+    hdrDebevec.get((int)coord.get(j,0)[1], (int)coord.get(j,0)[0])[2],
+    0.0),avg);
+    }
+    org.opencv.core.Core.divide((double)coord.rows(),avg,avg);
+
+    Log.d(TAG,"Average of white pixels is: " + String.valueOf(avg.get(0,0)[0])
+    + " " +String.valueOf(avg.get(0,0)[1])
+    +" "+String.valueOf(avg.get(0,0)[2]));
+
+
+
+    double Y = (0.2126 * avg.get(0,0)[2] + 0.7152 * avg.get(0,0)[1] + 0.0722 * avg.get(0,0)[0]);
+    Scalar multY = new Scalar(Y/avg.get(0,0)[0], Y/avg.get(0,0)[1], Y/avg.get(0,0)[2], 0.0);
+
+    Log.d(TAG,"Brightness value is: " + String.valueOf(Y));
+    Log.d(TAG,"Multiplying by: " + multY.toString());
+
+
+    org.opencv.core.Core.divide(hdrDebevec,multY,hdrDebevecY); // Why divide and not mult? works better don't understand.
+
+    double B1 = hdrDebevec.get((int)coord.get(0,0)[1], (int)coord.get(0,0)[0])[0];
+    double G1 = hdrDebevec.get((int)coord.get(0,0)[1], (int)coord.get(0,0)[0])[1];
+    double R1 = hdrDebevec.get((int)coord.get(0,0)[1], (int)coord.get(0,0)[0])[2];
+    Log.d(TAG,"Before: " + String.valueOf(B1) +" "+ String.valueOf(G1) +" "+ String.valueOf(R1));
+
+    B1 = hdrDebevecY.get((int)coord.get(0,0)[1], (int)coord.get(0,0)[0])[0];
+    G1 = hdrDebevecY.get((int)coord.get(0,0)[1], (int)coord.get(0,0)[0])[1];
+    R1 = hdrDebevecY.get((int)coord.get(0,0)[1], (int)coord.get(0,0)[0])[2];
+    Log.d(TAG,"After Y: " + String.valueOf(B1) +" "+ String.valueOf(G1) +" "+ String.valueOf(R1));
+
+    B1 = hdrDebevec.get((int)coord.get(coord.rows()-1,0)[1], (int)coord.get(coord.rows()-1,0)[0])[0];
+    G1 = hdrDebevec.get((int)coord.get(coord.rows()-1,0)[1], (int)coord.get(coord.rows()-1,0)[0])[1];
+    R1 = hdrDebevec.get((int)coord.get(coord.rows()-1,0)[1], (int)coord.get(coord.rows()-1,0)[0])[2];
+    Log.d(TAG,"Before end: " + String.valueOf(B1) +" "+ String.valueOf(G1) +" "+ String.valueOf(R1));
+
+    B1 = hdrDebevecY.get((int)coord.get(coord.rows()-1,0)[1], (int)coord.get(coord.rows()-1,0)[0])[0];
+    G1 = hdrDebevecY.get((int)coord.get(coord.rows()-1,0)[1], (int)coord.get(coord.rows()-1,0)[0])[1];
+    R1 = hdrDebevecY.get((int)coord.get(coord.rows()-1,0)[1], (int)coord.get(coord.rows()-1,0)[0])[2];
+    Log.d(TAG,"After Y end: " + String.valueOf(B1) +" "+ String.valueOf(G1) +" "+ String.valueOf(R1));
+
+        /*
+        opath = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name + "_nY.EXR";
         log(TAG,"Saving EXR file as " + opath + ".");
-        //notificationLedBlink(LedTarget.LED3, LedColor.RED, 150);
-        imwrite(opath, hdrDebevecY,compressParams);
+        notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
+        imwrite(opath, hdrDebevec,compressParams);
+        */
 
-        // We try the hack to copy the file with an jpg extension to make it accesable on windows
-        //log(TAG,"Saving EXR as a jpg copy hack.");
-        //File source = new File(opath);
+    new Thread(new tonemap_thread()).start();
 
-        // 5/16/2019 change by theta360.guide community
+
+    opath = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name + ".EXR";
+    log(TAG,"Saving EXR file as " + opath + ".");
+    //notificationLedBlink(LedTarget.LED3, LedColor.RED, 150);
+    imwrite(opath, hdrDebevecY,compressParams);
+
+    // We try the hack to copy the file with an jpg extension to make it accesable on windows
+    //log(TAG,"Saving EXR as a jpg copy hack.");
+    //File source = new File(opath);
+
+    // 5/16/2019 change by theta360.guide community
 //            File target = new File(opath+"_removethis.JPG");
 //            copyWithChannels(source, target, false);
 
-        //File from = new File(opath);
-        //File to = new File(opath+"_removethis.JPG");
-        //if(from.exists())
-        //    from.renameTo(to);
+    //File from = new File(opath);
+    //File to = new File(opath+"_removethis.JPG");
+    //if(from.exists())
+    //    from.renameTo(to);
 
-        // end change by theta360.guide community
-
-
+    // end change by theta360.guide community
 
 
 
 
-        registImage(opath, mcontext);
 
-        zipFileAtPath(Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name,
-        Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name+".ZIP");
 
-        deleteDir(new File(Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name));
-        //  need do some stuff with exif data to fix reading in app
+    registImage(opath, mcontext);
 
-            /*
-            //Drawable drawable = getResources().getDrawable(android.R.drawable.ref);
-            //Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ref);
-            String opath_exif = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/exif_file.JPG";
+    zipFileAtPath(Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name,
+    Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name+".ZIP");
 
-            File file = new File(opath_exif);
+    deleteDir(new File(Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" + session_name));
+    //  need do some stuff with exif data to fix reading in app
 
-            try {
-                InputStream is_jpg = getResources().openRawResource(R.raw.ref);;
-                OutputStream os = new FileOutputStream(file);
-                byte[] data = new byte[is_jpg.available()];
-                is_jpg.read(data);
-                os.write(data);
-                is_jpg.close();
-                os.close();
-            } catch (IOException e) {
-                // Unable to create file, likely because external storage is
-                // not currently mounted.
-                log("ExternalStorage", "Error writing " + file, e);
-            }
-            log(TAG,"Exif copy ");
-            try
-            {
-                ExifInterface tone_mapped_Exif = new ExifInterface(opath);
-                ExifInterface ref_exif =  new ExifInterface(opath_exif);
-                tone_mapped_Exif = ref_exif;
-                tone_mapped_Exif.saveAttributes();
-            }
-            catch (Exception e)
-            {
-                log(TAG,"Exif error.");
-                e.printStackTrace();
-                log(TAG,"end exif error.");
-            }
-            */
+        /*
+        //Drawable drawable = getResources().getDrawable(android.R.drawable.ref);
+        //Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ref);
+        String opath_exif = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/exif_file.JPG";
 
-        log(TAG,"File saving done.");
-        hdrDebevec.release();
-        hdrDebevecY.release();
-        coord.release();
-        responseDebevec.release();
-
-        log(TAG,"----- JOB DONE -----");
-        taking_pics = false;
-
-        ColorThread = false;
-        notificationLedBlink(LedTarget.LED3, LedColor.MAGENTA, 2000);
-        notificationLedHide(LedTarget.LED3);
-        notificationLedShow(LedTarget.LED3);
-        notificationLed3Show(LedColor.MAGENTA);
-
-        Intent intent = new Intent("com.theta360.plugin.ACTION_AUDIO_SH_CLOSE");
-        sendBroadcast(intent);
-        }
-
-        }
-        private double find_closest_shutter(double shutter_in)
-        {
-        int i;
-        for( i=0; i<shutter_table.length; i++){
-        if (shutter_table[i][1] > shutter_in) {
-        break;
-        }
-        }
-        return shutter_table[i][0];
-        }
-
-        private Camera.PictureCallback pictureListener = new Camera.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
-        //save image to storage
-        Log.d(TAG,"onpicturetaken called ok");
-        if (data != null) {
+        File file = new File(opath_exif);
 
         try {
-        String tname = getNowDate();
-        String extra;
-        if ( m_is_auto_pic)
-        {
-        // get picture info, iso and shutter
-        Camera.Parameters params = mCamera.getParameters();
-        String flattened = params.flatten();
-        Log.d(TAG,flattened);
-        StringTokenizer tokenizer = new StringTokenizer(flattened, ";");
-        String text;
-        String cur_shutter = "";
-        String cur_iso  = "";
-        while (tokenizer.hasMoreElements())
-        {
-        text = tokenizer.nextToken();
-        if (text.contains("cur-exposure-time"))
-        {
-        cur_shutter = text.split("=")[1];
-        Log.d(TAG,"INFO after: "+text);
+            InputStream is_jpg = getResources().openRawResource(R.raw.ref);;
+            OutputStream os = new FileOutputStream(file);
+            byte[] data = new byte[is_jpg.available()];
+            is_jpg.read(data);
+            os.write(data);
+            is_jpg.close();
+            os.close();
+        } catch (IOException e) {
+            // Unable to create file, likely because external storage is
+            // not currently mounted.
+            log("ExternalStorage", "Error writing " + file, e);
         }
-                            /*else if (text.contains("RIC_"))
-                            {
-                                Log.d("INFO" ,"after: "+text);
-                            }*/
-        else if (text.contains("cur-iso"))
+        log(TAG,"Exif copy ");
+        try
         {
-        cur_iso = text.split("=")[1];
-        Log.d(TAG,"INFO after: "+text);
+            ExifInterface tone_mapped_Exif = new ExifInterface(opath);
+            ExifInterface ref_exif =  new ExifInterface(opath_exif);
+            tone_mapped_Exif = ref_exif;
+            tone_mapped_Exif.saveAttributes();
         }
+        catch (Exception e)
+        {
+            log(TAG,"Exif error.");
+            e.printStackTrace();
+            log(TAG,"end exif error.");
         }
+        */
 
-        // Here we populate the bracket_array based on the base auto exposure picture.
-        extra = "auto_pic";
+    log(TAG,"File saving done.");
+    hdrDebevec.release();
+    hdrDebevecY.release();
+    coord.release();
+    responseDebevec.release();
 
-        // cur_shutter is in mille seconds and a string
-        Float shutter = Float.parseFloat(cur_shutter)/1000;
-        Float iso_flt  =  Float.parseFloat(cur_iso);
+    log(TAG,"----- JOB DONE -----");
+    taking_pics = false;
 
-        Float new_shutter = shutter * iso_flt/100*2;
-        //find_closest_shutter(new_shutter);
-        Log.d(TAG,"New shutter number " + Double.toString(new_shutter));
+    ColorThread = false;
+    notificationLedBlink(LedTarget.LED3, LedColor.MAGENTA, 2000);
+    notificationLedHide(LedTarget.LED3);
+    notificationLedShow(LedTarget.LED3);
+    notificationLed3Show(LedColor.MAGENTA);
 
-        Log.d(TAG,"Closest shutter number " + Double.toString(find_closest_shutter(new_shutter)));
+    Intent intent = new Intent("com.theta360.plugin.ACTION_AUDIO_SH_CLOSE");
+    sendBroadcast(intent);
+    }
 
-        // We adjust the stop jumps based on the current shutter number
-        // if base exposure time is low/short we are in light situation --> smaller jumps
-        // if base exposure time is a lager number = longer time we are in dark situation --> bigger jumps to reach overexposure and we are soon at
-        // < 1/1000 --> 1
-        // < 1/500  --> 1.5
-        // < 1/50   --> 2
-        // < 1/20   --> 2.5
+    }
 
-        // default is 2.5
-            if (stopjump.equals("auto")) {
-                if (new_shutter <= 0.02) {
-                    stop_jumps = 2.0;
-                }
-                if (new_shutter <= 0.002) {
-                    stop_jumps = 1.5;
-                }
-                if (new_shutter <= 0.001) {
-                    stop_jumps = 1.0;
-                }
-                if (new_shutter <= 0.0002) {
-                    stop_jumps = 0.5;
-                }
+    private double find_closest_shutter(double shutter_in)
+    {
+    int i;
+    for( i=0; i<shutter_table.length; i++){
+    if (shutter_table[i][1] > shutter_in) {
+    break;
+    }
+    }
+    return shutter_table[i][0];
+    }
+
+    private Camera.PictureCallback pictureListener = new Camera.PictureCallback()
+    {
+    @Override
+    public void onPictureTaken(byte[] data, Camera camera) {
+    //save image to storage
+    Log.d(TAG,"onpicturetaken called ok");
+    if (data != null) {
+
+    try {
+    String tname = getNowDate();
+    String extra;
+    if ( m_is_auto_pic)
+    {
+    // get picture info, iso and shutter
+    Camera.Parameters params = mCamera.getParameters();
+    String flattened = params.flatten();
+    Log.d(TAG,flattened);
+    StringTokenizer tokenizer = new StringTokenizer(flattened, ";");
+    String text;
+    String cur_shutter = "";
+    String cur_iso  = "";
+    while (tokenizer.hasMoreElements())
+    {
+    text = tokenizer.nextToken();
+    if (text.contains("cur-exposure-time"))
+    {
+    cur_shutter = text.split("=")[1];
+    Log.d(TAG,"INFO after: "+text);
+    }
+                        /*else if (text.contains("RIC_"))
+                        {
+                            Log.d("INFO" ,"after: "+text);
+                        }*/
+    else if (text.contains("cur-iso"))
+    {
+    cur_iso = text.split("=")[1];
+    Log.d(TAG,"INFO after: "+text);
+    }
+    }
+
+    // Here we populate the bracket_array based on the base auto exposure picture.
+    extra = "auto_pic";
+
+    // cur_shutter is in mille seconds and a string
+    Float shutter = Float.parseFloat(cur_shutter)/1000;
+    Float iso_flt  =  Float.parseFloat(cur_iso);
+
+    Float new_shutter = shutter * iso_flt/100*2;
+    //find_closest_shutter(new_shutter);
+    Log.d(TAG,"New shutter number " + Double.toString(new_shutter));
+
+    Log.d(TAG,"Closest shutter number " + Double.toString(find_closest_shutter(new_shutter)));
+
+    // We adjust the stop jumps based on the current shutter number
+    // if base exposure time is low/short we are in light situation --> smaller jumps
+    // if base exposure time is a lager number = longer time we are in dark situation --> bigger jumps to reach overexposure and we are soon at
+    // < 1/1000 --> 1
+    // < 1/500  --> 1.5
+    // < 1/50   --> 2
+    // < 1/20   --> 2.5
+
+    // default is 2.5
+        if (stopjump.equals("auto")) {
+            if (new_shutter <= 0.02) {
+                stop_jumps = 2.0;
             }
-            else
-            {
-                stop_jumps = Double.parseDouble(stopjump);
-
+            if (new_shutter <= 0.002) {
+                stop_jumps = 1.5;
             }
-        log(TAG,"Stop jumps are set to ----> "+Double.toString(stop_jumps) + ".");
-
-        // iso is always the lowest for now maybe alter we can implement a fast option with higher iso
-        // bracket_array =
-        // {{iso,shutter,bracketpos, shutter_length_real, go_ahead },{iso,shutter,bracketpos,shutter_length_real, go_ahead },{iso,shutter,bracketpos,shutter_length_real, go_ahead },....}
-        // {{50, 1/50, 0},{50, 1/25, +1},{50,1/100,-1},{50,1/13,+2},....}
-        // go_aherad is to turn of pictur takinfg when pict get full white or full black by default set 1, 0 means no pic
-        for( int i=0; i<numberOfPictures; i++)
-        {
-        boolean reached_18 = false;
-        bracket_array[i][0] = 1.0;
-        bracket_array[i][4] = 1.0;
-        // 0=0  1 = *2,+1  2 = /2, -1, 3 = *4=2^2,+2, 4=/4=2^2,-2 5 = *8=2^3,+3, 6 = /8=2^3
-        if ( (i & 1) == 0 )
-        {
-        //even...
-        bracket_array[i][1] = find_closest_shutter(new_shutter/( Math.pow(2,stop_jumps *  Math.ceil(i/2.0))));
-        bracket_array[i][2] = -1 * Math.ceil(i/2.0);
-        bracket_array[i][3] = shutter_table[bracket_array[i][1].intValue()][1];
-        times.put(i,0, shutter_table[bracket_array[i][1].intValue()][1]);
+            if (new_shutter <= 0.001) {
+                stop_jumps = 1.0;
+            }
+            if (new_shutter <= 0.0002) {
+                stop_jumps = 0.5;
+            }
         }
         else
         {
-        //odd...
-        Double corrected_shutter = new_shutter*(Math.pow(2,stop_jumps *Math.ceil(i/2.0)));
-        int iso = 1;
-
-        int j;
-        for( j=1; j<shutter_table.length-1; j++){
-        if (shutter_table[j][1] > corrected_shutter) {
-        break;
-        }
-        }
-        bracket_array[i][3] = shutter_table[j][1];
-        times.put(i,0, shutter_table[j][1]);
-
-        if ((corrected_shutter >= 1.0))
-        {
-        // If shutter value goes above 1 sec we increase iso unless we have reached highest iso already
-
-        while (corrected_shutter >=1.0 && !( reached_18))
-        {
-        corrected_shutter = corrected_shutter/2.0;
-        if (iso == 1) { iso =3; }
-        else          { iso = iso + 3; }
-        if (iso >=18)
-        {
-        iso=18;
-        //if (reached_18) {corrected_shutter = corrected_shutter * 2.0;}
-        reached_18 = true;
+            stop_jumps = Double.parseDouble(stopjump);
 
         }
+    log(TAG,"Stop jumps are set to ----> "+Double.toString(stop_jumps) + ".");
 
-        }
-        }
-        if ((reached_18) && (bracket_array[i-2][0] == 18))
-        {
-        // previous one was already at highest iso.
-        bracket_array[i][0] = 18.0;
-        bracket_array[i][1] = find_closest_shutter(corrected_shutter);
+    // iso is always the lowest for now maybe alter we can implement a fast option with higher iso
+    // bracket_array =
+    // {{iso,shutter,bracketpos, shutter_length_real, go_ahead },{iso,shutter,bracketpos,shutter_length_real, go_ahead },{iso,shutter,bracketpos,shutter_length_real, go_ahead },....}
+    // {{50, 1/50, 0},{50, 1/25, +1},{50,1/100,-1},{50,1/13,+2},....}
+    // go_aherad is to turn of pictur takinfg when pict get full white or full black by default set 1, 0 means no pic
+    for( int i=0; i<numberOfPictures; i++)
+    {
+    boolean reached_18 = false;
+    bracket_array[i][0] = 1.0;
+    bracket_array[i][4] = 1.0;
+    // 0=0  1 = *2,+1  2 = /2, -1, 3 = *4=2^2,+2, 4=/4=2^2,-2 5 = *8=2^3,+3, 6 = /8=2^3
+    if ( (i & 1) == 0 )
+    {
+    //even...
+    bracket_array[i][1] = find_closest_shutter(new_shutter/( Math.pow(2,stop_jumps *  Math.ceil(i/2.0))));
+    bracket_array[i][2] = -1 * Math.ceil(i/2.0);
+    bracket_array[i][3] = shutter_table[bracket_array[i][1].intValue()][1];
+    times.put(i,0, shutter_table[bracket_array[i][1].intValue()][1]);
+    }
+    else
+    {
+    //odd...
+    Double corrected_shutter = new_shutter*(Math.pow(2,stop_jumps *Math.ceil(i/2.0)));
+    int iso = 1;
 
-        }
-        bracket_array[i][0] = Double.valueOf(iso);
-        bracket_array[i][1] = find_closest_shutter(corrected_shutter);
-        bracket_array[i][2] = Math.ceil(i/2.0);
+    int j;
+    for( j=1; j<shutter_table.length-1; j++){
+    if (shutter_table[j][1] > corrected_shutter) {
+    break;
+    }
+    }
+    bracket_array[i][3] = shutter_table[j][1];
+    times.put(i,0, shutter_table[j][1]);
 
-        }
-        log(TAG,"Array: index "+Integer.toString(i) +
-        " iso #: "+Integer.toString(bracket_array[i][0].intValue())+
-        " shutter #: "+Integer.toString(bracket_array[i][1].intValue())+
-        " bracketpos : "+Integer.toString(bracket_array[i][2].intValue())+
-        " real shutter length : "+Double.toString(bracket_array[i][3]));
-        }
-        m_is_auto_pic = false;
-        }
-        else // not auto pic so we are in bracket loop
-        {
-        String nul ="";
-        if (current_count<10){nul ="0";}
-        if ( (current_count & 1) == 0 ) {
-        //even is min
+    if ((corrected_shutter >= 1.0))
+    {
+    // If shutter value goes above 1 sec we increase iso unless we have reached highest iso already
 
-        extra = "i" + nul + Integer.toString(current_count) + "_m" + Integer.toString(Math.abs(bracket_array[current_count][2].intValue()));
-        }
-        else
-        {
-        //oneven is plus
-        extra = "i" + nul + Integer.toString(current_count) + "_p" + Integer.toString(bracket_array[current_count][2].intValue());
-        }
+    while (corrected_shutter >=1.0 && !( reached_18))
+    {
+    corrected_shutter = corrected_shutter/2.0;
+    if (iso == 1) { iso =3; }
+    else          { iso = iso + 3; }
+    if (iso >=18)
+    {
+    iso=18;
+    //if (reached_18) {corrected_shutter = corrected_shutter * 2.0;}
+    reached_18 = true;
 
-        extra += "_c" + Integer.toString(noise_count);
-        if (noise_count == 1)
-        {
-        current_count++;
-        noise_count = number_of_noise_pics;
-        }
-        else
-        {
-        noise_count--;
-        }
+    }
 
-        }
+    }
+    }
+    if ((reached_18) && (bracket_array[i-2][0] == 18))
+    {
+    // previous one was already at highest iso.
+    bracket_array[i][0] = 18.0;
+    bracket_array[i][1] = find_closest_shutter(corrected_shutter);
 
-        //sort array from high to low
-        //Arrays.sort(bracket_array, (a, b) -> Double.compare(a[2], b[2]));
+    }
+    bracket_array[i][0] = Double.valueOf(iso);
+    bracket_array[i][1] = find_closest_shutter(corrected_shutter);
+    bracket_array[i][2] = Math.ceil(i/2.0);
 
-        String opath = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" +  session_name + "/" + extra + ".jpg";
-        //String opath = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/IMG_" + Integer.toString(current_count) + ".JPG";
+    }
+    log(TAG,"Array: index "+Integer.toString(i) +
+    " iso #: "+Integer.toString(bracket_array[i][0].intValue())+
+    " shutter #: "+Integer.toString(bracket_array[i][1].intValue())+
+    " bracketpos : "+Integer.toString(bracket_array[i][2].intValue())+
+    " real shutter length : "+Double.toString(bracket_array[i][3]));
+    }
+    m_is_auto_pic = false;
+    }
+    else // not auto pic so we are in bracket loop
+    {
+    String nul ="";
+    if (current_count<10){nul ="0";}
+    if ( (current_count & 1) == 0 ) {
+    //even is min
 
-        FileOutputStream fos;
-        fos = new FileOutputStream(opath);
-        fos.write(data);
+    extra = "i" + nul + Integer.toString(current_count) + "_m" + Integer.toString(Math.abs(bracket_array[current_count][2].intValue()));
+    }
+    else
+    {
+    //oneven is plus
+    extra = "i" + nul + Integer.toString(current_count) + "_p" + Integer.toString(bracket_array[current_count][2].intValue());
+    }
+
+    extra += "_c" + Integer.toString(noise_count);
+    if (noise_count == 1)
+    {
+    current_count++;
+    noise_count = number_of_noise_pics;
+    }
+    else
+    {
+    noise_count--;
+    }
+
+    }
+
+    //sort array from high to low
+    //Arrays.sort(bracket_array, (a, b) -> Double.compare(a[2], b[2]));
+
+    String opath = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" +  session_name + "/" + extra + ".jpg";
+    //String opath = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/IMG_" + Integer.toString(current_count) + ".JPG";
+
+    FileOutputStream fos;
+    fos = new FileOutputStream(opath);
+    fos.write(data);
 
 
 
 
-        ExifInterface exif = new ExifInterface(opath);
+    ExifInterface exif = new ExifInterface(opath);
 /*
-                    if (!extra.contains("auto_pic")) // setup opencv array for hdr merge
-                            {
-                                //log(TAG,"adding to whole: "+opath);
-                                images_before_avg.add(imread(opath));
-                            }
+                if (!extra.contains("auto_pic")) // setup opencv array for hdr merge
+                        {
+                            //log(TAG,"adding to whole: "+opath);
+                            images_before_avg.add(imread(opath));
+                        }
 */
 
-        // firmware 3.00 doesn't support the tag shuuter_speed_value anymore
-        // But this whole piece was just extra info so let's throw it out
+    // firmware 3.00 doesn't support the tag shuuter_speed_value anymore
+    // But this whole piece was just extra info so let's throw it out
 
-                    /*
-                    String shutter_str = exif.getAttribute(ExifInterface.TAG_SHUTTER_SPEED_VALUE);
-                    Float shutter_flt = (Float.parseFloat(shutter_str.split("/")[0]) / Float.parseFloat(shutter_str.split("/")[1]));
-                    String out ="";
-                    if ( shutter_flt>0 )
-                    {
-                        out = "1/"+Double.toString(Math.floor(Math.pow(2,shutter_flt)));
-                    }
-                    else
-                    {
-                        out = Double.toString(1.0/(Math.pow(2,shutter_flt)));
-                    }
-                    */
+                /*
+                String shutter_str = exif.getAttribute(ExifInterface.TAG_SHUTTER_SPEED_VALUE);
+                Float shutter_flt = (Float.parseFloat(shutter_str.split("/")[0]) / Float.parseFloat(shutter_str.split("/")[1]));
+                String out ="";
+                if ( shutter_flt>0 )
+                {
+                    out = "1/"+Double.toString(Math.floor(Math.pow(2,shutter_flt)));
+                }
+                else
+                {
+                    out = Double.toString(1.0/(Math.pow(2,shutter_flt)));
+                }
+                */
 
-        //String shttr_str = exif.getAttribute(ExifInterface.TAG_SHUTTER_SPEED_VALUE);
-        //log(TAG,"shutter_float is" + shutter_flt);
-        Float shutter_speed_float = Float.parseFloat(exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME));
-        DecimalFormat df = new DecimalFormat("00.00000");
-        df.setMaximumFractionDigits(5);
-        String shutter_speed_string = df.format(shutter_speed_float);
+    //String shttr_str = exif.getAttribute(ExifInterface.TAG_SHUTTER_SPEED_VALUE);
+    //log(TAG,"shutter_float is" + shutter_flt);
+    Float shutter_speed_float = Float.parseFloat(exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME));
+    DecimalFormat df = new DecimalFormat("00.00000");
+    df.setMaximumFractionDigits(5);
+    String shutter_speed_string = df.format(shutter_speed_float);
 
-        //File fileold = new File(opath);
-        String opath_new = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" +
-        session_name + "/" + extra +
-        "_iso" +exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) +
-        "_shttr" + shutter_speed_string +
-        "s.jpg";
-        //File filenew = ;
+    //File fileold = new File(opath);
+    String opath_new = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/" +
+    session_name + "/" + extra +
+    "_iso" +exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) +
+    "_shttr" + shutter_speed_string +
+    "s.jpg";
+    //File filenew = ;
 
-        if (!extra.contains("auto_pic")) // save filename for easy retrieve later on
-        {
-        filename_array.add(opath_new);
-        }
-        else
-        {
-        auto_pic = opath_new;
-        }
-        // check for full white pic and replace that with default white jpg to save time
-        Log.d(TAG,"_c" + Integer.toString(number_of_noise_pics)+"_");
+    if (!extra.contains("auto_pic")) // save filename for easy retrieve later on
+    {
+    filename_array.add(opath_new);
+    }
+    else
+    {
+    auto_pic = opath_new;
+    }
+    // check for full white pic and replace that with default white jpg to save time
+    Log.d(TAG,"_c" + Integer.toString(number_of_noise_pics)+"_");
 
-        if (opath_new.contains("_c" + Integer.toString(number_of_noise_pics)+"_"))
-        {
-        log(TAG, "checking for full white");
-        temp_pic2 = new Mat();
-        temp_pic2 = imread(opath);
-        Scalar mean = org.opencv.core.Core.mean(temp_pic2);
-        temp_pic2.release();
-        double new_mean = (mean.val[0] + mean.val[1] + mean.val[2]) / 3.0;
-        //log(TAG, "Average Mean: " + Double.toString(new_mean));
-        if (new_mean == 255.0)
-        {
-        // We can skip these images and replace them with resource white jpg
-        // because they are full white
-        white_picture = opath_new;
-        saved_white_data = data;
+    if (opath_new.contains("_c" + Integer.toString(number_of_noise_pics)+"_"))
+    {
+    log(TAG, "checking for full white");
+    temp_pic2 = new Mat();
+    temp_pic2 = imread(opath);
+    Scalar mean = org.opencv.core.Core.mean(temp_pic2);
+    temp_pic2.release();
+    double new_mean = (mean.val[0] + mean.val[1] + mean.val[2]) / 3.0;
+    //log(TAG, "Average Mean: " + Double.toString(new_mean));
+    if (new_mean == 255.0)
+    {
+    // We can skip these images and replace them with resource white jpg
+    // because they are full white
+    white_picture = opath_new;
+    saved_white_data = data;
 
-        for (int i=current_count; i < numberOfPictures;i=i+2)
-        {
-        bracket_array[i][4] = 0.0;
-        log(TAG, "no pic on: " + Double.toString(i));
-        }
-        }
-        }
-
-
+    for (int i=current_count; i < numberOfPictures;i=i+2)
+    {
+    bracket_array[i][4] = 0.0;
+    log(TAG, "no pic on: " + Double.toString(i));
+    }
+    }
+    }
 
 
-        new File(opath).renameTo(new File(opath_new));
-        log(TAG,"Saving file " + opath_new);
-
-        log(TAG,"Shot with iso " + exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) +" and a shutter of "+  shutter_speed_string + " sec.\n");
-        if(opath_new.contains("_c1_")){
-        new Thread(new average_thread()).start();
-        }
-
-        Log.d(TAG,"EXIF iso value: " + exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS));
-        //Log.d(TAG,"EXIF shutter value " + exif.getAttribute(ExifInterface.TAG_SHUTTER_SPEED_VALUE) + " or " + out + " sec.");
-        Log.d(TAG,"EXIF shutter value/exposure value " + exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME) + " sec.");
-        //Log.d(TAG,"EXIF Color Temp: " + exif.getAttribute(ExifInterface.TAG_WHITE_BALANCE));
-        //Log.d(TAG,"EXIF white point: " + exif.getAttribute(ExifInterface.TAG_WHITE_POINT));
 
 
-        fos.close();
-        //registImage(tname, opath, mcontext, "image/jpeg");
-        } catch (Exception e) {
-        log(TAG,"Begin big error.");
-        e.printStackTrace();
-        log(TAG,"End big error.");
+    new File(opath).renameTo(new File(opath_new));
+    log(TAG,"Saving file " + opath_new);
 
-        }
+    log(TAG,"Shot with iso " + exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) +" and a shutter of "+  shutter_speed_string + " sec.\n");
+    if(opath_new.contains("_c1_")){
+    new Thread(new average_thread()).start();
+    }
 
-        nextShutter();
-        }
-        }
-        };
-        private static String getNowDate(){
-        final DateFormat df = new SimpleDateFormat("HH_mm_ss");
-        final Date date = new Date(System.currentTimeMillis());
-        return df.format(date);
-        }
-
-        private static String getSessionName(){
-        final DateFormat df = new SimpleDateFormat("MM-dd_HH-mm");
-        final Date date = new Date(System.currentTimeMillis());
-        return "HDR" + df.format(date) ;
-        }
-
-        private static void registImage( String Path,Context mcontext  )
-        {
-        File f = new File(Path);
-        ContentValues values = new ContentValues();
-
-        ContentResolver contentResolver = mcontext.getContentResolver();
-
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-        values.put(MediaStore.Images.Media.TITLE, f.getName());
-        values.put("_data", Path);
-        contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        }
+    Log.d(TAG,"EXIF iso value: " + exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS));
+    //Log.d(TAG,"EXIF shutter value " + exif.getAttribute(ExifInterface.TAG_SHUTTER_SPEED_VALUE) + " or " + out + " sec.");
+    Log.d(TAG,"EXIF shutter value/exposure value " + exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME) + " sec.");
+    //Log.d(TAG,"EXIF Color Temp: " + exif.getAttribute(ExifInterface.TAG_WHITE_BALANCE));
+    //Log.d(TAG,"EXIF white point: " + exif.getAttribute(ExifInterface.TAG_WHITE_POINT));
 
 
-        }
+    fos.close();
+    //registImage(tname, opath, mcontext, "image/jpeg");
+    } catch (Exception e) {
+    log(TAG,"Begin big error.");
+    e.printStackTrace();
+    log(TAG,"End big error.");
+
+    }
+
+    nextShutter();
+    }
+    }
+    };
+
+    private static String getNowDate()
+    {
+    final DateFormat df = new SimpleDateFormat("HH_mm_ss");
+    final Date date = new Date(System.currentTimeMillis());
+    return df.format(date);
+    }
+
+    private static String getSessionName()
+    {
+    final DateFormat df = new SimpleDateFormat("MM-dd_HH-mm");
+    final Date date = new Date(System.currentTimeMillis());
+    return "HDR" + df.format(date) ;
+    }
+
+    private static void registImage( String Path,Context mcontext  )
+    {
+    File f = new File(Path);
+    ContentValues values = new ContentValues();
+
+    ContentResolver contentResolver = mcontext.getContentResolver();
+
+    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+    values.put(MediaStore.Images.Media.TITLE, f.getName());
+    values.put("_data", Path);
+    contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        //Intent intent = new Intent("com.theta360.plugin.ACTION_DATABASE_UPDATE");
+        //intent.putExtra("targets", targets);
+        //sendBroadcast(intent);
+
+
+    }
+}
 
 
 

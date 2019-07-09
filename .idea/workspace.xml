@@ -18,7 +18,7 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_LOG_LEVEL" value="verbose" />
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="info" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
     <option name="LOGCAT_FORMAT_STRING" value="%1$s %4$c/%5$s: %6$s" />
   </component>
@@ -81,30 +81,15 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/jarAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/jarAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.externalNativeBuild/ndkBuild/debug/armeabi-v7a/android_gradle_build_app_armeabi-v7a.stdout.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/.externalNativeBuild/ndkBuild/debug/armeabi-v7a/android_gradle_build_app_armeabi-v7a.stdout.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.externalNativeBuild/ndkBuild/debug/x86/android_gradle_build_app_x86.stdout.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/.externalNativeBuild/ndkBuild/debug/x86/android_gradle_build_app_x86.stdout.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.externalNativeBuild/ndkBuild/debug/x86_64/android_gradle_build_app_x86_64.stdout.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/.externalNativeBuild/ndkBuild/debug/x86_64/android_gradle_build_app_x86_64.stdout.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/debug/app-debug.apk" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/outputs/apk/debug/app-debug.apk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/openCVLibrary344/build/generated/source/buildConfig/androidTest/debug/org/opencv/test/BuildConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/openCVLibrary344/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/generateDebugRFile/R.jar" beforeDir="false" afterPath="$PROJECT_DIR$/openCVLibrary344/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/generateDebugRFile/R.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/openCVLibrary344/build/intermediates/incremental/packageDebugResources/compile-file-map.properties" beforeDir="false" afterPath="$PROJECT_DIR$/openCVLibrary344/build/intermediates/incremental/packageDebugResources/compile-file-map.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/openCVLibrary344/build/intermediates/merged_manifests/debugAndroidTest/AndroidManifest.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/openCVLibrary344/build/intermediates/merged_manifests/debugAndroidTest/output.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/openCVLibrary344/openCVLibrary344.iml" beforeDir="false" afterPath="$PROJECT_DIR$/openCVLibrary344/openCVLibrary344.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pluginlibrary/pluginlibrary.iml" beforeDir="false" afterPath="$PROJECT_DIR$/pluginlibrary/pluginlibrary.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pluginlibrary/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pluginlibrary/src/main/AndroidManifest.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -169,67 +154,64 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="116">
-              <caret line="7" selection-start-line="6" selection-start-column="3" selection-end-line="7" />
+            <state relative-caret-position="46">
+              <caret line="34" selection-start-line="34" selection-end-line="34" />
               <folding>
+                <element signature="e#0#74382#0" expanded="true" />
+                <element signature="imports" expanded="true" />
                 <element signature="initializer##0;class#MainActivity#0" />
-                <element signature="e#7622#9067#0" />
-                <element signature="e#9073#9297#0" />
-                <element signature="e#9303#10572#0" />
-                <element signature="e#10579#11767#0" />
-                <element signature="e#11774#12039#0" />
-                <marker date="1562231103014" expanded="false" signature="5904:7370" ph="..." />
-                <marker date="1562231103014" expanded="false" signature="42695:48510" ph="..." />
+                <element signature="e#7777#7840#1" />
+                <element signature="e#9372#9596#0" />
+                <element signature="e#9602#10871#0" />
+                <element signature="e#10878#12066#0" />
+                <element signature="e#12073#12338#0" />
+                <element signature="e#12345#13079#0" />
+                <element signature="e#13085#13278#0" />
+                <element signature="e#13284#14038#0" />
+                <element signature="e#14044#14199#0" />
+                <element signature="e#14205#14359#0" />
+                <element signature="e#12911#14481#0" />
+                <element signature="class#13419:14474" />
+                <element signature="e#14483#14870#0" />
+                <element signature="e#13945#13996#0" />
+                <element signature="e#14920#15582#0" />
+                <element signature="e#15584#16003#0" />
+                <element signature="e#16005#16640#0" />
+                <element signature="e#16642#17435#0" />
+                <element signature="e#17468#41920#0" />
+                <element signature="e#19702#43521#0" />
+                <element signature="e#41912#44054#0" />
+                <element signature="e#44064#46176#0" />
+                <element signature="e#46187#47252#0" />
+                <element signature="e#47261#62611#0" />
+                <element signature="e#62620#62876#0" />
+                <element signature="class#70391:81742" />
+                <element signature="e#74300#74505#0" />
+                <element signature="e#74515#74736#0" />
+                <element signature="e#74746#75423#0" />
+                <marker date="1562697373386" expanded="false" signature="5256:6691" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="279">
-              <caret line="20" column="32" selection-start-line="20" selection-start-column="8" selection-end-line="20" selection-end-column="32" />
+            <state relative-caret-position="126">
+              <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
             </state>
           </provider>
           <provider editor-type-id="android-manifest" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pluginlibrary/src/main/AndroidManifest.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="54">
-              <caret line="3" column="41" selection-start-line="3" selection-start-column="41" selection-end-line="3" selection-end-column="41" />
-            </state>
-          </provider>
-          <provider editor-type-id="android-manifest" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/app.iml">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/build.gradle">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="5" column="35" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
-            </state>
-          </provider>
         </entry>
       </file>
     </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>inttostr</find>
-      <find>shutterSpeedSpacing</find>
-      <find>shutterSpeedValue</find>
-      <find>images</find>
       <find>images_before_avg</find>
       <find>LoadText</find>
       <find>getParameters()</find>
@@ -256,6 +238,10 @@
       <find>Average</find>
       <find>sec</find>
       <find>Y</find>
+      <find>AUDIO</find>
+      <find>ACTION_AUDIO_SH_OPEN</find>
+      <find>KEYCODE_CAMERA</find>
+      <find>KeyReceiver</find>
     </findStrings>
     <replaceStrings>
       <replace>log</replace>
@@ -278,15 +264,17 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/settings.gradle" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
-        <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/pluginlibrary/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="width" value="1440" />
-    <option name="height" value="900" />
+    <option name="x" value="35" />
+    <option name="y" value="23" />
+    <option name="width" value="1405" />
+    <option name="height" value="877" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -294,17 +282,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="AndroidView">
-        <subPane>
-          <expand>
-            <path>
-              <item name="Authydra" type="1abcf292:AndroidViewProjectNode" />
-              <item name="app" type="feadf853:AndroidModuleNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -321,12 +298,6 @@
               <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
               <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="build" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -335,6 +306,14 @@
               <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="assets" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
@@ -353,54 +332,16 @@
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="authydra" type="462c0819:PsiDirectoryNode" />
             </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="AndroidView">
+        <subPane>
+          <expand>
             <path>
-              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="pluginlibrary" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-            </path>
-            <path>
-              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="pluginlibrary" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="pluginlibrary" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="androidTest" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="pluginlibrary" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="pluginlibrary" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="pluginlibrary" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="pluginlibrary" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="pluginlibrary" type="462c0819:PsiDirectoryNode" />
+              <item name="Authydra" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
             </path>
           </expand>
           <select />
@@ -618,14 +559,22 @@
       <option name="project" value="LOCAL" />
       <updated>1562226658812</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Some name stuff internally and added nice picture to webinterface">
+      <created>1562231273394</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1562231273394</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.22103004" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.1788269" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" side_tool="true" />
@@ -633,15 +582,15 @@
       <window_info id="Designer" order="6" />
       <window_info id="Capture Tool" order="7" />
       <window_info id="Resources Explorer" order="8" />
-      <window_info anchor="bottom" id="Run" order="0" weight="0.32771084" />
+      <window_info anchor="bottom" id="Run" order="0" weight="0.32694355" />
       <window_info anchor="bottom" id="Debug" order="1" weight="0.32891566" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="2" sideWeight="0.49928468" visible="true" weight="0.31325302" />
-      <window_info anchor="bottom" id="Logcat" order="3" sideWeight="0.49963316" weight="0.3493976" />
+      <window_info anchor="bottom" id="Version Control" order="2" sideWeight="0.49928468" weight="0.32218093" />
+      <window_info anchor="bottom" id="Logcat" order="3" sideWeight="0.49963316" weight="0.31445783" />
       <window_info anchor="bottom" id="TODO" order="4" />
       <window_info anchor="bottom" id="Terminal" order="5" weight="0.32771084" />
       <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.5007153" side_tool="true" weight="0.30963856" />
-      <window_info anchor="bottom" id="Build" order="7" sideWeight="0.49928468" weight="0.3120482" />
-      <window_info anchor="bottom" id="Device File Explorer" order="8" weight="0.2554974" />
+      <window_info anchor="bottom" id="Build" order="7" sideWeight="0.49928468" weight="0.30963856" />
+      <window_info anchor="bottom" id="Device File Explorer" order="8" visible="true" weight="0.27831325" />
       <window_info anchor="right" id="Android Profiler" order="0" sideWeight="0.502693" side_tool="true" weight="0.28145337" />
       <window_info anchor="right" id="Capture Analysis" order="1" />
       <window_info anchor="right" id="Gradle" order="2" weight="0.3297568" />
@@ -705,10 +654,10 @@
     <MESSAGE value="disabled shutter_speed_tag so now should be ready for firmware version 3.00" />
     <MESSAGE value="version 1 of Authydra" />
     <MESSAGE value="small update, main difference is that you no longer need the refresh button when shooting is in progress." />
-    <option name="LAST_COMMIT_MESSAGE" value="small update, main difference is that you no longer need the refresh button when shooting is in progress." />
+    <MESSAGE value="Some name stuff internally and added nice picture to webinterface" />
+    <option name="LAST_COMMIT_MESSAGE" value="Some name stuff internally and added nice picture to webinterface" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_v-00114247/DCIM/0/DCIM/100RICOH/S190406_2010/avg_0.jpg" />
     <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_v-00114247/DCIM/0/DCIM/100RICOH/S190413_1858/i00_m0_c2_iso64_shutter00.20000sec.jpg" />
     <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_v-00114247/DCIM/0/DCIM/100RICOH/S190413_1858/i00_m0_c3_iso64_shutter00.20000sec.jpg" />
     <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_v-00114247/DCIM/0/DCIM/100RICOH/S190413_1858/i00_m0_avg_iso64_shutter00.20000sec.jpg" />
@@ -732,8 +681,8 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/camera_main.xml">
-      <provider selected="true" editor-type-id="text-editor" />
       <provider editor-type-id="android-designer2" />
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kasper/hdr4exr/MainActivity.java" />
     <entry file="file://$PROJECT_DIR$/.gitignore" />
@@ -754,7 +703,6 @@
       <provider selected="true" editor-type-id="text-editor" />
       <provider editor-type-id="android-manifest" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/assets/settings.json" />
     <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.nanohttpd/nanohttpd/2.3.1/c820129da77c30b2e4ea1cea619d7f589a17bcdd/nanohttpd-2.3.1-sources.jar!/fi/iki/elonen/NanoHTTPD.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="197">
@@ -783,22 +731,12 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/submit-to-ricoh/1.png" />
-    <entry file="file://$PROJECT_DIR$/app/Android.mk">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
           <caret line="15" selection-start-line="15" selection-end-line="15" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/proguard-rules.pro">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/Authydra">
       <provider selected="true" editor-type-id="text-editor" />
@@ -836,23 +774,8 @@
     <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="5" column="35" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/app.iml">
+    <entry file="file://$PROJECT_DIR$/app/src/main/assets/settings.json">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="279">
-          <caret line="20" column="32" selection-start-line="20" selection-start-column="8" selection-end-line="20" selection-end-column="32" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-manifest" />
     </entry>
     <entry file="file://$PROJECT_DIR$/pluginlibrary/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
@@ -862,22 +785,82 @@
       </provider>
       <provider editor-type-id="android-manifest" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/app.iml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-352">
+          <caret line="5" column="35" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/proguard-rules.pro">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Android.mk">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity copy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="142" column="7" selection-start-line="142" selection-start-column="7" selection-end-line="142" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="116">
-          <caret line="7" selection-start-line="6" selection-start-column="3" selection-end-line="7" />
+        <state relative-caret-position="46">
+          <caret line="34" selection-start-line="34" selection-end-line="34" />
           <folding>
+            <element signature="e#0#74382#0" expanded="true" />
+            <element signature="imports" expanded="true" />
             <element signature="initializer##0;class#MainActivity#0" />
-            <element signature="e#7622#9067#0" />
-            <element signature="e#9073#9297#0" />
-            <element signature="e#9303#10572#0" />
-            <element signature="e#10579#11767#0" />
-            <element signature="e#11774#12039#0" />
-            <marker date="1562231103014" expanded="false" signature="5904:7370" ph="..." />
-            <marker date="1562231103014" expanded="false" signature="42695:48510" ph="..." />
+            <element signature="e#7777#7840#1" />
+            <element signature="e#9372#9596#0" />
+            <element signature="e#9602#10871#0" />
+            <element signature="e#10878#12066#0" />
+            <element signature="e#12073#12338#0" />
+            <element signature="e#12345#13079#0" />
+            <element signature="e#13085#13278#0" />
+            <element signature="e#13284#14038#0" />
+            <element signature="e#14044#14199#0" />
+            <element signature="e#14205#14359#0" />
+            <element signature="e#12911#14481#0" />
+            <element signature="class#13419:14474" />
+            <element signature="e#14483#14870#0" />
+            <element signature="e#13945#13996#0" />
+            <element signature="e#14920#15582#0" />
+            <element signature="e#15584#16003#0" />
+            <element signature="e#16005#16640#0" />
+            <element signature="e#16642#17435#0" />
+            <element signature="e#17468#41920#0" />
+            <element signature="e#19702#43521#0" />
+            <element signature="e#41912#44054#0" />
+            <element signature="e#44064#46176#0" />
+            <element signature="e#46187#47252#0" />
+            <element signature="e#47261#62611#0" />
+            <element signature="e#62620#62876#0" />
+            <element signature="class#70391:81742" />
+            <element signature="e#74300#74505#0" />
+            <element signature="e#74515#74736#0" />
+            <element signature="e#74746#75423#0" />
+            <marker date="1562697373386" expanded="false" signature="5256:6691" ph="..." />
           </folding>
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+      <provider editor-type-id="android-manifest" />
     </entry>
   </component>
 </project>
