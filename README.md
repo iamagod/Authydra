@@ -42,13 +42,13 @@ https://plugin-dev-quickstart.readthedocs.io/en/latest/index.html
 Now either push the photo button. You have 5 seconds to run away and hide, else you are in the picture.
 Or connect you phone/laptop/tablet/... to the wifi of the ricoh theta and goto http://192.168.1.1:8888 and choose your setting and press the take picture button.
 
-3) The Wifi logo turns greens and the theta makes picture taking sounds. Depending on your settings it starts taking pictures.
-When using the webinterface you are taken to a page that shows a refresh button, when pressed it wil show what the camera is doing.
+3) The Wifi logo turns greens and the theta makes pictures and optionally makes sounds.
+When using the webinterface you are taken to a page that shows the progress of the process, also there is a low res version of the pictures you are taking.
 
 4) After the picture taking the wifi logo will blink red and blue. You can now move or pick up the camera. It is busy merging the pictures.
 This takes about one or two minutes. When it is done it makes a sound and the wifi logo turn magenta again. The webinterface will return to the settings page.
 
-5) Use the webinterface to download (and or delete) the pictures. Or connect camera to a computer to download the pictures.
+5) Use the webinterface to download (and or delete) the pictures. You can view the jpg of picture in 360 by pressing the filename in the file manage menu.
 
 
 ***Good to know***
@@ -63,32 +63,26 @@ If you want to build it for yourself make sure to change the file paths in the A
 - The picture taking part is largely based on the work of Ichi Hirota’s dual-fisheye plug-in <https://github.com/theta360developers/original-dual-fisheye-plugin>
 - The integration of OpenCV is a combination of <https://community.theta360.guide/t/ricoh-blog-post-running-opencv-in-your-ricoh-theta/4084> and <https://www.learn2crack.com/2016/03/setup-opencv-sdk-android-studio.html> and a lot of trail and error!
 - The HDR part is based on https://www.learnopencv.com/high-dynamic-range-hdr-imaging-using-opencv-cpp-python/
+- The view in 360 is done using the great kaleidoscope library <https://github.com/thiagopnts/kaleidoscope> by Thiago Pontes
 
 Feel free to change, improve and of course use!
 
 Let me know what you think and run into!
 
 
-
-
-  * TODO ideas
-  * - export default python script to recreate hdri offline?
-  * - support opencv 4
-  * - fix black hole sun
-  * - support Z1
-  * - support tonemapped jpg in theta default app -> no idea why it doesn't work, maybe something with adding right exif data but maybe not.
-  *
-  *
-  * TODO v2.1
-  * - log counter of progress
-  * - calibrate auto stop jumps
-  * - better layout of webinterface
-  * - turn sound on/off
-  * - turn iso looping on/off
-  * - name session
-  * - viewer
-  * - dng support
-  * - disk space warnings
+ * TODO ideas
+ * export default python script to recreate hdri offline?
+ * support opencv 4
+ * fix black hole sun
+ * support Z1
+ * dng support
+ * support tonemapped jpg in theta default app -> no idea why it doesn't work, maybe something with adding right exif data but maybe not.
+ *
+ *
+ * TODO v2.1
+ * total time calculator
+ * update database intent thingy
+ * add abort button (with option to delete)
 
  
 

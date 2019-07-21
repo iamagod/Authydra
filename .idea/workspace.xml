@@ -18,8 +18,8 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_LOG_LEVEL" value="debug" />
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="info" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Authydra" />
     <option name="LOGCAT_FORMAT_STRING" value="%1$s %4$c/%5$s: %6$s" />
   </component>
   <component name="AvailableLibraryUpdateStorage">
@@ -77,7 +77,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4aa2ed84-c706-4c54-a4e8-ce1094f29c54" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/assets/kaleidoscope.min.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" afterDir="false" />
@@ -85,25 +84,10 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/debug/app-debug.apk" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/outputs/apk/debug/app-debug.apk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/openCVLibrary344/openCVLibrary344.iml" beforeDir="false" afterPath="$PROJECT_DIR$/openCVLibrary344/openCVLibrary344.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pluginlibrary/pluginlibrary.iml" beforeDir="false" afterPath="$PROJECT_DIR$/pluginlibrary/pluginlibrary.iml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -168,82 +152,92 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="200">
-              <caret line="25" column="27" selection-start-line="25" selection-start-column="27" selection-end-line="25" selection-end-column="27" />
+            <state relative-caret-position="361">
+              <caret line="30" column="35" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
               <folding>
-                <element signature="e#6686#8752#0" />
-                <element signature="e#10346#10690#0" />
+                <element signature="e#7874#11518#0" />
+                <element signature="e#11579#12530#0" />
                 <element signature="initializer##0;class#MainActivity#0" />
-                <element signature="e#9007#9235#0" />
-                <element signature="e#9241#10514#0" />
-                <element signature="e#10520#11682#0" />
-                <element signature="e#11688#11957#0" />
-                <element signature="e#14813#15032#0" />
-                <element signature="e#15038#15260#0" />
-                <element signature="e#15266#15600#0" />
-                <element signature="e#15743#16595#0" />
-                <element signature="e#16656#17698#0" />
-                <element signature="e#11963#12697#0" />
-                <element signature="e#12703#12896#0" />
-                <element signature="e#10768#11522#0" />
-                <element signature="e#11528#11683#0" />
-                <element signature="e#11689#11843#0" />
-                <element signature="e#13983#15595#0" />
-                <element signature="e#15601#16048#0" />
-                <element signature="e#16054#16113#0" />
-                <element signature="e#16119#16861#0" />
-                <element signature="e#16867#17350#0" />
-                <element signature="e#17356#18055#0" />
-                <element signature="e#18061#18950#0" />
-                <element signature="e#17312#17398#0" />
-                <element signature="e#31857#32495#1" />
-                <element signature="e#27836#32241#1" />
-                <element signature="e#35917#37191#1" />
-                <element signature="e#37243#37780#1" />
-                <element signature="e#34076#38764#1" />
-                <element signature="e#37031#39028#1" />
-                <element signature="e#35419#37439#1" />
-                <element signature="e#36694#43928#1" />
-                <element signature="e#42067#42906#1" />
-                <element signature="e#42936#43139#1" />
-                <element signature="e#45571#59414#1" />
-                <element signature="e#58089#58611#0" />
-                <element signature="e#58617#58992#0" />
-                <element signature="e#58998#59197#0" />
-                <element signature="e#59203#59336#0" />
-                <element signature="e#59342#59867#0" />
-                <element signature="e#59873#60171#0" />
-                <element signature="e#56942#58942#0" />
-                <element signature="e#56501#57577#0" />
-                <element signature="e#57583#57870#0" />
-                <element signature="e#60292#60486#0" />
-                <element signature="e#60492#60702#0" />
-                <element signature="e#60708#61400#0" />
-                <element signature="e#44361#46367#0" />
-                <element signature="e#76068#78107#0" />
-                <element signature="e#76307#76520#1" />
-                <element signature="e#76542#77557#1" />
-                <element signature="class#79828:99103" />
-                <element signature="e#78648#87489#1" />
-                <element signature="e#79128#79775#1" />
-                <element signature="e#81027#81574#1" />
-                <element signature="e#81612#81694#1" />
-                <element signature="e#87561#88709#1" />
-                <element signature="e#90545#91512#1" />
-                <element signature="e#92608#92745#0" />
-                <element signature="e#92849#94924#1" />
+                <element signature="e#12855#13083#0" />
+                <element signature="e#13089#14362#0" />
+                <element signature="e#13256#14244#0" />
+                <element signature="e#13525#13620#1" />
+                <element signature="e#13626#14209#1" />
+                <element signature="e#14129#14195#1" />
+                <element signature="e#14265#14335#0" />
+                <element signature="e#14368#15530#0" />
+                <element signature="e#14632#15524#1" />
+                <element signature="e#14670#14742#1" />
+                <element signature="e#14748#15514#1" />
+                <element signature="e#15402#15468#1" />
+                <element signature="e#15536#15805#0" />
+                <element signature="e#15811#16147#0" />
+                <element signature="e#16153#16492#0" />
+                <element signature="e#16498#16957#0" />
+                <element signature="e#17075#17927#0" />
+                <element signature="e#17933#19041#0" />
+                <element signature="e#19882#20075#0" />
+                <element signature="e#20081#20835#0" />
+                <element signature="e#20841#20996#0" />
+                <element signature="e#21002#21156#0" />
+                <element signature="e#21162#23102#0" />
+                <element signature="e#23108#23555#0" />
+                <element signature="e#23561#23620#0" />
+                <element signature="e#23626#24368#0" />
+                <element signature="e#24374#24857#0" />
+                <element signature="e#24863#25562#0" />
+                <element signature="e#25568#26457#0" />
+                <element signature="e#26589#26687#0" />
+                <element signature="e#27265#27903#1" />
+                <element signature="e#27955#28497#1" />
+                <element signature="e#27951#32710#1" />
+                <element signature="e#32762#34036#1" />
+                <element signature="e#34088#34625#1" />
+                <element signature="e#34675#39595#1" />
+                <element signature="e#39649#41646#1" />
+                <element signature="e#41692#43694#1" />
+                <element signature="e#48189#62032#1" />
+                <element signature="e#62045#62567#0" />
+                <element signature="e#62573#62933#0" />
+                <element signature="e#62939#63138#0" />
+                <element signature="e#63144#63277#0" />
+                <element signature="e#63283#63808#0" />
+                <element signature="e#63814#64112#0" />
+                <element signature="e#64118#66118#0" />
+                <element signature="e#66124#67200#0" />
+                <element signature="e#67206#67493#0" />
+                <element signature="e#67499#67705#0" />
+                <element signature="e#67711#67933#0" />
+                <element signature="e#67939#68671#0" />
+                <element signature="e#68677#70765#0" />
+                <element signature="e#70771#72890#0" />
+                <element signature="e#71055#71284#1" />
+                <element signature="e#74690#88123#0" />
+                <element signature="class#87948:107205" />
+                <element signature="e#96774#98114#1" />
+                <element signature="e#100142#101261#1" />
+                <element signature="e#102738#104954#1" />
                 <element signature="class#Base64Coder#0" />
-                <marker date="1563569838993" expanded="false" signature="6299:7752" ph="..." />
-                <marker date="1563569838993" expanded="false" signature="49338:59481" ph="..." />
+                <marker date="1563656073377" expanded="false" signature="6305:7758" ph="..." />
+                <marker date="1563656073377" expanded="false" signature="51606:61749" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="408">
+              <caret line="89" selection-start-line="89" selection-end-line="89" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="162">
@@ -271,7 +265,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Log.i</find>
       <find>noise_count</find>
       <find>for</find>
       <find>session_name</find>
@@ -301,6 +294,7 @@
       <find>split(</find>
       <find>endTime</find>
       <find>AUDIO</find>
+      <find>abort</find>
     </findStrings>
     <replaceStrings>
       <replace>log</replace>
@@ -321,12 +315,12 @@
         <option value="$PROJECT_DIR$/pluginlibrary/build.gradle" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kasper/hdr2exr/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/Android.mk" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/settings.gradle" />
         <option value="$PROJECT_DIR$/pluginlibrary/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -432,32 +426,6 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="authydra" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="res" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="res" type="462c0819:PsiDirectoryNode" />
-              <item name="mipmap-xxxhdpi" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="res" type="462c0819:PsiDirectoryNode" />
-              <item name="raw" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -689,14 +657,21 @@
       <option name="project" value="LOCAL" />
       <updated>1562698203491</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary=" * Done:&#10; * simpel 360 viewer on jpg&#10; * added nice icon&#10; * added a sound checkbox&#10; * fixed disk size not working&#10; * added a log with times on camera&#10; * add auto pic to refresh page&#10; * made log text simpeler showing where we are in progress&#10; * propabily fixed very dark settings error&#10; * disk space warnings&#10; * better layout of webinterface&#10; * add Z1 resolution setting&#10; * add better jpeg compression&#10; * add a pictures done popup with time&#10; * fixed very large picture on webinterface">
+      <created>1563570160370</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1563570160370</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="1487" y="-154" width="1680" height="996" extended-state="0" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.17826618" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.17826618" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" side_tool="true" />
@@ -706,8 +681,8 @@
       <window_info id="Resources Explorer" order="8" />
       <window_info anchor="bottom" id="Run" order="0" weight="0.32694355" />
       <window_info anchor="bottom" id="Debug" order="1" weight="0.32891566" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="2" sideWeight="0.49928468" visible="true" weight="0.32079646" />
-      <window_info anchor="bottom" id="Logcat" order="3" sideWeight="0.49963316" weight="0.2909292" />
+      <window_info anchor="bottom" id="Version Control" order="2" sideWeight="0.49928468" visible="true" weight="0.1659292" />
+      <window_info anchor="bottom" id="Logcat" order="3" sideWeight="0.49963316" weight="0.30641592" />
       <window_info anchor="bottom" id="TODO" order="4" />
       <window_info anchor="bottom" id="Terminal" order="5" weight="0.32743362" />
       <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.5007153" side_tool="true" weight="0.30963856" />
@@ -778,7 +753,8 @@
     <MESSAGE value="small update, main difference is that you no longer need the refresh button when shooting is in progress." />
     <MESSAGE value="Some name stuff internally and added nice picture to webinterface" />
     <MESSAGE value="Fixed closing error" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed closing error" />
+    <MESSAGE value=" * Done:&#10; * simpel 360 viewer on jpg&#10; * added nice icon&#10; * added a sound checkbox&#10; * fixed disk size not working&#10; * added a log with times on camera&#10; * add auto pic to refresh page&#10; * made log text simpeler showing where we are in progress&#10; * propabily fixed very dark settings error&#10; * disk space warnings&#10; * better layout of webinterface&#10; * add Z1 resolution setting&#10; * add better jpeg compression&#10; * add a pictures done popup with time&#10; * fixed very large picture on webinterface" />
+    <option name="LAST_COMMIT_MESSAGE" value=" * Done:&#10; * simpel 360 viewer on jpg&#10; * added nice icon&#10; * added a sound checkbox&#10; * fixed disk size not working&#10; * added a log with times on camera&#10; * add auto pic to refresh page&#10; * made log text simpeler showing where we are in progress&#10; * propabily fixed very dark settings error&#10; * disk space warnings&#10; * better layout of webinterface&#10; * add Z1 resolution setting&#10; * add better jpeg compression&#10; * add a pictures done popup with time&#10; * fixed very large picture on webinterface" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_v-00114247/DCIM/0/DCIM/100RICOH/S190413_1915/i00_m0_c1_iso64_shutter00.33333sec.jpg">
@@ -851,13 +827,6 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/submit-to-ricoh/1.png" />
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="15" selection-start-line="15" selection-end-line="15" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Authydra">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -936,79 +905,6 @@
     <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_v-00114247/DCIM/0/DCIM/100RICOH/shots_log.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="25" column="27" selection-start-line="25" selection-start-column="27" selection-end-line="25" selection-end-column="27" />
-          <folding>
-            <element signature="e#6686#8752#0" />
-            <element signature="e#10346#10690#0" />
-            <element signature="initializer##0;class#MainActivity#0" />
-            <element signature="e#9007#9235#0" />
-            <element signature="e#9241#10514#0" />
-            <element signature="e#10520#11682#0" />
-            <element signature="e#11688#11957#0" />
-            <element signature="e#14813#15032#0" />
-            <element signature="e#15038#15260#0" />
-            <element signature="e#15266#15600#0" />
-            <element signature="e#15743#16595#0" />
-            <element signature="e#16656#17698#0" />
-            <element signature="e#11963#12697#0" />
-            <element signature="e#12703#12896#0" />
-            <element signature="e#10768#11522#0" />
-            <element signature="e#11528#11683#0" />
-            <element signature="e#11689#11843#0" />
-            <element signature="e#13983#15595#0" />
-            <element signature="e#15601#16048#0" />
-            <element signature="e#16054#16113#0" />
-            <element signature="e#16119#16861#0" />
-            <element signature="e#16867#17350#0" />
-            <element signature="e#17356#18055#0" />
-            <element signature="e#18061#18950#0" />
-            <element signature="e#17312#17398#0" />
-            <element signature="e#31857#32495#1" />
-            <element signature="e#27836#32241#1" />
-            <element signature="e#35917#37191#1" />
-            <element signature="e#37243#37780#1" />
-            <element signature="e#34076#38764#1" />
-            <element signature="e#37031#39028#1" />
-            <element signature="e#35419#37439#1" />
-            <element signature="e#36694#43928#1" />
-            <element signature="e#42067#42906#1" />
-            <element signature="e#42936#43139#1" />
-            <element signature="e#45571#59414#1" />
-            <element signature="e#58089#58611#0" />
-            <element signature="e#58617#58992#0" />
-            <element signature="e#58998#59197#0" />
-            <element signature="e#59203#59336#0" />
-            <element signature="e#59342#59867#0" />
-            <element signature="e#59873#60171#0" />
-            <element signature="e#56942#58942#0" />
-            <element signature="e#56501#57577#0" />
-            <element signature="e#57583#57870#0" />
-            <element signature="e#60292#60486#0" />
-            <element signature="e#60492#60702#0" />
-            <element signature="e#60708#61400#0" />
-            <element signature="e#44361#46367#0" />
-            <element signature="e#76068#78107#0" />
-            <element signature="e#76307#76520#1" />
-            <element signature="e#76542#77557#1" />
-            <element signature="class#79828:99103" />
-            <element signature="e#78648#87489#1" />
-            <element signature="e#79128#79775#1" />
-            <element signature="e#81027#81574#1" />
-            <element signature="e#81612#81694#1" />
-            <element signature="e#87561#88709#1" />
-            <element signature="e#90545#91512#1" />
-            <element signature="e#92608#92745#0" />
-            <element signature="e#92849#94924#1" />
-            <element signature="class#Base64Coder#0" />
-            <marker date="1563569838993" expanded="false" signature="6299:7752" ph="..." />
-            <marker date="1563569838993" expanded="false" signature="49338:59481" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="108">
@@ -1023,6 +919,87 @@
         </state>
       </provider>
       <provider editor-type-id="android-manifest" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="89" selection-start-line="89" selection-end-line="89" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="361">
+          <caret line="30" column="35" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
+          <folding>
+            <element signature="e#7874#11518#0" />
+            <element signature="e#11579#12530#0" />
+            <element signature="initializer##0;class#MainActivity#0" />
+            <element signature="e#12855#13083#0" />
+            <element signature="e#13089#14362#0" />
+            <element signature="e#13256#14244#0" />
+            <element signature="e#13525#13620#1" />
+            <element signature="e#13626#14209#1" />
+            <element signature="e#14129#14195#1" />
+            <element signature="e#14265#14335#0" />
+            <element signature="e#14368#15530#0" />
+            <element signature="e#14632#15524#1" />
+            <element signature="e#14670#14742#1" />
+            <element signature="e#14748#15514#1" />
+            <element signature="e#15402#15468#1" />
+            <element signature="e#15536#15805#0" />
+            <element signature="e#15811#16147#0" />
+            <element signature="e#16153#16492#0" />
+            <element signature="e#16498#16957#0" />
+            <element signature="e#17075#17927#0" />
+            <element signature="e#17933#19041#0" />
+            <element signature="e#19882#20075#0" />
+            <element signature="e#20081#20835#0" />
+            <element signature="e#20841#20996#0" />
+            <element signature="e#21002#21156#0" />
+            <element signature="e#21162#23102#0" />
+            <element signature="e#23108#23555#0" />
+            <element signature="e#23561#23620#0" />
+            <element signature="e#23626#24368#0" />
+            <element signature="e#24374#24857#0" />
+            <element signature="e#24863#25562#0" />
+            <element signature="e#25568#26457#0" />
+            <element signature="e#26589#26687#0" />
+            <element signature="e#27265#27903#1" />
+            <element signature="e#27955#28497#1" />
+            <element signature="e#27951#32710#1" />
+            <element signature="e#32762#34036#1" />
+            <element signature="e#34088#34625#1" />
+            <element signature="e#34675#39595#1" />
+            <element signature="e#39649#41646#1" />
+            <element signature="e#41692#43694#1" />
+            <element signature="e#48189#62032#1" />
+            <element signature="e#62045#62567#0" />
+            <element signature="e#62573#62933#0" />
+            <element signature="e#62939#63138#0" />
+            <element signature="e#63144#63277#0" />
+            <element signature="e#63283#63808#0" />
+            <element signature="e#63814#64112#0" />
+            <element signature="e#64118#66118#0" />
+            <element signature="e#66124#67200#0" />
+            <element signature="e#67206#67493#0" />
+            <element signature="e#67499#67705#0" />
+            <element signature="e#67711#67933#0" />
+            <element signature="e#67939#68671#0" />
+            <element signature="e#68677#70765#0" />
+            <element signature="e#70771#72890#0" />
+            <element signature="e#71055#71284#1" />
+            <element signature="e#74690#88123#0" />
+            <element signature="class#87948:107205" />
+            <element signature="e#96774#98114#1" />
+            <element signature="e#100142#101261#1" />
+            <element signature="e#102738#104954#1" />
+            <element signature="class#Base64Coder#0" />
+            <marker date="1563656073377" expanded="false" signature="6305:7758" ph="..." />
+            <marker date="1563656073377" expanded="false" signature="51606:61749" ph="..." />
+          </folding>
+        </state>
+      </provider>
     </entry>
   </component>
 </project>
