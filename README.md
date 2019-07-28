@@ -71,21 +71,16 @@ Let me know what you think and run into!
 
 
  * TODO ideas
- * export default python script to recreate hdri offline?
- * support opencv 4
- * fix black hole sun
- * support Z1
- * dng support
- * support tonemapped jpg in theta default app -> no idea why it doesn't work, maybe something with adding right exif data but maybe not.
- *
- *
- * TODO v2.1
- * total time calculator
- * update database intent thingy
- * add abort button (with option to delete)
-
- 
-
+  * export default python script to recreate hdri offline?
+  * support opencv 4
+  * fully support Z1
+  * dng support -> split in two exposures
+  * support tonemapped jpg in theta default app
+  *
+  * TODO v2.1
+  * total time calculator
+  * add abort button (with option to delete)
+  * fix black hole sun
  
 
  

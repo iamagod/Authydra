@@ -10,19 +10,20 @@
  * TODO ideas
  * export default python script to recreate hdri offline?
  * support opencv 4
- * fix black hole sun
- * support Z1
- * dng support
- * support tonemapped jpg in theta default app -> no idea why it doesn't work, maybe something with adding right exif data but maybe not.
- *
+ * fully support Z1
+ * dng support -> split in two exposures
+ * support tonemapped jpg in theta default app
  *
  * TODO v2.1
- *
  * total time calculator
  * add abort button (with option to delete)
+ * fix black hole sun
  *
  * Done:
+ * better font
  * added divider per day in file menu
+ * sound on/off fix
+ * z1 9 bracket
  *
  * simpel 360 viewer on jpg
  * added nice icon
@@ -568,6 +569,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             log(TAG, "Set Z1 resolution");
             cols = 6720;
             rows = 3360;
+
+            numberOfPictures = 9;
         }
 
         log(TAG,"Available disk space is: "+bytesToHuman(free_disk())+" " +free_disk());
@@ -801,7 +804,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     "margin: 2px 1px;" +
                     "cursor: pointer;" +
                     "}</style>" +
-                    "<body style='background-color:black;'><font color='white'><center><h1>Manage Files</h1></center>";
+                    "<body style='background-color:black;color:white; font-family:arial;' ><center><h1>Manage Files</h1></center>";
             String txt_color = "white";
             if (free_disk()<250000000)
             {
@@ -905,7 +908,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     "cursor: pointer;" +
                     "}</style>" +
 
-                    "<html><body style='background-color:black;'><font color='white'>"+
+                    "<html><body style='background-color:black;color:white; font-family:arial;' >"+
                     "<center><h1>Delete:</h1>"+ name +"?<br><br><br>"+
             "<a href='http://192.168.1.1:8888/delyes=" + name + "'> <input type='button' class='abutton' value='YES'>" +
             "<a href='http://192.168.1.1:8888/files'> <input type='button' class='abutton' value='NO'>" +
@@ -1124,7 +1127,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 taking_pics = true;
                 message_log = "";
                 msg = "<meta http-equiv='refresh' content='0.5; URL=http://192.168.1.1:8888/refresh'>"+
-                        "<html><body style='background-color:black;'><font color='white'><h1>Busy taking pictures</h1><br>Doing:<br>" ;
+                        "<html><body style='background-color:black;color:white; font-family:arial;' ><h1>Busy taking pictures</h1><br>Doing:<br>" ;
                 //"<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form></font></body></html>";
                 return newFixedLengthResponse(msg );
             }
@@ -1173,7 +1176,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                         "  border: 1px solid white; color: white;\n" +
                         "}\n" +
                         "</style>"+
-                        "<html><body style='background-color:black;'><font color='white'>" +
+                        "<html><body style='background-color:black;color:white; font-family:arial;' >"+
                         "<center><h1>Busy taking pictures<br><br>";
                 if (!Processing)
                 {
@@ -1281,7 +1284,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             "margin: 2px 1px;" +
             "cursor: pointer;" +
             "}</style>" +
-            "<body style='background-color:black;'><font color='white'>"+
+            "<body style='background-color:black;color:white; font-family:arial;' >"+
             "<center><h1>Authydra</h1>"+
             "<svg version='1.1' width='60%'" +
             "viewBox='0 0 885.22 720' style='enable-background:new 0 0 885.22 720;' xml:space='preserve'>" +
@@ -1382,11 +1385,19 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             "<option value='5'>5</option>" +
             "<option value='6'>6</option>" +
             "<option value='7'>7</option>" +
-            "<option value='8'>8</option>" +
-            "<option value='9'>9</option>" +
-            "<option value='10'>10</option>" +
-            "<option selected='selected' value='11'>11</option>" +
-            "</select><br><br>" +
+            "<option value='8'>8</option>";
+
+            if (Build.MODEL.equals("RICOH THETA Z1"))
+            {
+               msg += "<option selected='selected' value='9'>9</option>";
+            }
+            else
+            {
+                msg += "<option value='9'>9</option>"+
+                "<option value='10'>10</option>" +
+                "<option selected='selected' value='11'>11</option>" ;
+            }
+            msg+= "</select><br><br>" +
             "Number of denoise pictures: <select class='abutton' name='denoise'>" +
             "<option value='1'>1</option>" +
             "<option value='2'>2</option>" +
@@ -1912,6 +1923,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                         log(TAG, "----- JOB DONE -----");
                         taking_pics = false;
                         Processing = false;
+                        sound = true;
                         endTime = System.currentTimeMillis();
 
 
