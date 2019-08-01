@@ -64,6 +64,7 @@ If you want to build it for yourself make sure to change the file paths in the A
 - The integration of OpenCV is a combination of <https://community.theta360.guide/t/ricoh-blog-post-running-opencv-in-your-ricoh-theta/4084> and <https://www.learn2crack.com/2016/03/setup-opencv-sdk-android-studio.html> and a lot of trail and error!
 - The HDR part is based on https://www.learnopencv.com/high-dynamic-range-hdr-imaging-using-opencv-cpp-python/
 - The view in 360 is done using the great kaleidoscope library <https://github.com/thiagopnts/kaleidoscope> by Thiago Pontes
+- The hydra logo is from the free clipart site: https://publicdomainvectors.org/en/free-clipart/Hydra-dragon-vector-silhouette/75432.html
 
 Feel free to change, improve and of course use!
 

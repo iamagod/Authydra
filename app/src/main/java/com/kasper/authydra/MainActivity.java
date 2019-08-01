@@ -20,6 +20,7 @@
  * fix black hole sun
  *
  * Done:
+ * no caching added
  * better font
  * added divider per day in file menu
  * sound on/off fix
@@ -790,6 +791,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             Arrays.sort(contents);
             Log.i("web","number of files found: "+contents.length);
             msg = "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">"+
+                    "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n" +
+                    "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n" +
+                    "<meta http-equiv=\"Expires\" content=\"0\" />"+
                     "<html>"+
                     "<style>.abutton {" +
                     "background-color: #555555;" +
@@ -1148,6 +1152,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
 
                 msg = "<meta http-equiv='refresh' content='1; URL=http://192.168.1.1:8888/refresh'>" +
+                        "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n" +
+                        "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n" +
+                        "<meta http-equiv=\"Expires\" content=\"0\" />"+
                         "<head>\n" +
                         "<style>.abutton {" +
                         "background-color: #555555;" +
@@ -1270,6 +1277,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 return r;
             }
             msg = "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">" +
+            "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n" +
+            "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n" +
+            "<meta http-equiv=\"Expires\" content=\"0\" />"+
             "<html>" +
             "<style>.abutton {" +
             "background-color: #555555;" +
