@@ -23,7 +23,7 @@
  * z1 -> aperture support
  * z1 -> raw processing
  * dng support -> split in two exposures
- * option for only take pic
+ * fix time on only pics
  * option for saving as default
  * option for spherical pics faster?
  * option for spliting pics (no more memory error)
@@ -585,7 +585,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             cols = 6720;
             rows = 3360;
 
-            numberOfPictures = 7;
+            numberOfPictures = 9;
         }
 
         log(TAG,"Available disk space is: "+bytesToHuman(free_disk())+" " +free_disk());
@@ -1653,19 +1653,19 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         if (Build.MODEL.equals("RICOH THETA Z1"))
         {
             params.set("RIC_DNG_OUTPUT_ENABLED",1);
-            params.setPictureFormat(ImageFormat.RAW_SENSOR);
+            //params.setPictureFormat(ImageFormat.RAW_SENSOR);
             cols = 6720;
             rows = 3360;
 
-            cols = 7296;
-            rows = 3648;
+            //cols = 7296;
+            //rows = 3648;
         }
 
-        params.set("RIC_PROC_STITCHING", "RicNonStitching");
+        //params.set("RIC_PROC_STITCHING", "RicNonStitching");
         //params.setPictureSize(5792, 2896); // no stiching
 
-        //params.setPictureFormat(ImageFormat.JPEG);
-        //params.set("jpeg-quality",25);
+        params.setPictureFormat(ImageFormat.JPEG);
+        params.set("jpeg-quality",25);
         //params.set("RIC_JPEG_COMP_FILESIZE_ENABLED",1);
         //params.set("RIC_JPEG_COMP_FILESIZE",12582912);
 
