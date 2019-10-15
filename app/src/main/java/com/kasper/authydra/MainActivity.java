@@ -175,6 +175,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     Boolean ColorThread = true;
     Boolean Processing = false;
     Boolean sound = true;
+    Boolean MergeHDRI = true;
 
     String auto_pic = "";
     String encodedImage = "";
@@ -1125,13 +1126,21 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 number_of_noise_pics = 1;
                 stopjump ="auto";
                 sound = true;
+                MergeHDRI = true;
             }
             else
             {
-                Log.i("web", "Taking picture. With brackets at " + parms.get("brackets") + " and denoise at " + parms.get("denoise")+parms.get("sound"));
+                Log.i("web", "Taking picture. With brackets at " + parms.get("brackets") + " and denoise at " + parms.get("denoise") + " Sound: " + parms.get("sound") + " and merge: " + parms.get("merge"));
                 numberOfPictures = Integer.parseInt(parms.get("brackets"));
                 number_of_noise_pics = Integer.parseInt(parms.get("denoise"));
                 stopjump = parms.get("stopjump");
+
+                if (parms.get("merge") == null || parms.get("merge").isEmpty() || !Boolean.parseBoolean(parms.get("merge")))
+                {
+                    MergeHDRI = false;
+                    Log.i("web","turned HDRI merging off.");
+                }
+
                 if (parms.get("sound") == null || parms.get("sound").isEmpty()||(!parms.get("sound").equals("true")))
                 {
                     sound =false;
@@ -1437,6 +1446,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             "<option value='2.5'>2.5</option>" +
             "</select><br><br>" +
             "<input type='checkbox' class='abutton' name='sound' value='true' checked> Play sound"+
+            "<br>"+
+            "<input type='checkbox' class='abutton' name='merge' value='true' checked> Merge HDRI"+
+            "<br>"+
             "<center><input type='submit' class='abutton' value='Take picture'></form></center>";
             if (free_disk()<250000000)
             {   // below 250 mb give warning
@@ -2362,7 +2374,20 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 }
                 else // Doing processing HDR merge etc
                 {
-                    HDR_processing();
+                    if(MergeHDRI)
+                    {
+                        HDR_processing();
+                    }
+                    else
+                    {
+                        Log.i(TAG, "Skipped processing of HDR due to flag");
+                        taking_pics = false;
+
+                        if (sound)
+                        {
+                            sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SH_CLOSE"));
+                        }
+                    }
                 }
                 }
             }
