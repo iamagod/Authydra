@@ -3,6 +3,7 @@
  * Modified to use Shutter speed instead of exposure compensation
  * Added openCV support
  *
+ * adb shell settings put global usb_debug true
  *
  * curl -X POST http://192.168.1.1/osc/commands/execute --data '{"name": "camera._setPlugin","parameters": {"packageName": "com.kasper.authydra","boot":true,"force":false}}' -H 'content-type: application/json'
  * curl -X POST 192.168.1.1/osc/commands/execute --data '{"name":"camera._listPlugins"}' -H 'content-type: application/json'
@@ -10,14 +11,25 @@
  * TODO ideas
  * export default python script to recreate hdri offline?
  * support opencv 4
- * fully support Z1
- * dng support -> split in two exposures
  * support tonemapped jpg in theta default app
+ *
  *
  * TODO v2.1
  * total time calculator
  * add abort button (with option to delete)
  * fix black hole sun
+ * set auto off to 10 min
+ * z1 -> raw enable
+ * z1 -> aperture support
+ * z1 -> raw processing
+ * dng support -> split in two exposures
+ * option for only take pic
+ * option for saving as default
+ * option for spherical pics faster?
+ * option for spliting pics (no more memory error)
+ * z1 -> do something with display
+ *
+ *
  *
  * Done:
  * no caching added
@@ -135,7 +147,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
     //#################################################################################################
     private int numberOfPictures = 11;    // max number of pictures for the bracket          #
-    private int number_of_noise_pics = 5; // max number of pictures take for noise reduction #
+    private int number_of_noise_pics = 3; // max number of pictures take for noise reduction #
     //#################################################################################################
 
     Double stop_jumps = 2.5;      // stops jump between each bracket has become dynamic            #
@@ -568,10 +580,11 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         if (Build.MODEL.equals("RICOH THETA Z1"))
         {   //set Z1 resolution
             log(TAG, "Set Z1 resolution");
+
             cols = 6720;
             rows = 3360;
 
-            numberOfPictures = 9;
+            numberOfPictures = 7;
         }
 
         log(TAG,"Available disk space is: "+bytesToHuman(free_disk())+" " +free_disk());
@@ -1625,12 +1638,22 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         Camera.Parameters params = mCamera.getParameters();
         //Log.d("shooting mode", params.flatten());
         params.set("RIC_SHOOTING_MODE", "RicStillCaptureStd");
+        if (Build.MODEL.equals("RICOH THETA Z1"))
+        {
+            params.set("RIC_DNG_OUTPUT_ENABLED",1);
+            params.setPictureFormat(ImageFormat.RAW_SENSOR);
+            cols = 6720;
+            rows = 3360;
 
-        //params.set("RIC_PROC_STITCHING", "RicNonStitching");
+            cols = 7296;
+            rows = 3648;
+        }
+
+        params.set("RIC_PROC_STITCHING", "RicNonStitching");
         //params.setPictureSize(5792, 2896); // no stiching
 
-        params.setPictureFormat(ImageFormat.JPEG);
-        params.set("jpeg-quality",25);
+        //params.setPictureFormat(ImageFormat.JPEG);
+        //params.set("jpeg-quality",25);
         //params.set("RIC_JPEG_COMP_FILESIZE_ENABLED",1);
         //params.set("RIC_JPEG_COMP_FILESIZE",12582912);
 
@@ -1678,6 +1701,10 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             // So here we take our first picture on full auto settings to get
             // proper lighting settings to use a our middle exposure value
             params.set("RIC_EXPOSURE_MODE", "RicAutoExposureP");
+            if (Build.MODEL.equals("RICOH THETA Z1"))
+            {
+                params.set("RIC_DNG_OUTPUT_ENABLED",1);
+            }
         }
         else // in bracket loop
         {
@@ -1697,6 +1724,10 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             // exif info doesn't take this value. so you can only visually verify
             //params.set("RIC_WB_MODE",  "RicWbPrefixTemperature");
             //params.set("RIC_WB_TEMPERATURE",  "5100");
+            if (Build.MODEL.equals("RICOH THETA Z1"))
+            {
+                params.set("RIC_DNG_OUTPUT_ENABLED",1);
+            }
         }
 
         bcnt = bcnt - 1;
@@ -1822,7 +1853,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
             log(TAG, "Starting merge.");
             if (!abort) {
+                log(TAG, "Starting merge1.");
                 mergeDebevec.process(images, hdrDebevec, times, responseDebevec);
+                log(TAG, "Starting merge2.");
 
 
                 // Start Saving HDR Files.
@@ -2274,18 +2307,18 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
                 if (auto_pic != "") // setting up auto picture for display in website
                 {
-                    Log.i(TAG,"before jpg read.");
+                    //Log.i(TAG,"before jpg read.");
                     Mat t_pic = new Mat();
                     t_pic = imread(auto_pic);
 
                     Imgproc.resize(t_pic, t_pic, new Size(cols*0.15,rows*0.15),Imgproc.INTER_LINEAR);
                     compressParams_jpg = new MatOfInt(org.opencv.imgcodecs.Imgcodecs.IMWRITE_JPEG_QUALITY , 60);
                     String  new_name = auto_pic.substring(0,auto_pic.length()-4)+"_small.jpg";
-                    Log.i(TAG,"after jpg read."+new_name);
+                    //Log.i(TAG,"after jpg read."+new_name);
                     imwrite(new_name, t_pic,compressParams_jpg);
                     compressParams_jpg = new MatOfInt(org.opencv.imgcodecs.Imgcodecs.IMWRITE_JPEG_QUALITY , 100);
                     t_pic.release();
-                    Log.i(TAG,"after jpg read."+new_name);
+                    //Log.i(TAG,"after jpg read."+new_name);
 
                     InputStream inStream = null;
                     BufferedInputStream bis = null;
