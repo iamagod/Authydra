@@ -16,7 +16,6 @@
  *
  * TODO v2.1
  * total time calculator
- * add abort button (with option to delete)
  * fix black hole sun
  * set auto off to 10 min
  * z1 -> raw enable
@@ -28,6 +27,7 @@
  * option for spherical pics faster?
  * option for spliting pics (no more memory error)
  * z1 -> do something with display
+ * better visual and audio count down
  *
  *
  *
@@ -56,10 +56,12 @@
 
 package com.kasper.authydra;
 
+import android.app.ActivityManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
@@ -68,6 +70,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -108,6 +111,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.io.IOException;
@@ -130,6 +134,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -141,12 +146,16 @@ import java.util.zip.ZipEntry;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 
+import android.content.Context;
+import java.text.DecimalFormat;
+import android.app.ActivityManager;
+
 
 public class MainActivity extends PluginActivity implements SurfaceHolder.Callback
 {
 
     //#################################################################################################
-    private int numberOfPictures = 11;    // max number of pictures for the bracket          #
+    private int numberOfPictures = 15;    // max number of pictures for the bracket          #
     private int number_of_noise_pics = 3; // max number of pictures take for noise reduction #
     //#################################################################################################
 
@@ -194,6 +203,12 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     long startTime;
     long middleTime;
     long endTime;
+
+    //SharedPreferences pref = this.getSharedPreferences("com.authydra.app.default_settings", 0); // 0 - for private mode
+    //SharedPreferences sharedPref = getApplicationContext().getPreferences(Context.MODE_PRIVATE);
+    //SharedPreferences.Editor editor = pref.edit();
+
+
 
     // Set exr file to half float --> smaller files
     private MatOfInt compressParams = new MatOfInt(org.opencv.imgcodecs.Imgcodecs.CV_IMWRITE_EXR_TYPE, org.opencv.imgcodecs.Imgcodecs.IMWRITE_EXR_TYPE_HALF);
@@ -517,7 +532,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         message_log =" " + message.replace("/storage/emulated/0/DCIM/100RICOH","..") + "<br>" + message_log;
     }
 
-    class LedChange implements Runnable {
+    class LedChange implements Runnable
+    {
         @Override
         public void run() {
             Boolean color = true;
@@ -542,7 +558,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
     }
 
-    class average_thread implements Runnable {
+    class average_thread implements Runnable
+    {
         @Override
         public void run()
         {
@@ -550,13 +567,14 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         }
     }
 
-    class tonemap_thread implements Runnable {
+    class tonemap_thread implements Runnable
+    {
         @Override
         public void run()
         {
             tone_map( hdrDebevecY);
          }
-         }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -565,6 +583,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_main);
         mcontext = this;
+
+
 
         this.webServer = new WebServer(this.mcontext);
         try
@@ -578,15 +598,18 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         fill_iso_lut();
         fill_shutter_lut();
 
-        if (Build.MODEL.equals("RICOH THETA Z1"))
-        {   //set Z1 resolution
-            log(TAG, "Set Z1 resolution");
 
-            cols = 6720;
-            rows = 3360;
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = pref.edit();
 
-            numberOfPictures = 9;
-        }
+        MergeHDRI = pref.getBoolean("MergeHDRI", true);
+        sound = pref.getBoolean("sound", true);
+        stopjump = pref.getString("stopjump", "auto");
+        numberOfPictures = pref.getInt("numberOfPictures", 9);
+        number_of_noise_pics = pref.getInt("number_of_noise_pics", 3);
+
+
+
 
         log(TAG,"Available disk space is: "+bytesToHuman(free_disk())+" " +free_disk());
 
@@ -603,11 +626,26 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 {
                     // If on second run we need to reset everything
                     notificationLedBlink(LedTarget.LED3, LedColor.GREEN, 300);
-                    log("TAG","5 seconds delay to run away.");
+                    log(TAG,"5 seconds delay to run away.");
                     //5sec delay timer to run away
                     try
                     {
-                        sleep(5000);
+                        sleep(1000);
+                        if (sound) sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER"));
+                        log(TAG,"4 seconds delay to run away.");
+
+                        sleep(1000);
+                        if (sound) sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER"));
+                        log(TAG,"3 seconds delay to run away.");
+
+                        sleep(1000);
+                        if (sound) sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER"));
+                        log(TAG,"2 seconds delay to run away.");
+
+                        sleep(1000);
+                        if (sound) sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER"));
+                        log(TAG,"1 seconds delay to run away.");
+
                     }
                     catch (InterruptedException e)
                     {
@@ -754,6 +792,10 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     {
         String uri = session.getUri();
         String msg ="";
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = pref.edit();
+
         //Log.i("web", "Uri is " + uri);
         try
         {
@@ -1165,6 +1207,65 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 return r;
             }
         }
+        else if (uri.equals("/save_default"))
+        {
+
+            if (parms.get("brackets") == null || parms.get("brackets").isEmpty()
+                    || parms.get("denoise") == null || parms.get("denoise").isEmpty()
+                    || parms.get("stopjump") == null || parms.get("stopjump").isEmpty())
+            {
+                Log.i(TAG, "Saving default. With brackets at 1 and denoise at 1.");
+                numberOfPictures = 1;
+                number_of_noise_pics = 1;
+                stopjump ="auto";
+                sound = true;
+                MergeHDRI = true;
+            }
+            else
+            {
+                Log.i(TAG, "Saving default. With brackets at " + parms.get("brackets") + " and denoise at " + parms.get("denoise") + " Sound: " + parms.get("sound") + " and merge: " + parms.get("merge"));
+                numberOfPictures = Integer.parseInt(parms.get("brackets"));
+                number_of_noise_pics = Integer.parseInt(parms.get("denoise"));
+                stopjump = parms.get("stopjump");
+
+                if (parms.get("merge") == null || parms.get("merge").isEmpty() || !Boolean.parseBoolean(parms.get("merge")))
+                {
+                    MergeHDRI = false;
+                    Log.i(TAG,"turned HDRI merging off.");
+                }
+                else
+                {
+                    MergeHDRI = true;
+                }
+
+                if (parms.get("sound") == null || parms.get("sound").isEmpty()||(!parms.get("sound").equals("true")))
+                {
+                    sound =false;
+                    Log.i(TAG,"turned sound off.");
+                }
+                else
+                {
+                    sound = true;
+                }
+            }
+
+            editor.putBoolean("MergeHDRI", MergeHDRI);
+            editor.putBoolean("sound", sound);
+            editor.putString("stopjump", stopjump);
+            editor.putInt("numberOfPictures", numberOfPictures);
+            editor.putInt("number_of_noise_pics", number_of_noise_pics);
+            editor.commit(); // commit changes
+
+            msg = "<html><head>" +
+                    "<script type='text/javascript'>" +
+                    "alert('Saved default settings');" +
+                    "window.location = 'http://192.168.1.1:8888';"+
+                    "</script></head>";
+            log(TAG, msg);
+            msg += "<body style='background-color:black;'><font color='white'>></body></html>";
+            return newFixedLengthResponse(msg);
+
+        }
         else if (uri.equals("/refresh"))
         {
             if (taking_pics)
@@ -1245,7 +1346,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     //shots_table[i][2][1] = "gray";
                     //shots_table[i][]
                     //msg += "<span style='color:"+shots_table[i][0][1]+";'>" +
-                            msg +=  "<tr><th class='"+shots_table[i][0][1]+"'>Picture: "  +Integer.toString(i)+
+                            msg +=  "<tr><th class='"+shots_table[i][0][1]+"'>Picture: "  +Integer.toString(i+1)+
                                     "</th><th class='"+shots_table[i][0][1]+"'>stops: "   +shots_table[i][0][0]+
                                     "</th><th class='"+shots_table[i][0][1]+"'>iso: "     +shots_table[i][1][0]+
                                     "</th><th class='"+shots_table[i][0][1]+"'>shutter: " +shots_table[i][2][0]+
@@ -1324,6 +1425,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             ".st0{fill:#FFFFFF;}" +
             "</style>" +
             "<g>" +
+
+            //region logo
             "\t<path class=\"st0\" d=\"M37.44,695.38c-3,1.99-6.25,3.12-7.78,5.4c-2.31,3.45-2.32,7.45,3.26,8.13c10.66,1.32,20.55-1.42,29.49-7.05\n" +
             "\t\tc2.04-1.29,3.44-4.48,4.02-7.05c2.15-9.4,2.82-9.69,11.93-5.98c8.73,3.56,17.46,7.8,26.6,9.48c7.23,1.33,15.33,0.12,22.57-1.76\n" +
             "\t\tc3.47-0.9,6.47-5.65,8.41-9.33c0.73-1.39-1.93-6.58-3.37-6.73c-3.92-0.4-8.33,0.27-11.96,1.86c-3.51,1.54-6.29,4.75-9.5,7.31\n" +
@@ -1403,6 +1506,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             "\t\tc0.59-0.83-1.5-5.15-3.13-5.73C183.4,93.91,172.38,93.46,160.12,99z M69.56,430.09c5.31-7.37,8.58-13.4,13.25-18.02\n" +
             "\t\tc5.46-5.4,4.36-8.94-1.56-13.38C71.81,406.27,69.21,416.23,69.56,430.09z M813.22,476.58c-2.22-11.74-5.34-20.41-16.77-26.54\n" +
             "\t\tc-0.46,4.35-2.18,8.54-0.84,10.09C800.33,465.58,806.1,470.11,813.22,476.58z\"/>\n" +
+            //endregion logo
             "</g>" +
             "</svg></center><br>"+
 
@@ -1417,25 +1521,24 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             "<option value='5'>5</option>" +
             "<option value='6'>6</option>" +
             "<option value='7'>7</option>" +
-            "<option value='8'>8</option>";
+            "<option value='8'>8</option>" +
+            "<option value='9'>9</option>" +
+            "<option value='10'>10</option>"+
+            "<option value='11'>11</option>"+
+            "<option value='12'>12</option>"+
+            "<option value='13'>13</option>"+
+            "<option value='14'>14</option>"+
+            "<option value='15'>15</option>";
 
-            if (Build.MODEL.equals("RICOH THETA Z1"))
-            {
-               msg += "<option selected='selected' value='9'>9</option>";
-            }
-            else
-            {
-                msg += "<option value='9'>9</option>"+
-                "<option value='10'>10</option>" +
-                "<option selected='selected' value='11'>11</option>" ;
-            }
+            msg += "<option selected='selected' value='"+numberOfPictures+"'>"+numberOfPictures+"</option>" ;
             msg+= "</select><br><br>" +
             "Number of denoise pictures: <select class='abutton' name='denoise'>" +
             "<option value='1'>1</option>" +
             "<option value='2'>2</option>" +
-            "<option selected='selected' value='3'>3</option>" +
+            "<option value='3'>3</option>" +
             "<option value='4'>4</option>" +
             "<option value='5'>5</option>" +
+            "<option selected='selected' value='"+number_of_noise_pics+"'>"+number_of_noise_pics+"</option>"+
             "</select><br><br>" +
             "Number stop jumps between brackets: <select class='abutton' name='stopjump'>" +
             "<option value='auto'>auto</option>" +
@@ -1444,12 +1547,30 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             "<option value='1.5'>1.5</option>" +
             "<option value='2.0'>2.0</option>" +
             "<option value='2.5'>2.5</option>" +
-            "</select><br><br>" +
-            "<input type='checkbox' class='abutton' name='sound' value='true' checked> Play sound"+
+            "<option selected='selected' value='"+stopjump+"'>"+stopjump+"</option>"+
+
+            "</select><br><br>";
+            if (sound)
+            {
+                msg += "<input type='checkbox' class='abutton' name='sound' value='true' checked> Play sound"+"<br>";
+            }
+            else
+            {
+                msg += "<input type='checkbox' class='abutton' name='sound' value='true' > Play sound"+"<br>";// is not a boolean but a string the value
+            }
+            if (MergeHDRI)
+            {
+                msg +="<input type='checkbox' class='abutton' name='merge' value='true' checked> Merge HDRI";
+            }
+            else
+            {
+                msg +="<input type='checkbox' class='abutton' name='merge' value='true' > Merge HDRI"; // is not a boolean but a string the value
+            }
+            msg+= "<br>"+
+            "<center><input type='submit' class='abutton' value='Take picture'></center>"+
             "<br>"+
-            "<input type='checkbox' class='abutton' name='merge' value='true' checked> Merge HDRI"+
             "<br>"+
-            "<center><input type='submit' class='abutton' value='Take picture'></form></center>";
+            "<right><input type='submit' class='abutton' formaction='/save_default' value='Save settings as default'></right></form>";
             if (free_disk()<250000000)
             {   // below 250 mb give warning
                 msg += "<h1> You are running out of diskspace!</h1>";
@@ -1460,7 +1581,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     }
 }
 
-    private static void encodeFile(File inputFile, File outputFile) throws IOException {
+    private static void encodeFile(File inputFile, File outputFile) throws IOException
+    {
         BufferedInputStream in = null;
         BufferedWriter out = null;
         try {
@@ -1476,7 +1598,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         }
     }
 
-    private static void encodeStream(InputStream in, BufferedWriter out) throws IOException {
+    private static void encodeStream(InputStream in, BufferedWriter out) throws IOException
+    {
         int lineLength = 72;
         byte[] buf = new byte[lineLength / 4 * 3];
         while (true) {
@@ -1487,18 +1610,21 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         }
     }
 
-    static String encodeArray(byte[] in) throws IOException {
+    static String encodeArray(byte[] in) throws IOException
+    {
         StringBuffer out = new StringBuffer();
         out.append(Base64Coder.encode(in, 0, in.length));
         return out.toString();
     }
 
-    static byte[] decodeArray(String in) throws IOException {
+    static byte[] decodeArray(String in) throws IOException
+    {
         byte[] buf = Base64Coder.decodeLines(in);
         return buf;
     }
 
-    private static void decodeFile(File inputFile, File outputFile) throws IOException {
+    private static void decodeFile(File inputFile, File outputFile) throws IOException
+    {
         BufferedReader in = null;
         BufferedOutputStream out = null;
         try {
@@ -1514,7 +1640,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         }
     }
 
-    private static void decodeStream(BufferedReader in, OutputStream out) throws IOException {
+    private static void decodeStream(BufferedReader in, OutputStream out) throws IOException
+    {
         while (true) {
             String s = in.readLine();
             if (s == null)
@@ -1530,6 +1657,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         Mat temp_pic3 = new Mat();
 
         log("avg","---> Starting average on image "+Integer.toString(i+1));
+        Thread.currentThread().setName("Denoise Average "+(i+1));
+
         if (number_of_noise_pics==1)
         {
             //images_filename_array = filename_array;
@@ -1538,7 +1667,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         else
         {
             average_pic = new Mat(rows, cols, CvType.CV_32FC3, new Scalar((float) (0.0), (float) (0.0), (float) (0.0)));
-
+            //average_pic = new Mat(rows, cols, CvType.CV_16UC3, new Scalar(0,0,0));
             for (Integer j = 0; j < number_of_noise_pics; j++)
             {
                 //notificationLedBlink(LedTarget.LED3, LedColor.RED, 300);
@@ -1546,6 +1675,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 temp_pic3 = imread(filename_array.get(i * number_of_noise_pics + j));
                 temp_pic3.convertTo(temp_pic3, CvType.CV_32FC3);
                 Core.add(average_pic, temp_pic3, average_pic);
+                temp_pic3.convertTo(temp_pic3, CvType.CV_8UC3);
                 temp_pic3.release();
                 //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
 
@@ -1553,6 +1683,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             org.opencv.core.Core.divide(average_pic, new Scalar(((float) number_of_noise_pics + 0.0),
                     ((float) number_of_noise_pics + 0.0),
                     ((float) number_of_noise_pics + 0.0)), average_pic);
+            //org.opencv.core.Core.divide(average_pic,  new Mat(rows,cols,CvType.CV_16UC3,
+            //        new Scalar(number_of_noise_pics,number_of_noise_pics,number_of_noise_pics)), average_pic);
+            average_pic.convertTo(average_pic, CvType.CV_8UC3);
             Log.d(TAG, "Total average value " + Double.toString(average_pic.get(1, 1)[0]));
 
             String opath = filename_array.get(i * number_of_noise_pics + number_of_noise_pics - 1);
@@ -1563,7 +1696,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             imwrite(opath, average_pic,compressParams_jpg);
             average_pic.release();
             images_filename_array.add(opath);
-            registImage(opath, mcontext);
+             registImage(opath, mcontext);
         }
         log("avg","---> Done denoise on image "+Integer.toString(i+1));
     }
@@ -1574,7 +1707,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
         Mat ldrDrago = new Mat();
         org.opencv.photo.TonemapDrago tonemapDrago = org.opencv.photo.Photo.createTonemapDrago((float)1.0,(float)0.7);
-        log(TAG,"done creating tonemap.");
+        log(TAG,"done creating tonemap."+" mem: "+get_mem());
 
         tonemapDrago.process(hdrDebevecY, ldrDrago);
         //ldrMantiuk = 3 * ldrMantiuk;
@@ -1592,6 +1725,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         log(TAG,"Saving tonemapped file as " + opath + ".");
         //org.opencv.core.Core.multiply(ldrMantiuk, new Scalar(255,255,255), ldrMantiuk);
         imwrite(opath, ldrDrago, compressParams_jpg);
+        log(TAG, "File Saved.");
+
         ldrDrago.release();
     }
 
@@ -1650,16 +1785,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         Camera.Parameters params = mCamera.getParameters();
         //Log.d("shooting mode", params.flatten());
         params.set("RIC_SHOOTING_MODE", "RicStillCaptureStd");
-        if (Build.MODEL.equals("RICOH THETA Z1"))
-        {
-            params.set("RIC_DNG_OUTPUT_ENABLED",1);
-            //params.setPictureFormat(ImageFormat.RAW_SENSOR);
-            cols = 6720;
-            rows = 3360;
 
-            //cols = 7296;
-            //rows = 3648;
-        }
 
         //params.set("RIC_PROC_STITCHING", "RicNonStitching");
         //params.setPictureSize(5792, 2896); // no stiching
@@ -1670,7 +1796,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         //params.set("RIC_JPEG_COMP_FILESIZE",12582912);
 
         //params.setPictureSize(5376, 2688); // stiched
-        params.setPictureSize(cols, rows);
+
 
 
         // https://api.ricoh/docs/theta-plugin-reference/camera-api/
@@ -1688,7 +1814,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         params.set("RIC_EXPOSURE_MODE", "RicAutoExposureP");
 
         bcnt = numberOfPictures * number_of_noise_pics;
-        mCamera.setParameters(params);
+
         //params = mCamera.getParameters();
         session_name = getSessionName();
 
@@ -1696,8 +1822,30 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         Log.i(TAG,"About to take first auto picture to measure lighting settings.");
         new File(Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/"+session_name).mkdir();
 
-        //Log.d("get", params.get("RIC_MANUAL_EXPOSURE_ISO_BACK"));
+        if (Build.MODEL.equals("RICOH THETA Z1"))
+        {
+            params.set("RIC_DNG_OUTPUT_ENABLED",1);
+            params.set("rawsave-mode", 1);
+            String fname = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/"+session_name+"/test.dng";
+            log(TAG,fname);
+            params.set("rawfname",fname ); // may have to set this for every frame captured
+            //params.setPictureFormat(ImageFormat.RAW_SENSOR);
+            cols = 6720;
+            rows = 3360;
 
+            //sensor_pick_resolution: Matched pick_w:3776, pick_h:3710, pick_fps:29.430000, pick_clk:444000000, pick_mode:1
+            //2019-10-18 13:21:55.022 E/mm-camera: <SENSOR><ERROR> 4572: sensor_get_raw_dimension: raw w 3776 h 3710
+
+
+            //cols = 5376;
+            //rows = 2688;
+
+            cols = 7296;
+            rows = 3648;
+        }
+        //Log.d("get", params.get("RIC_MANUAL_EXPOSURE_ISO_BACK"));
+        params.setPictureSize(cols, rows);
+        mCamera.setParameters(params);
         if (sound) sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER"));
 
         mCamera.takePicture(null,null, null, pictureListener);
@@ -1713,10 +1861,10 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             // So here we take our first picture on full auto settings to get
             // proper lighting settings to use a our middle exposure value
             params.set("RIC_EXPOSURE_MODE", "RicAutoExposureP");
-            if (Build.MODEL.equals("RICOH THETA Z1"))
-            {
-                params.set("RIC_DNG_OUTPUT_ENABLED",1);
-            }
+            //if (Build.MODEL.equals("RICOH THETA Z1"))
+            //{
+                //params.set("RIC_DNG_OUTPUT_ENABLED",1);
+            //}
         }
         else // in bracket loop
         {
@@ -1738,7 +1886,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             //params.set("RIC_WB_TEMPERATURE",  "5100");
             if (Build.MODEL.equals("RICOH THETA Z1"))
             {
-                params.set("RIC_DNG_OUTPUT_ENABLED",1);
+                //params.set("RIC_DNG_OUTPUT_ENABLED",1);
             }
         }
 
@@ -1757,7 +1905,48 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         }
     }
 
-    void HDR_processing()
+
+
+    String get_mem()
+    {
+        /*final Runtime runtime = Runtime.getRuntime();
+        final long usedMemInMB=(runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
+        final long maxHeapSizeInMB=runtime.maxMemory() / 1048576L;
+        final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
+        return(Long.toString(availHeapSizeInMB));
+        */
+
+
+        long freeSize = 0L;
+        long totalSize = 0L;
+        long usedSize = -1L;
+        try {
+            Runtime info = Runtime.getRuntime();
+            freeSize = info.freeMemory();
+            totalSize = info.totalMemory();
+            usedSize = totalSize - freeSize;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Double gb = Math.floor(usedSize/1000000);
+        Double mb = Math.floor((usedSize-gb*1000000)/1000);
+        Double  b = Math.floor((usedSize-gb*1000000) - mb*1000);
+
+        String gb_s = (Double.toString(gb)).split("\\.")[0];
+        String mb_s = (Double.toString(mb)).split("\\.")[0];
+        if (mb_s.length() == 2){ mb_s = "0"+mb_s; }
+        if (mb_s.length() == 1){ mb_s = "00"+mb_s; }
+
+        String b_s = (Double.toString(b)).split("\\.")[0];
+        if (b_s.length() == 2){ b_s = "0"+b_s; }
+        if (b_s.length() == 1){ b_s = "00"+b_s; }
+
+        return (gb_s+"."+mb_s+"."+b_s);
+
+    }
+
+   void HDR_processing()
     {
         //////////////////////////////////////////////////////////////////////////
         //                                                                      //
@@ -1766,6 +1955,15 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         //////////////////////////////////////////////////////////////////////////
 
         log(TAG,"Done with picture taking, let's start with the HDR merge.");
+
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+
+        for (Iterator<Thread> it = threadSet.iterator(); it.hasNext(); )
+        {
+            Thread f = it.next();
+            log(TAG,"thread: "+f.getName());
+        }
+
         Processing = true;
         middleTime = System.currentTimeMillis();
         //Log.d(TAG,"images is: "+Integer.toString(images_before_avg.size()) );
@@ -1834,181 +2032,344 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         }
         catch(IOException e){log(TAG,"IO error");}
 
-        if (!abort) {
-            log(TAG, "Preping merge.");
-            Mat hdrDebevec = new Mat();
-            org.opencv.photo.MergeDebevec mergeDebevec = org.opencv.photo.Photo.createMergeDebevec();
 
-            //Log.d(TAG,"starting align");
-            //org.opencv.photo.AlignMTB align = org.opencv.photo.Photo.createAlignMTB();
-            //align.process(images,images);
-            if (number_of_noise_pics == 1) {
-                images_filename_array = filename_array;
-            } else {
-                log(TAG, "Merging average pics for denoise.");
-                while (images_filename_array.size() != numberOfPictures) {
-                    log("avg", "Denoising of images not ready yet, we wait. Already done " + images_filename_array.size() + " of " + numberOfPictures + " images.");
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException ex) {
-                        Thread.currentThread().interrupt();
-                    }
-                }
-            }
-            images = new ArrayList<Mat>(numberOfPictures);
-            for (Integer i = 0; i < numberOfPictures; i++) {
-                String name = images_filename_array.get(i);
-                Log.d(TAG, "Adding file " + name);
-                images.add(imread(name));
-            }
+        log(TAG, "Preping merge.");
+        Mat hdrDebevec = new Mat();
+        //org.opencv.photo.MergeDebevec mergeDebevec = org.opencv.photo.Photo.createMergeDebevec();
 
-
-            log(TAG, "Starting merge.");
-            if (!abort) {
-                log(TAG, "Starting merge1.");
-                mergeDebevec.process(images, hdrDebevec, times, responseDebevec);
-                log(TAG, "Starting merge2.");
-
-
-                // Start Saving HDR Files.
-                // We divide by the mean value of the whole picture to get the exposure values with a proper range.
-                // Multiplied by 2 to get average value around 0.5 and 1.0, this has a better starting point.
-
-                Scalar mean = org.opencv.core.Core.mean(hdrDebevec);
-                Log.d(TAG, "Mean: " + mean.toString());
-                double new_mean = (mean.val[0] * 2 + mean.val[1] * 2 + mean.val[2] * 2) / 3.0;
-                //log(TAG,"Average Mean: " + Double.toString(new_mean));
-                org.opencv.core.Core.divide(hdrDebevec, new Scalar(new_mean, new_mean, new_mean, 0), hdrDebevec);
-
-                log(TAG, "Doing White balance.");
-                //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
-                // Do white balance thing, we take the auto_pic detect in that one all the white pixels.
-                // Save those positions
-                // then check those pixels in the HDR merge en compensate the average value to be white again.
-
-                int low_value = 80;
-                int high_value = 128;
-
-                Mat mask = new Mat();
-                Mat coord = new Mat();
-                Mat mask_pic_w = new Mat(rows, cols, CvType.CV_8UC3, new Scalar(255, 255, 255));
-                Mat mask_pic = new Mat(rows, cols, CvType.CV_8UC3, new Scalar(0, 0, 0));
-                Mat temp_pic;
-                temp_pic = imread(auto_pic);
-                if (!abort) {
-                    log(TAG, "Going through all white pixels.");
-                    for (int i = low_value; i < high_value; i++) {
-                        Core.inRange(imread(auto_pic), new Scalar(i, i, i), new Scalar(i + 3, i + 3, i + 3), mask);
-                        Core.bitwise_or(mask_pic_w, mask_pic, mask_pic, mask);
-                    }
-                    temp_pic.release();
-                    org.opencv.imgproc.Imgproc.cvtColor(mask_pic, temp_pic, org.opencv.imgproc.Imgproc.COLOR_RGB2GRAY);
-                    Core.findNonZero(temp_pic, coord);
-                    temp_pic.release();
-                    mask.release();
-                    mask_pic.release();
-                    mask_pic_w.release();
-
-
-                    Mat avg = new Mat(1, 1, CvType.CV_32FC3, new Scalar(0.0, 0.0, 0.0));
-
-                    log(TAG, "Found " + Integer.toString(coord.rows()) + " white pixels.");
-                    for (Integer j = 0; j < coord.rows(); j++) {
-                        org.opencv.core.Core.add(avg, new Scalar(hdrDebevec.get((int) coord.get(j, 0)[1], (int) coord.get(j, 0)[0])[0],
-                                hdrDebevec.get((int) coord.get(j, 0)[1], (int) coord.get(j, 0)[0])[1],
-                                hdrDebevec.get((int) coord.get(j, 0)[1], (int) coord.get(j, 0)[0])[2],
-                                0.0), avg);
-                    }
-                    org.opencv.core.Core.divide((double) coord.rows(), avg, avg);
-
-                    Log.d(TAG, "Average of white pixels is: " + String.valueOf(avg.get(0, 0)[0])
-                            + " " + String.valueOf(avg.get(0, 0)[1])
-                            + " " + String.valueOf(avg.get(0, 0)[2]));
-
-                    double Y = (0.2126 * avg.get(0, 0)[2] + 0.7152 * avg.get(0, 0)[1] + 0.0722 * avg.get(0, 0)[0]);
-                    Scalar multY = new Scalar(Y / avg.get(0, 0)[0], Y / avg.get(0, 0)[1], Y / avg.get(0, 0)[2], 0.0);
-
-                    Log.d(TAG, "Brightness value is: " + String.valueOf(Y));
-                    Log.d(TAG, "Multiplying by: " + multY.toString());
-
-                    org.opencv.core.Core.divide(hdrDebevec, multY, hdrDebevecY); // Why divide and not mult? works better don't understand.
-
-                    double B1 = hdrDebevec.get((int) coord.get(0, 0)[1], (int) coord.get(0, 0)[0])[0];
-                    double G1 = hdrDebevec.get((int) coord.get(0, 0)[1], (int) coord.get(0, 0)[0])[1];
-                    double R1 = hdrDebevec.get((int) coord.get(0, 0)[1], (int) coord.get(0, 0)[0])[2];
-                    Log.d(TAG, "Before: " + String.valueOf(B1) + " " + String.valueOf(G1) + " " + String.valueOf(R1));
-
-                    B1 = hdrDebevecY.get((int) coord.get(0, 0)[1], (int) coord.get(0, 0)[0])[0];
-                    G1 = hdrDebevecY.get((int) coord.get(0, 0)[1], (int) coord.get(0, 0)[0])[1];
-                    R1 = hdrDebevecY.get((int) coord.get(0, 0)[1], (int) coord.get(0, 0)[0])[2];
-                    Log.d(TAG, "After Y: " + String.valueOf(B1) + " " + String.valueOf(G1) + " " + String.valueOf(R1));
-
-                    B1 = hdrDebevec.get((int) coord.get(coord.rows() - 1, 0)[1], (int) coord.get(coord.rows() - 1, 0)[0])[0];
-                    G1 = hdrDebevec.get((int) coord.get(coord.rows() - 1, 0)[1], (int) coord.get(coord.rows() - 1, 0)[0])[1];
-                    R1 = hdrDebevec.get((int) coord.get(coord.rows() - 1, 0)[1], (int) coord.get(coord.rows() - 1, 0)[0])[2];
-                    Log.d(TAG, "Before end: " + String.valueOf(B1) + " " + String.valueOf(G1) + " " + String.valueOf(R1));
-
-                    B1 = hdrDebevecY.get((int) coord.get(coord.rows() - 1, 0)[1], (int) coord.get(coord.rows() - 1, 0)[0])[0];
-                    G1 = hdrDebevecY.get((int) coord.get(coord.rows() - 1, 0)[1], (int) coord.get(coord.rows() - 1, 0)[0])[1];
-                    R1 = hdrDebevecY.get((int) coord.get(coord.rows() - 1, 0)[1], (int) coord.get(coord.rows() - 1, 0)[0])[2];
-                    Log.d(TAG, "After Y end: " + String.valueOf(B1) + " " + String.valueOf(G1) + " " + String.valueOf(R1));
-
-                    if (!abort) {
-                        new Thread(new tonemap_thread()).start();
-
-
-                        opath = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name + ".EXR";
-                        log(TAG, "Saving EXR file as " + opath + ".");
-                        imwrite(opath, hdrDebevecY, compressParams);
-
-                        registImage(opath, mcontext);
-
-                        zipFileAtPath(Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name,
-                                Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name + ".ZIP");
-
-                        deleteDir(new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name));
-
-
-                        log(TAG, "File saving done.");
-                        hdrDebevec.release();
-                        hdrDebevecY.release();
-                        coord.release();
-                        responseDebevec.release();
-
-                        log(TAG, "----- JOB DONE -----");
-                        taking_pics = false;
-                        Processing = false;
-                        sound = true;
-                        endTime = System.currentTimeMillis();
-
-
-                        try {// we write out the times data to a file
-                            String filename = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/shots_log.txt";
-                            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filename, true)));
-                            out.println("pics: " + numberOfPictures + " | denoise: " + number_of_noise_pics + " | stops: " + stop_jumps +
-                                    " | pic part: " + millisToShortDHMS(middleTime - startTime) +
-                                    " | HDR part: " + millisToShortDHMS(endTime - middleTime) +
-                                    " | total part: " + millisToShortDHMS(endTime - startTime));
-                            out.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-
-                        ColorThread = false;
-                        notificationLedBlink(LedTarget.LED3, LedColor.MAGENTA, 2000);
-                        notificationLedHide(LedTarget.LED3);
-                        notificationLedShow(LedTarget.LED3);
-                        notificationLed3Show(LedColor.MAGENTA);
-
-                        if (sound)
-                            sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SH_CLOSE"));
-                    }
+        //Log.d(TAG,"starting align");
+        //org.opencv.photo.AlignMTB align = org.opencv.photo.Photo.createAlignMTB();
+        //align.process(images,images);
+        if (number_of_noise_pics == 1) {
+            images_filename_array = filename_array;
+        } else {
+            log(TAG, "Merging average pics for denoise.");
+            while (images_filename_array.size() != numberOfPictures) {
+                log("avg", "Denoising of images not ready yet, we wait. Already done " + images_filename_array.size() + " of " + numberOfPictures + " images.");
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
                 }
             }
         }
 
+        threadSet = Thread.getAllStackTraces().keySet();
+
+        for (Iterator<Thread> it = threadSet.iterator(); it.hasNext(); )
+        {
+            Thread f = it.next();
+            log(TAG,"thread: "+f.getName());
+        }
+
+
+        /*
+        images = new ArrayList<Mat>(numberOfPictures);
+        for (Integer i = 0; i < numberOfPictures; i++) {
+            String name = images_filename_array.get(i);
+            Log.d(TAG, "Adding file " + name);
+            images.add(imread(name));
+        }*/
+
+
+        log(TAG, "Starting merge."+" mem: "+get_mem());
+        System.gc();
+
+        //mergeDebevec.process(images, hdrDebevec, times, responseDebevec);
+        hdrDebevec = new_merge(images_filename_array, times, responseDebevec);
+        System.gc();
+        /*
+        // Try to clean memory
+        opath = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name + ".EXR";
+        log(TAG, "Saving EXR file as " + opath + "."+" mem: "+get_mem());
+        imwrite(opath, hdrDebevec, compressParams);
+        log(TAG, "File Saved."+" mem: "+get_mem());
+        hdrDebevec.release();
+        System.gc();
+        hdrDebevec = imread(opath);
+        log(TAG, "Flushed mem."+" mem: "+get_mem());
+        */
+        /*
+        for (Integer i = 0; i < numberOfPictures; i++) {
+            images.get(i).release();
+        }*/
+
+        // Start Saving HDR Files.
+        // We divide by the mean value of the whole picture to get the exposure values with a proper range.
+        // Multiplied by 2 to get average value around 0.5 and 1.0, this has a better starting point.
+
+        Scalar mean = org.opencv.core.Core.mean(hdrDebevec);
+        Log.d(TAG, "Mean: " + mean.toString());
+        double new_mean = (mean.val[0] * 2 + mean.val[1] * 2 + mean.val[2] * 2) / 3.0;
+        //log(TAG,"Average Mean: " + Double.toString(new_mean));
+        org.opencv.core.Core.divide(hdrDebevec, new Scalar(new_mean, new_mean, new_mean, 0), hdrDebevec);
+
+        log(TAG, "Doing White balance."+" mem: "+get_mem());
+        //notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 300);
+        // Do white balance thing, we take the auto_pic detect in that one all the white pixels.
+        // Save those positions
+        // then check those pixels in the HDR merge en compensate the average value to be white again.
+
+        int low_value = 80;
+        int high_value = 128;
+
+        low_value = 118;
+        high_value = 138;
+
+        Mat mask = new Mat();
+        Mat coord = new Mat();
+        Mat mask_pic_w = new Mat(rows, cols, CvType.CV_8UC3, new Scalar(255, 255, 255));
+        Mat mask_pic = new Mat(rows, cols, CvType.CV_8UC3, new Scalar(0, 0, 0));
+        Mat temp_pic = new Mat();
+        temp_pic = imread(auto_pic);
+
+        log(TAG, "Going through all white pixels.");
+        for (int i = low_value; i < high_value; i++) {
+            //Log.d(TAG, "Doing "+i+" pass 1 "+get_mem());
+            Core.inRange(temp_pic, new Scalar(i, i, i), new Scalar(i + 3, i + 3, i + 3), mask);
+            //Log.d(TAG, "Doing "+i+" pass 2 "+get_mem());
+            Core.bitwise_or(mask_pic_w, mask_pic, mask_pic, mask);
+            //Log.d(TAG, "Doing "+i+" pass 3 "+get_mem());
+        }
+        temp_pic.release();
+        org.opencv.imgproc.Imgproc.cvtColor(mask_pic, temp_pic, org.opencv.imgproc.Imgproc.COLOR_RGB2GRAY);
+        //Log.d(TAG, "Doing pass 4 "+get_mem());
+        Core.findNonZero(temp_pic, coord);
+        //Log.d(TAG, "Doing pass 5 "+get_mem());
+        temp_pic.release();
+        mask.release();
+        mask_pic.release();
+        mask_pic_w.release();
+
+
+        Mat avg = new Mat(1, 1, CvType.CV_32FC3, new Scalar(0.0, 0.0, 0.0));
+
+        log(TAG, "Found " + Integer.toString(coord.rows()) + " white pixels.");
+        for (Integer j = 0; j < coord.rows(); j++) {
+            org.opencv.core.Core.add(avg, new Scalar(hdrDebevec.get((int) coord.get(j, 0)[1], (int) coord.get(j, 0)[0])[0],
+                    hdrDebevec.get((int) coord.get(j, 0)[1], (int) coord.get(j, 0)[0])[1],
+                    hdrDebevec.get((int) coord.get(j, 0)[1], (int) coord.get(j, 0)[0])[2],
+                    0.0), avg);
+        }
+        org.opencv.core.Core.divide((double) coord.rows(), avg, avg);
+
+        Log.d(TAG, "Average of white pixels is: " + String.valueOf(avg.get(0, 0)[0])
+                + " " + String.valueOf(avg.get(0, 0)[1])
+                + " " + String.valueOf(avg.get(0, 0)[2]));
+
+        double Y = (0.2126 * avg.get(0, 0)[2] + 0.7152 * avg.get(0, 0)[1] + 0.0722 * avg.get(0, 0)[0]);
+        Scalar multY = new Scalar(Y / avg.get(0, 0)[0], Y / avg.get(0, 0)[1], Y / avg.get(0, 0)[2], 0.0);
+
+        Log.d(TAG, "Brightness value is: " + String.valueOf(Y));
+        Log.d(TAG, "Multiplying by: " + multY.toString());
+
+        org.opencv.core.Core.divide(hdrDebevec, multY, hdrDebevec); // Why divide and not mult? works better don't understand.
+
+        //region check
+        /*
+        double B1 = hdrDebevec.get((int) coord.get(0, 0)[1], (int) coord.get(0, 0)[0])[0];
+        double G1 = hdrDebevec.get((int) coord.get(0, 0)[1], (int) coord.get(0, 0)[0])[1];
+        double R1 = hdrDebevec.get((int) coord.get(0, 0)[1], (int) coord.get(0, 0)[0])[2];
+        Log.d(TAG, "Before: " + String.valueOf(B1) + " " + String.valueOf(G1) + " " + String.valueOf(R1));
+
+        B1 = hdrDebevecY.get((int) coord.get(0, 0)[1], (int) coord.get(0, 0)[0])[0];
+        G1 = hdrDebevecY.get((int) coord.get(0, 0)[1], (int) coord.get(0, 0)[0])[1];
+        R1 = hdrDebevecY.get((int) coord.get(0, 0)[1], (int) coord.get(0, 0)[0])[2];
+        Log.d(TAG, "After Y: " + String.valueOf(B1) + " " + String.valueOf(G1) + " " + String.valueOf(R1));
+
+        B1 = hdrDebevec.get((int) coord.get(coord.rows() - 1, 0)[1], (int) coord.get(coord.rows() - 1, 0)[0])[0];
+        G1 = hdrDebevec.get((int) coord.get(coord.rows() - 1, 0)[1], (int) coord.get(coord.rows() - 1, 0)[0])[1];
+        R1 = hdrDebevec.get((int) coord.get(coord.rows() - 1, 0)[1], (int) coord.get(coord.rows() - 1, 0)[0])[2];
+        Log.d(TAG, "Before end: " + String.valueOf(B1) + " " + String.valueOf(G1) + " " + String.valueOf(R1));
+
+        B1 = hdrDebevecY.get((int) coord.get(coord.rows() - 1, 0)[1], (int) coord.get(coord.rows() - 1, 0)[0])[0];
+        G1 = hdrDebevecY.get((int) coord.get(coord.rows() - 1, 0)[1], (int) coord.get(coord.rows() - 1, 0)[0])[1];
+        R1 = hdrDebevecY.get((int) coord.get(coord.rows() - 1, 0)[1], (int) coord.get(coord.rows() - 1, 0)[0])[2];
+        Log.d(TAG, "After Y end: " + String.valueOf(B1) + " " + String.valueOf(G1) + " " + String.valueOf(R1));
+        */
+        //endregion check
+
+        //new Thread(new tonemap_thread()).start();
+
+
+        opath = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name + ".EXR";
+        log(TAG, "Saving EXR file as " + opath + ".");
+        imwrite(opath, hdrDebevec, compressParams);
+        log(TAG, "File Saved."+" mem: "+get_mem());
+        registImage(opath, mcontext);
+        coord.release();
+        responseDebevec.release();
+
+        tone_map(hdrDebevec);
+        hdrDebevec.release();
+
+        log(TAG, "Compressing files into one zip file...");
+
+        zipFileAtPath(Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name,
+                Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name + ".ZIP");
+        log(TAG, "Cleaning up...");
+        deleteDir(new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name));
+
+
+        log(TAG, "File compress/cleanup done.");
+
+        //hdrDebevecY.release();
+
+
+        log(TAG, "----- JOB DONE -----");
+
     }
+
+    private Mat new_merge(ArrayList<String> images_filename_array, Mat times, Mat input_response)
+    {
+        log(TAG,"starting setup loop."+" mem: "+get_mem());
+        //if (images.size() != times.rows()) { log(TAG,"images and times lengths do not match"); }
+        String name = images_filename_array.get(0);
+
+        Mat image = new Mat();
+        image = imread(name);
+        int rows = image.rows();
+        int cols = image.cols();
+        int channels = image.channels();
+        image.release();
+
+        //Mat result =  new Mat(rows,cols, CvType.CV_32FC3, new Scalar(0, 0, 0)); //<-- big one do without?
+
+        List<Mat> result_split = new ArrayList<Mat>(channels);
+        for (int i=0; i<channels; i++)
+        {
+            result_split.add(new Mat(rows,cols, CvType.CV_32F, new Scalar(0, 0, 0)));
+        }
+        //org.opencv.core.Core.split(result,result_split);
+
+        Mat weight_sum = new Mat(rows,cols, CvType.CV_32F, new Scalar(0, 0, 0));
+        Mat weights = new Mat(org.opencv.photo.Photo.LDR_SIZE, 1, CvType.CV_32F, new Scalar(0, 0, 0));
+        for (int i =0; i < org.opencv.photo.Photo.LDR_SIZE;i++)
+        {
+            if (i<org.opencv.photo.Photo.LDR_SIZE/2) { weights.put(i,0 , i+1.0); }
+            else { weights.put(i,0, org.opencv.photo.Photo.LDR_SIZE - i); }
+            //Log.d(TAG,"weights "+i+" : "+Double.toString(weights.get(i,0)[0]));
+        }
+        Mat log_response = new Mat();
+        org.opencv.core.Core.log(input_response,log_response);
+
+        List<Mat> log_response_split = new ArrayList<Mat>(channels);
+        for (int i=0; i<channels; i++)
+        {
+            log_response_split.add(new Mat(rows,cols, CvType.CV_32F, new Scalar(0, 0, 0)));
+        }
+        org.opencv.core.Core.split(log_response,log_response_split);
+        log_response.release();
+
+        Mat exp_values = new Mat();
+        org.opencv.core.Core.log(times,exp_values);
+
+        List<Mat> splitted = new ArrayList<Mat>(channels);
+
+        Log.d(TAG,"starting image loop."+" mem: "+get_mem());
+        for (int i=0; i<images_filename_array.size();i++)
+        {
+            name = images_filename_array.get(i);
+            double exp_value_time = -1 * exp_values.get(i,0)[0];
+            Log.d(TAG,"doing image loop. For "+i+" "+name+" mem: "+get_mem());
+            image = imread(name);
+            for (int c=0; c<channels; c++)
+            {
+                splitted.add(new Mat(rows,cols, CvType.CV_8U, new Scalar(0)));
+            }
+            org.opencv.core.Core.split(image,splitted);
+            image.release();
+            Log.d(TAG,"before big image"+" mem: "+get_mem());
+            Mat w =new Mat(rows,cols, CvType.CV_32F, new Scalar(0));
+            Log.d(TAG,"after big image"+" mem: "+get_mem());
+            for (int c=0;c<channels;c++)
+            {
+                Mat temp = new Mat();
+                Log.d(TAG,"after big image1"+" mem: "+get_mem());
+                org.opencv.core.Core.LUT(splitted.get(c),weights,temp);
+                Log.d(TAG,"after big image2"+" mem: "+get_mem());
+                org.opencv.core.Core.add(w,temp,w);
+                Log.d(TAG,"after big image3"+" mem: "+get_mem());
+                temp.release();
+                Log.d(TAG,"after big image4"+" mem: "+get_mem());
+                org.opencv.core.Core.LUT(splitted.get(c),log_response_split.get(c),splitted.get(c));
+                Log.d(TAG,"after big image5"+" mem: "+get_mem());
+
+                //Log.d(TAG,"after split/add image"+" mem: "+get_mem());
+                //org.opencv.core.Core.divide(w, new Scalar(channels+0.0,channels+0.0,channels+0.0,0.0), w);
+                //Log.d(TAG,"after divide image"+" mem: "+get_mem());
+            }
+
+            Log.d(TAG,"after split/add image"+" mem: "+get_mem());
+            org.opencv.core.Core.divide(w, new Scalar(channels+0.0), w);
+            Log.d(TAG,"after divide image"+" mem: "+get_mem());
+            //Mat response_img = new Mat();
+            //log(TAG,"after new mat image");
+            // moved up
+            //org.opencv.core.Core.LUT(image,log_response,response_img);
+            //log(TAG,"after lut image");
+            //image.release();
+            //org.opencv.core.Core.split(response_img,splitted);
+            Log.d(TAG,"before channel loop"+" mem: "+get_mem());
+            for (int c=0;c<channels;c++)
+            {
+                //Mat minus = new Mat();
+
+
+                org.opencv.core.Core.add(splitted.get(c),new Scalar( exp_value_time),splitted.get(c));
+
+                //Mat mul = new Mat();
+                org.opencv.core.Core.multiply(w,splitted.get(c),splitted.get(c));
+                Log.d(TAG,"after mul loop"+" mem: "+get_mem());
+                org.opencv.core.Core.add(result_split.get(c),splitted.get(c),result_split.get(c));
+                Log.d(TAG,"after add channel loop"+" mem: "+get_mem());
+                //mul.release();
+                //minus.release();
+                splitted.get(c).convertTo(splitted.get(c), CvType.CV_8U);
+                splitted.get(c).release();
+            }
+            Log.d(TAG,"after channel loop image"+" mem: "+get_mem());
+            org.opencv.core.Core.add(weight_sum,w,weight_sum);
+            Log.d(TAG,"after weight add"+" mem: "+get_mem());
+            w.convertTo(w, CvType.CV_8U);
+
+            w.release();
+            System.gc();
+            Log.d(TAG,"after system gc"+" mem: "+get_mem());
+        }
+
+        log(TAG,"done image loop.Doing very long divide... please wait"+" mem: "+get_mem());
+        Mat ones = new Mat(rows,cols, CvType.CV_32F, new Scalar(1.0, 1.0, 1.0));
+        Log.d(TAG,"done image loop1."+" mem: "+get_mem());
+        org.opencv.core.Core.divide( ones, weight_sum, weight_sum);
+        Log.d(TAG,"done image loop2."+" mem: "+get_mem());
+        ones.release();
+        Log.d(TAG,"done image loop3."+" mem: "+get_mem());
+        /*for (int l=0;l<rows;l++)
+        {
+            for (int k=0;k<cols;k++)
+            {
+                weight_sum.put(l,k,1.0/weight_sum.get(l,k)[0]);
+            }
+        }*/
+        for (int c=0;c<channels;c++) {
+            // Do gets work here?
+            org.opencv.core.Core.multiply(result_split.get(c),weight_sum,result_split.get(c));
+            org.opencv.core.Core.exp(result_split.get(c),result_split.get(c));
+            log_response_split.get(c).release();
+        }
+        weight_sum.release();
+
+        Mat result =  new Mat(rows,cols, CvType.CV_32FC3, new Scalar(0, 0, 0)); //<-- big one do without?
+        org.opencv.core.Core.merge(result_split,result);
+        for (int c=0;c<channels;c++)
+        {
+            result_split.get(c).release();
+        }
+        log(TAG,"done merge loop."+" mem: "+get_mem());
+        return(result);
+    }
+
 
     private Camera.PictureCallback pictureListener = new Camera.PictureCallback()
     {
@@ -2381,16 +2742,44 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     else
                     {
                         Log.i(TAG, "Skipped processing of HDR due to flag");
-                        taking_pics = false;
-
-                        if (sound)
-                        {
-                            sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SH_CLOSE"));
-                        }
                     }
-                }
+
+                    taking_pics = false;
+                    Processing = false;
+
+                    endTime = System.currentTimeMillis();
+
+
+                    try
+                    {// we write out the times data to a file
+                        String filename = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/shots_log.txt";
+                        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filename, true)));
+                        String out_times = "Merge: " +MergeHDRI +" | pics: " + numberOfPictures + " | denoise: " + number_of_noise_pics + " | stops: " + stop_jumps +
+                                " | pic part: " + millisToShortDHMS(middleTime - startTime) +
+                                " | HDR part: " + millisToShortDHMS(endTime - middleTime) +
+                                " | total part: " + millisToShortDHMS(endTime - startTime);
+                        out.println(out_times);
+                        log(TAG,out_times);
+                        out.close();
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+
+                    ColorThread = false;
+                    notificationLedBlink(LedTarget.LED3, LedColor.MAGENTA, 2000);
+                    notificationLedHide(LedTarget.LED3);
+                    notificationLedShow(LedTarget.LED3);
+                    notificationLed3Show(LedColor.MAGENTA);
+
+                    if (sound)
+                        sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SH_CLOSE"));
+                    sound = true;
                 }
             }
+        }
     };
 }
 
