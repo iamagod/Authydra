@@ -12,26 +12,31 @@
  * export default python script to recreate hdri offline?
  * support opencv 4
  * support tonemapped jpg in theta default app
- *
+ * sRGB-> lin
+ * whitepoint
+ * total time calculator
+ * set auto off to 10 min
  *
  * TODO v2.1
- * total time calculator
- * fix black hole sun
- * set auto off to 10 min
- * z1 -> raw enable
+ * fix black hole sun (either by comp or in merge function)
  * z1 -> aperture support
- * z1 -> raw processing
- * dng support -> split in two exposures
- * fix time on only pics
- * option for saving as default
- * option for spherical pics faster?
- * option for spliting pics (no more memory error)
- * z1 -> do something with display
+ * z1 better memory -> nomore crashes
+ * z1 save raw option in webinterface
  * better visual and audio count down
  *
- *
+ * TODO v2.2
+ * z1 -> raw processing * ?dng support -> split in two exposures
+ * test: option for spherical pics faster?
+ * raw stichting with opencv
+ * z1 -> do something with display
  *
  * Done:
+ * fix time on only pic
+ * z1 -> raw enable
+ * option for saving as default
+ *
+ *
+ *
  * no caching added
  * better font
  * added divider per day in file menu
@@ -176,6 +181,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
     int cols = 5376;
     int rows = 2688;
+
+    String raw_fname;
 
 
     ArrayList<String> filename_array = new ArrayList<String>();
@@ -1824,11 +1831,13 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
         if (Build.MODEL.equals("RICOH THETA Z1"))
         {
+
             params.set("RIC_DNG_OUTPUT_ENABLED",1);
             params.set("rawsave-mode", 1);
-            String fname = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/"+session_name+"/test.dng";
-            log(TAG,fname);
-            params.set("rawfname",fname ); // may have to set this for every frame captured
+            raw_fname = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/"+session_name+"/test.dng";
+            log(TAG,raw_fname);
+            params.set("rawfname",raw_fname ); // may have to set this for every frame captured
+            log(TAG,"Setting raw file stuff "+raw_fname);
             //params.setPictureFormat(ImageFormat.RAW_SENSOR);
             cols = 6720;
             rows = 3360;
@@ -1886,7 +1895,26 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             //params.set("RIC_WB_TEMPERATURE",  "5100");
             if (Build.MODEL.equals("RICOH THETA Z1"))
             {
-                //params.set("RIC_DNG_OUTPUT_ENABLED",1);
+
+                params.set("RIC_DNG_OUTPUT_ENABLED",1);
+                params.set("rawsave-mode", 1);
+                raw_fname = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/"+session_name+"/test.dng";
+                log(TAG,raw_fname);
+                params.set("rawfname",raw_fname ); // may have to set this for every frame captured
+                log(TAG,"Setting raw file stuff "+raw_fname);
+                //params.setPictureFormat(ImageFormat.RAW_SENSOR);
+                //cols = 6720;
+                //rows = 3360;
+
+                //sensor_pick_resolution: Matched pick_w:3776, pick_h:3710, pick_fps:29.430000, pick_clk:444000000, pick_mode:1
+                //2019-10-18 13:21:55.022 E/mm-camera: <SENSOR><ERROR> 4572: sensor_get_raw_dimension: raw w 3776 h 3710
+
+
+                //cols = 5376;
+                //rows = 2688;
+
+                cols = 7296;
+                rows = 3648;
             }
         }
 
@@ -2370,6 +2398,22 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         return(result);
     }
 
+    private static void copyFileUsingStream(File source, File dest) throws IOException {
+        InputStream is = null;
+        OutputStream os = null;
+        try {
+            is = new FileInputStream(source);
+            os = new FileOutputStream(dest);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = is.read(buffer)) > 0) {
+                os.write(buffer, 0, length);
+            }
+        } finally {
+            is.close();
+            os.close();
+        }
+    }
 
     private Camera.PictureCallback pictureListener = new Camera.PictureCallback()
     {
@@ -2384,6 +2428,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 {
                     String tname = getNowDate();
                     String extra;
+
+
+
                     if ( m_is_auto_pic)
                     {
 
@@ -2653,6 +2700,21 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
                     new File(opath).renameTo(new File(opath_new));
                     log(TAG,"Saving file " + opath_new);
+
+                    raw_fname = opath_new.substring(0, opath_new.length() - 3)+"dng";
+                    File f = new File(raw_fname);
+                    if (!f.exists())
+                    {
+                        String temp = Environment.getExternalStorageDirectory().getPath()+"/temp.dng";
+                        File temp_file = new File(temp);
+                        if (temp_file.exists())
+                        {
+                            log(TAG,"Moved dng file to "+raw_fname+" from "+temp);
+                            //temp_file.renameTo(f);
+                            copyFileUsingStream(temp_file,f);
+                        }
+                    }
+
 
                     log(TAG,"Shot with iso " + exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) +" and a shutter of "+  shutter_speed_string + " sec.\n");
                     if(opath_new.contains("_c1_"))
