@@ -7,7 +7,7 @@
 *VFX automatic HDR capture plugin*
 
 
-A plugin for the Ricoh Theta V to make one HDR exr file. 
+A plugin for the Ricoh Theta V and Z1 to make one HDR exr file. 
 Main use would be for on set VFX HDR capture.
 With a simple webinterface one can set the capture settings
 and download the EXR file (and original pictures if desired)
@@ -57,32 +57,43 @@ This version works with OpenCV 3.4.4 I ran into to some problems with 4.0 which 
 It also generates a tonemapped jpg, just for fun. Haven't been able to get this jpg to show up in the theta ios app. Don't know why maybe someone can help?
 If you want to build it for yourself make sure to change the file paths in the Android.mk file (in the app folder).
 
+***Known Problems***
+- The black hole sun error. When there is a very bright element in your picture. That is still over exposed in the darkest picture this will give a black hole in the final EXR.
+I am looking into this problem. One would be to fix it as post compositing problem. Another onw would be to look better into the HDR merge algorithm and see what is happening there.
+- For some reason the sound is running out of sync. It looks like the buffer is full or something strange like that.
  
 ***Credits***
-
 - The picture taking part is largely based on the work of Ichi Hirota’s dual-fisheye plug-in <https://github.com/theta360developers/original-dual-fisheye-plugin>
 - The integration of OpenCV is a combination of <https://community.theta360.guide/t/ricoh-blog-post-running-opencv-in-your-ricoh-theta/4084> and <https://www.learn2crack.com/2016/03/setup-opencv-sdk-android-studio.html> and a lot of trail and error!
 - The HDR part is based on https://www.learnopencv.com/high-dynamic-range-hdr-imaging-using-opencv-cpp-python/
 - The view in 360 is done using the great kaleidoscope library <https://github.com/thiagopnts/kaleidoscope> by Thiago Pontes
 - The hydra logo is from the free clipart site: https://publicdomainvectors.org/en/free-clipart/Hydra-dragon-vector-silhouette/75432.html
+- The mergeHDR option is added by Zachary Burke
 
 Feel free to change, improve and of course use!
 
 Let me know what you think and run into!
 
 
- * TODO ideas
+  * TODO v2.2
+  * fix black hole sun (either by comp or in merge function)
+  * z1 -> raw processing * ?dng support -> split in two exposures
+  * raw stichting with opencv
+  * z1 -> do something with display
+  * test: option for spherical pics faster?
+  * z1 -> aperture support
+  * z1 dng remove from zip??
+  *
+  *
+  *
+  * TODO ideas
   * export default python script to recreate hdri offline?
   * support opencv 4
-  * fully support Z1
-  * dng support -> split in two exposures
   * support tonemapped jpg in theta default app
-  *
-  * TODO v2.1
+  * sRGB-> lin
+  * whitepoint
   * total time calculator
-  * add abort button (with option to delete)
-  * fix black hole sun
- 
+  * set auto off to 10 min
 
  
 

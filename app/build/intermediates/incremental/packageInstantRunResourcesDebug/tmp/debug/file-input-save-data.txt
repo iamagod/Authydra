@@ -1,0 +1,19 @@
+#Internal package file, do not edit.
+#Fri Jul 19 22:54:15 CEST 2019
+1.base=/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/merged_assets/debug/out
+2.path=kaleidoscope.min.js
+0.baseType=DIRECTORY
+3.baseType=DIRECTORY
+2.base=/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/merged_assets/debug/out
+3.set=ASSET
+2.set=ASSET
+1.baseType=DIRECTORY
+3.path=license.html
+count=4
+1.set=ASSET
+0.path=settings.json
+3.base=/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/merged_assets/debug/out
+0.set=ASSET
+0.base=/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/merged_assets/debug/out
+2.baseType=DIRECTORY
+1.path=index_template.html

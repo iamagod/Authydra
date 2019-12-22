@@ -1,0 +1,219 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:2:1-35:12
+INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:2:1-35:12
+INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:2:1-35:12
+INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:2:1-35:12
+MERGED from [:pluginlibrary] /Users/kasper/Documents/scripts/Authydra/pluginlibrary/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-14:12
+MERGED from [com.android.support:appcompat-v7:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/c3be49300d191a0447d14ee723238258/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /Users/kasper/.gradle/caches/transforms-2/files-2.1/0688172febb4342ded9f49317efddf09/AndroidManifest.xml:2:1-11:12
+MERGED from [:openCVLibrary344] /Users/kasper/Documents/scripts/Authydra/openCVLibrary344/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-11:12
+MERGED from [com.android.support:exifinterface:25.1.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/08337da564ee33e8a16eb63e8b5ed5f2/AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:support-fragment:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/d884abab5fa581af5b883337c71a9717/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/ef9b583b0801bb6fd6242cbf85627c2d/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-ui:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/f7aea716a88ce3d91f4d4ed87666a144/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-utils:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/dce69ec8b5b9db835097ef3403b9567d/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-vector-drawable:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/3b9fe4307232e0bafd55ddc8888fd3f5/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:loader:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/1b0b949b05dfeab3a64158000e2415b2/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:viewpager:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/3c158556c7ee0ddd2c281d16fd26628b/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/2af2c623beba8bf25124c5219d50c2b5/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:drawerlayout:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/14bed3ce88e2f84febda900e2fbf4b17/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/1f7526585505e116fb95cd687cbf724f/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:customview:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/8101c475ac561a234a6fa21f759b35be/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/dc02f3d38f69e8fed1c2753f063ed7eb/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/424bd8a4d2064261f0c48bcf3ae76eb9/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-compat:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/fb50d38a58c6216fe46b68af8d391924/AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/2c91f7635a8d129a4bdb707a9bed59b2/AndroidManifest.xml:17:1-25:12
+MERGED from [com.android.support:cursoradapter:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/27c3cc13270b589d7a7e7a94af29e989/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/7ef9d5d964ae50678479c5aa00353f9c/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:documentfile:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/f14fc6e60ef75654a8cbc69afd1b883d/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/a03b6d46ef1215d73dad2fdef1b32944/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:print:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/3396409229f6124d49ad421ec1656d72/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/90494d411a3e2ddd7babc7131be773b8/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/dbeb133f0e3df2ef0df08eff023be536/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/ee92a2d088e5d130eac93ff8ed48cdca/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.core:runtime:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/db844596b864c3a4c94a6e89e4329d5b/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:interpolator:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/1ee739796bbabdc290aee0f914a232a3/AndroidManifest.xml:17:1-22:12
+INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:2:1-35:12
+INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:2:1-35:12
+INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:2:1-35:12
+	package
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:3:5-34
+		INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:2:1-35:12
+		INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+	android:versionCode
+		INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:2:1-35:12
+		INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:2:11-69
+uses-permission#android.permission.INTERNET
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:4:5-67
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:4:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:5:5-79
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:5:22-76
+uses-permission#android.permission.CAMERA
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:6:5-65
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:6:22-62
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:7:5-81
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:7:22-78
+uses-feature#com.theta360.receptor.v
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:9:5-83
+	android:required
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:9:58-81
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:9:19-57
+uses-feature#com.theta360.receptor.z1
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:10:5-84
+	android:required
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:10:59-82
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:10:19-58
+uses-feature#com.theta360.receptor.webapi
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:12:5-84
+	android:version
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:12:63-82
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:12:19-62
+uses-feature#com.theta360.receptor.mtpapi
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:13:5-84
+	android:version
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:13:63-82
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:13:19-62
+uses-feature#com.theta360.receptor.bleapi
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:14:5-84
+	android:version
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:14:63-82
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:14:19-62
+uses-feature#com.theta360.receptor.pluginapi
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:15:5-87
+	android:version
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:15:66-85
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:15:19-65
+application
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:18:5-33:19
+MERGED from [:pluginlibrary] /Users/kasper/Documents/scripts/Authydra/pluginlibrary/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:5-12:19
+MERGED from [:pluginlibrary] /Users/kasper/Documents/scripts/Authydra/pluginlibrary/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:5-12:19
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /Users/kasper/.gradle/caches/transforms-2/files-2.1/0688172febb4342ded9f49317efddf09/AndroidManifest.xml:9:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /Users/kasper/.gradle/caches/transforms-2/files-2.1/0688172febb4342ded9f49317efddf09/AndroidManifest.xml:9:5-20
+MERGED from [com.android.support:exifinterface:25.1.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/08337da564ee33e8a16eb63e8b5ed5f2/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:exifinterface:25.1.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/08337da564ee33e8a16eb63e8b5ed5f2/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-compat:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/fb50d38a58c6216fe46b68af8d391924/AndroidManifest.xml:22:5-94
+MERGED from [com.android.support:support-compat:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/fb50d38a58c6216fe46b68af8d391924/AndroidManifest.xml:22:5-94
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/2c91f7635a8d129a4bdb707a9bed59b2/AndroidManifest.xml:22:5-23:19
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/2c91f7635a8d129a4bdb707a9bed59b2/AndroidManifest.xml:22:5-23:19
+	android:appComponentFactory
+		ADDED from [com.android.support:support-compat:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/fb50d38a58c6216fe46b68af8d391924/AndroidManifest.xml:22:18-91
+	android:supportsRtl
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:24:9-35
+	android:label
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:22:9-33
+	android:roundIcon
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:23:9-54
+	android:icon
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:21:9-43
+	android:allowBackup
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:20:9-35
+	android:theme
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:25:9-40
+activity#com.kasper.authydra.MainActivity
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:26:9-32:20
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:26:19-47
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:27:13-31:29
+action#android.intent.action.MAIN
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:28:17-69
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:28:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:30:17-77
+	android:name
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml:30:27-74
+uses-sdk
+INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+MERGED from [:pluginlibrary] /Users/kasper/Documents/scripts/Authydra/pluginlibrary/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [:pluginlibrary] /Users/kasper/Documents/scripts/Authydra/pluginlibrary/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [com.android.support:appcompat-v7:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/c3be49300d191a0447d14ee723238258/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:appcompat-v7:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/c3be49300d191a0447d14ee723238258/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /Users/kasper/.gradle/caches/transforms-2/files-2.1/0688172febb4342ded9f49317efddf09/AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /Users/kasper/.gradle/caches/transforms-2/files-2.1/0688172febb4342ded9f49317efddf09/AndroidManifest.xml:5:5-7:41
+MERGED from [:openCVLibrary344] /Users/kasper/Documents/scripts/Authydra/openCVLibrary344/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [:openCVLibrary344] /Users/kasper/Documents/scripts/Authydra/openCVLibrary344/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [com.android.support:exifinterface:25.1.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/08337da564ee33e8a16eb63e8b5ed5f2/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:exifinterface:25.1.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/08337da564ee33e8a16eb63e8b5ed5f2/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-fragment:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/d884abab5fa581af5b883337c71a9717/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/d884abab5fa581af5b883337c71a9717/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/ef9b583b0801bb6fd6242cbf85627c2d/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/ef9b583b0801bb6fd6242cbf85627c2d/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/f7aea716a88ce3d91f4d4ed87666a144/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/f7aea716a88ce3d91f4d4ed87666a144/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/dce69ec8b5b9db835097ef3403b9567d/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/dce69ec8b5b9db835097ef3403b9567d/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/3b9fe4307232e0bafd55ddc8888fd3f5/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/3b9fe4307232e0bafd55ddc8888fd3f5/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:loader:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/1b0b949b05dfeab3a64158000e2415b2/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:loader:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/1b0b949b05dfeab3a64158000e2415b2/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:viewpager:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/3c158556c7ee0ddd2c281d16fd26628b/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:viewpager:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/3c158556c7ee0ddd2c281d16fd26628b/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/2af2c623beba8bf25124c5219d50c2b5/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/2af2c623beba8bf25124c5219d50c2b5/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:drawerlayout:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/14bed3ce88e2f84febda900e2fbf4b17/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:drawerlayout:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/14bed3ce88e2f84febda900e2fbf4b17/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/1f7526585505e116fb95cd687cbf724f/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/1f7526585505e116fb95cd687cbf724f/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:customview:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/8101c475ac561a234a6fa21f759b35be/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:customview:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/8101c475ac561a234a6fa21f759b35be/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/dc02f3d38f69e8fed1c2753f063ed7eb/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/dc02f3d38f69e8fed1c2753f063ed7eb/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/424bd8a4d2064261f0c48bcf3ae76eb9/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/424bd8a4d2064261f0c48bcf3ae76eb9/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/fb50d38a58c6216fe46b68af8d391924/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/fb50d38a58c6216fe46b68af8d391924/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/2c91f7635a8d129a4bdb707a9bed59b2/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/2c91f7635a8d129a4bdb707a9bed59b2/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cursoradapter:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/27c3cc13270b589d7a7e7a94af29e989/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cursoradapter:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/27c3cc13270b589d7a7e7a94af29e989/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/7ef9d5d964ae50678479c5aa00353f9c/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/7ef9d5d964ae50678479c5aa00353f9c/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:documentfile:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/f14fc6e60ef75654a8cbc69afd1b883d/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:documentfile:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/f14fc6e60ef75654a8cbc69afd1b883d/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/a03b6d46ef1215d73dad2fdef1b32944/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/a03b6d46ef1215d73dad2fdef1b32944/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:print:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/3396409229f6124d49ad421ec1656d72/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:print:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/3396409229f6124d49ad421ec1656d72/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/90494d411a3e2ddd7babc7131be773b8/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/90494d411a3e2ddd7babc7131be773b8/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/dbeb133f0e3df2ef0df08eff023be536/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/dbeb133f0e3df2ef0df08eff023be536/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/ee92a2d088e5d130eac93ff8ed48cdca/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/ee92a2d088e5d130eac93ff8ed48cdca/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/db844596b864c3a4c94a6e89e4329d5b/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.1] /Users/kasper/.gradle/caches/transforms-2/files-2.1/db844596b864c3a4c94a6e89e4329d5b/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:interpolator:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/1ee739796bbabdc290aee0f914a232a3/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:interpolator:28.0.0] /Users/kasper/.gradle/caches/transforms-2/files-2.1/1ee739796bbabdc290aee0f914a232a3/AndroidManifest.xml:20:5-44
+INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+		ADDED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/kasper/Documents/scripts/Authydra/app/src/main/AndroidManifest.xml

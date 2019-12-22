@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kasper.authydra"
+    android:targetSandboxVersion="2"
+    android:versionCode="2"
+    android:versionName="2.1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="25"
+        android:targetSdkVersion="28" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-feature
+        android:name="com.theta360.receptor.v"
+        android:required="true" />
+    <uses-feature
+        android:name="com.theta360.receptor.z1"
+        android:required="true" />
+    <uses-feature
+        android:name="com.theta360.receptor.webapi"
+        android:version="2" />
+    <uses-feature
+        android:name="com.theta360.receptor.mtpapi"
+        android:version="1" />
+    <uses-feature
+        android:name="com.theta360.receptor.bleapi"
+        android:version="1" />
+    <uses-feature
+        android:name="com.theta360.receptor.pluginapi"
+        android:version="1" />
+
+    <application
+        android:allowBackup="true"
+        android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
+        android:debuggable="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Authydra"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:testOnly="true"
+        android:theme="@style/AppTheme" >
+        <activity android:name="com.kasper.authydra.MainActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="com.android.tools.ir.server.InstantRunContentProvider"
+            android:authorities="com.kasper.authydra.com.android.tools.ir.server.InstantRunContentProvider"
+            android:multiprocess="true" />
+    </application>
+
+</manifest>

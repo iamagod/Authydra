@@ -1,0 +1,15 @@
+rm -f /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/*
+rm -f /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdbserver
+rm -f /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdb.setup
+mkdir -p /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/armeabi-v7a
+echo [armeabi-v7a] "Gdbserver      ": "[arm-linux-androideabi] /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdbserver"
+install -p /Users/kasper/Library/Android/sdk/ndk-bundle/prebuilt/android-arm/gdbserver/gdbserver /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdbserver
+echo [armeabi-v7a] "Gdbsetup       ": "/Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdb.setup"
+echo "set solib-search-path /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/obj/local/armeabi-v7a" > /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdb.setup
+echo "directory /Users/kasper/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/sysroot /Users/kasper/Documents/scripts/Authydra/app/src/main/jniLibs /Users/kasper/Library/Android/sdk/ndk-bundle/sources/cxx-stl/system" >> /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdb.setup
+mkdir -p /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/obj/local/armeabi-v7a
+echo [armeabi-v7a] "SharedLibrary  ": "libapp.so"
+/Users/kasper/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ -Wl,-soname,libapp.so -shared -lgcc -Wl,--exclude-libs,libgcc.a -latomic -Wl,--exclude-libs,libatomic.a -target armv7-none-linux-androideabi24 -no-canonical-prefixes    -Wl,--build-id -Wl,--build-id -stdlib=libstdc++ -Wl,--no-undefined -Wl,-z,noexecstack -Wl,--warn-shared-textrel -Wl,--fatal-warnings   -lc -lm -o /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/obj/local/armeabi-v7a/libapp.so
+echo [armeabi-v7a] "Install        ": "libapp.so => /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/libapp.so"
+install -p /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/obj/local/armeabi-v7a/libapp.so /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/libapp.so
+/Users/kasper/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/arm-linux-androideabi-strip --strip-unneeded  /Users/kasper/Documents/scripts/Authydra/app/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/libapp.so
