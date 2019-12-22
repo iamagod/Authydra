@@ -8,6 +8,24 @@
  * curl -X POST http://192.168.1.1/osc/commands/execute --data '{"name": "camera._setPlugin","parameters": {"packageName": "com.kasper.authydra","boot":true,"force":false}}' -H 'content-type: application/json'
  * curl -X POST 192.168.1.1/osc/commands/execute --data '{"name":"camera._listPlugins"}' -H 'content-type: application/json'
  *
+ *
+ * TODO v2.1
+ *
+ *
+ *
+ *
+ *
+ * TODO v2.2
+ * fix black hole sun (either by comp or in merge function)
+ * z1 -> raw processing * ?dng support -> split in two exposures
+ * raw stichting with opencv
+ * z1 -> do something with display
+ * test: option for spherical pics faster?
+ * z1 -> aperture support
+ * z1 dng remove from zip??
+ *
+ *
+ *
  * TODO ideas
  * export default python script to recreate hdri offline?
  * support opencv 4
@@ -17,24 +35,15 @@
  * total time calculator
  * set auto off to 10 min
  *
- * TODO v2.1
- * fix black hole sun (either by comp or in merge function)
- * z1 -> aperture support
+ *
+ *
+ * TODO Done:
  * z1 better memory -> nomore crashes
- * z1 save raw option in webinterface
- * better visual and audio count down
- *
- * TODO v2.2
- * z1 -> raw processing * ?dng support -> split in two exposures
- * test: option for spherical pics faster?
- * raw stichting with opencv
- * z1 -> do something with display
- *
- * Done:
  * fix time on only pic
  * z1 -> raw enable
  * option for saving as default
- *
+ * fixed sound error
+ * z1 save raw option in webinterface
  *
  *
  * no caching added
@@ -146,6 +155,7 @@ import java.util.ArrayList;
 import static java.lang.Thread.sleep;
 import java.util.concurrent.TimeUnit;
 
+import java.util.zip.Deflater;
 import java.util.zip.ZipOutputStream;
 import java.util.zip.ZipEntry;
 import java.io.BufferedInputStream;
@@ -192,6 +202,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     Boolean Processing = false;
     Boolean sound = true;
     Boolean MergeHDRI = true;
+    Boolean SaveDNG = true;
 
     String auto_pic = "";
     String encodedImage = "";
@@ -226,6 +237,12 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     private boolean m_is_bracket = true;
     private boolean m_is_auto_pic = true;
     boolean abort = false;
+
+    Intent shutter = new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER");
+    Intent sh_open = new Intent("com.theta360.plugin.ACTION_AUDIO_SH_OPEN");
+    Intent sh_close = new Intent("com.theta360.plugin.ACTION_AUDIO_SH_CLOSE");
+    Intent sh_self = new Intent("com.theta360.plugin.ACTION_AUDIO_SELF");
+
 
     Double shutter_table[][] =
             {
@@ -410,12 +427,12 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             } else {
                 byte data[] = new byte[BUFFER];
                 String unmodifiedFilePath = file.getPath();
-                String relativePath = unmodifiedFilePath
-                        .substring(basePathLength);
+                String relativePath = unmodifiedFilePath.substring(basePathLength);
                 FileInputStream fi = new FileInputStream(unmodifiedFilePath);
                 origin = new BufferedInputStream(fi, BUFFER);
                 ZipEntry entry = new ZipEntry(relativePath);
                 entry.setTime(file.lastModified()); // to keep modification time after unzipping
+                out.setLevel(Deflater.NO_COMPRESSION);
                 out.putNextEntry(entry);
                 int count;
                 while ((count = origin.read(data, 0, BUFFER)) != -1) {
@@ -605,18 +622,15 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         fill_iso_lut();
         fill_shutter_lut();
 
-
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = pref.edit();
 
         MergeHDRI = pref.getBoolean("MergeHDRI", true);
         sound = pref.getBoolean("sound", true);
+        SaveDNG = pref.getBoolean("SaveDNG", true);
         stopjump = pref.getString("stopjump", "auto");
         numberOfPictures = pref.getInt("numberOfPictures", 9);
         number_of_noise_pics = pref.getInt("number_of_noise_pics", 3);
-
-
-
 
         log(TAG,"Available disk space is: "+bytesToHuman(free_disk())+" " +free_disk());
 
@@ -637,21 +651,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     //5sec delay timer to run away
                     try
                     {
-                        sleep(1000);
-                        if (sound) sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER"));
-                        log(TAG,"4 seconds delay to run away.");
+                        if (sound) sendBroadcast(sh_self);
 
-                        sleep(1000);
-                        if (sound) sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER"));
-                        log(TAG,"3 seconds delay to run away.");
-
-                        sleep(1000);
-                        if (sound) sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER"));
-                        log(TAG,"2 seconds delay to run away.");
-
-                        sleep(1000);
-                        if (sound) sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER"));
-                        log(TAG,"1 seconds delay to run away.");
+                        sleep(5000);
 
                     }
                     catch (InterruptedException e)
@@ -785,808 +787,844 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     private class WebServer extends NanoHTTPD
     {
 
-    private static final int PORT = 8888;
-    private Context context;
+        private static final int PORT = 8888;
+        private Context context;
 
-    public WebServer(Context context)
-    {
-        super(PORT);
-        this.context = context;
-    }
-
-    @Override
-    public Response serve(IHTTPSession session)
-    {
-        String uri = session.getUri();
-        String msg ="";
-
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = pref.edit();
-
-        //Log.i("web", "Uri is " + uri);
-        try
+        public WebServer(Context context)
         {
-            session.parseBody(new HashMap<String, String>());
-        } catch (ResponseException | IOException r)
-        {
-            r.printStackTrace();
-        }
-        Map<String, String> parms = session.getParms();
-        for (String key : parms.keySet())
-        {
-            Log.d("web", key + "=" + parms.get(key));
+            super(PORT);
+            this.context = context;
         }
 
-        if (uri.equals("/toZIP"))
+        @Override
+        public Response serve(IHTTPSession session)
         {
-            Log.i("web","Doing folder convert");
-            File[] contents = new File("/storage/emulated/0/DCIM/100RICOH/").listFiles();
-            for (File f: contents)
-            {
-                if (f.isDirectory())
-                {
-                    Log.i("web","Converting folder "+f.getAbsolutePath()+" to ZIP.");
-                    zipFileAtPath(f.getAbsolutePath(),f.getAbsolutePath()+".ZIP");
-                }
-            }
-            Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
-            r.addHeader("Location", "http://192.168.1.1:8888/files");
-            return r;
+            String uri = session.getUri();
+            String msg ="";
 
-        }
-        else if (uri.equals("/abort"))
-        {
-            abort = true;
-            taking_pics = false;
-            // stop potential long exposure
-            Camera.Parameters params = mCamera.getParameters();
-            params.set("RIC_CAPTURE_BREAK", "RicStillCaptureBreak");
-            mCamera.setParameters(params);
-            log(TAG, "------------- ABORT WAS PRESSED!!! --------------");
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = pref.edit();
 
-            Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
-            r.addHeader("Location", "http://192.168.1.1:8888");
-            return r;
-        }
-        else if (uri.equals("/files"))
-        {
-            File[] contents = new File("/storage/emulated/0/DCIM/100RICOH/").listFiles();
-            Arrays.sort(contents);
-            Log.i("web","number of files found: "+contents.length);
-            msg = "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">"+
-                    "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n" +
-                    "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n" +
-                    "<meta http-equiv=\"Expires\" content=\"0\" />"+
-                    "<html>"+
-                    "<style>.abutton {" +
-                    "background-color: #555555;" +
-                    "border: 0;" +
-                    "border-radius: 0px;"+
-                    "color: black;" +
-                    "padding: 5px 10px;" +
-                    "text-align: center;" +
-                    "text-decoration: none;" +
-                    "display: inline-block;" +
-                    "font-size: 10px;" +
-                    "margin: 2px 1px;" +
-                    "cursor: pointer;" +
-                    "}</style>" +
-                    "<body style='background-color:black;color:white; font-family:arial;' ><center><h1>Manage Files</h1></center>";
-            String txt_color = "white";
-            if (free_disk()<250000000)
-            {
-                txt_color = "red";
-            }
-            msg += "<span style='color:"+txt_color+";'><center>Available disk space is "+ bytesToHuman(free_disk())+"</center></span><br><hr>";
-            String previous_file = "";
-            String previous_date = "";
-            SimpleDateFormat formatter= new SimpleDateFormat("EEEE dd MMMM yyyy");
-
-            for (File f: contents)
-            {
-                Log.d("web","File found: "+f.getName());
-                String size_dir_text ="";
-                if (f.isDirectory())
-                {
-                    size_dir_text = "folder";
-                }
-                else
-                {
-                    long size = f.length();
-                    if (size > 1000000000) {
-                        // Gigabyte
-                        size_dir_text = java.lang.Math.floor(size / 1000000000) + " Gb";
-                    } else if (size > 1000000) {
-                        // Megabyte
-                        size_dir_text = java.lang.Math.floor(size / 1000000) + " Mb";
-                    } else if (size > 1000) {
-                        // Kilobyte
-                        size_dir_text = java.lang.Math.floor(size / 1000000000) + " Kb";
-                    } else {
-                        // byte
-                        size_dir_text = java.lang.Math.floor(size) + " b";
-                    }
-                }
-                if (previous_file != "")
-                {
-                    String core_name = f.getName().split("\\.")[0];
-                    Log.d("web","Core name: "+core_name);
-                    if (!core_name.equals(previous_file))
-                    {
-                        // different file so lets add break
-                        msg += "<hr>";
-                    }
-                }
-                if (previous_date == "" || !previous_date.equals(formatter.format(new Date(f.lastModified()))))
-                {
-                    msg += formatter.format(new Date(f.lastModified())) + "<hr>";
-                }
-
-                // add 360 button for jpg files
-                String extension ="";
-                int i = f.getName().lastIndexOf('.');
-                if (i > 0)  extension = f.getName().substring(i+1).toLowerCase();
-                Log.d("web","extension is  "+extension);
-
-                String button ="";
-                if (extension !="" && (extension.equals("jpg") ||  extension.equals("jpeg")))// add special 360 viewer
-                {
-                    button ="<button class='abutton' type=\"v360\" formaction=\"http://192.168.1.1:8888/v360="+f.getName()+"\">"+f.getName()+"</button>";
-                }
-                else // not jpg
-                {
-                    button = f.getName();
-                }
-
-                msg += "<form action=\"http://192.168.1.1:8888/download="+f.getName()+"\" method=\"get\">" +
-                "  <button class='abutton' type=\"Download\">Download</button>" + button +
-                "  <button class='abutton' type=\"Delete\" formaction=\"http://192.168.1.1:8888/delete="+f.getName()+"\">Delete</button>" + size_dir_text+
-                "</form>";
-
-                previous_file = f.getName();
-                previous_file = previous_file.split("\\.")[0];
-                Log.d("web","previous_file "+previous_file);
-
-                previous_date = formatter.format(new Date(f.lastModified()));
-
-            }
-
-            msg += "<br><br><center><a href='http://192.168.1.1:8888'> <input type='button' class='abutton' value='Return'></center><br><br>" +
-                    "</font></body></html>";
-
-            return newFixedLengthResponse(msg );
-        }
-        else if (uri.contains("/delete="))
-        {
-            String name = uri.split("=")[1];
-            Log.i("web","Selected file is of files found: "+name);
-            msg =   "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">" +
-                    "<style>.abutton {" +
-                    "background-color: #555555;" +
-                    "border: 0;" +
-                    "border-radius: 0px;"+
-                    "color: black;" +
-                    "padding: 15px 30px;" +
-                    "text-align: center;" +
-                    "text-decoration: none;" +
-                    "display: inline-block;" +
-                    "font-size: 18px;" +
-                    "margin: 4px 2px;" +
-                    "cursor: pointer;" +
-                    "}</style>" +
-
-                    "<html><body style='background-color:black;color:white; font-family:arial;' >"+
-                    "<center><h1>Delete:</h1>"+ name +"?<br><br><br>"+
-            "<a href='http://192.168.1.1:8888/delyes=" + name + "'> <input type='button' class='abutton' value='YES'>" +
-            "<a href='http://192.168.1.1:8888/files'> <input type='button' class='abutton' value='NO'>" +
-            "</center></font></body></html>";
-
-            return newFixedLengthResponse(msg );
-
-        }
-        else if (uri.contains("/delyes="))
-        {
-            String name = uri.split("=")[1];
-            Log.i("web", "Deleting: " + name);
-            File file = new File("/storage/emulated/0/DCIM/100RICOH/" + name);
-            if (file.isDirectory())
-            {
-                deleteDir(file);
-            }
-            else
-            {
-                file.delete();
-            }
-            Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
-            r.addHeader("Location", "http://192.168.1.1:8888/files");
-            return r;
-        }
-        else if (uri.contains("/v360="))
-        {
-            String name = uri.split("=")[1];
-            Log.i("web", "v360 file is : " + name);
-            String file_uri = Uri.parse(Environment.getExternalStorageDirectory().getPath()+"/DCIM/100RICOH/" + name).toString();
-            Log.i("web", "v360 file uri is : " + file_uri);
-            FileInputStream fis = null;
-            String path = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + name;
-            File file = new File(path);
-            String js_lib ="";
-
+            //Log.i("web", "Uri is " + uri);
             try
             {
-                // setup js library
-                //InputStream is = this.getResources().openRawResource(R.raw.kaleidoscope);
-                AssetManager am = context.getAssets();
-                InputStream inStream = am.open("kaleidoscope.min.js");
-                //String path_k = "android.resource://" + getPackageName() + "/" + R.raw.kaleidoscope;
-                //InputStream inStream = new FileInputStream(path_k);
-                BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
-                String readLine = null;
-                while ((readLine = br.readLine()) != null){ js_lib += readLine;}
-            } catch (IOException e) {e.printStackTrace();}
-
-            Log.d("web","begin of js lib is "+js_lib.substring(0,30));
-
-            // setup jpg read
-            if (file.exists())
+                session.parseBody(new HashMap<String, String>());
+            } catch (ResponseException | IOException r)
             {
-                /*
-                Log.i(TAG,"before jpg read.");
-                Mat t_pic = new Mat();
-                t_pic = imread(path);
+                r.printStackTrace();
+            }
+            Map<String, String> parms = session.getParms();
+            for (String key : parms.keySet())
+            {
+                Log.d("web", key + "=" + parms.get(key));
+            }
 
-                Imgproc.resize(t_pic, t_pic, new Size(cols*0.15,rows*0.15),Imgproc.INTER_LINEAR);
-                compressParams_jpg = new MatOfInt(org.opencv.imgcodecs.Imgcodecs.IMWRITE_JPEG_QUALITY , 60);
-                String  new_name = auto_pic.substring(0,auto_pic.length()-4)+"_small.jpg";
-                Log.i(TAG,"after jpg read."+new_name);
-                imwrite(new_name, t_pic,compressParams_jpg);
-                compressParams_jpg = new MatOfInt(org.opencv.imgcodecs.Imgcodecs.IMWRITE_JPEG_QUALITY , 100);
-                t_pic.release();
-                Log.i(TAG,"after jpg read."+new_name);
-                */
-
-                InputStream inStream = null;
-                BufferedInputStream bis = null;
-                try
+            if (uri.equals("/toZIP"))
+            {
+                Log.i("web","Doing folder convert");
+                File[] contents = new File("/storage/emulated/0/DCIM/100RICOH/").listFiles();
+                for (File f: contents)
                 {
-                    inStream = new FileInputStream(path);
-                    bis = new BufferedInputStream(inStream);
-                    byte[] imageBytes = new byte[0];
-                    for (byte[] ba = new byte[bis.available()];
-                         bis.read(ba) != -1; ) {
-                        byte[] baTmp = new byte[imageBytes.length + ba.length];
-                        System.arraycopy(imageBytes, 0, baTmp, 0, imageBytes.length);
-                        System.arraycopy(ba, 0, baTmp, imageBytes.length, ba.length);
-                        imageBytes = baTmp;
-                    }
-                    encodedImage = encodeArray(imageBytes);
-                }
-                catch(Exception e){ e.printStackTrace();}
-                finally
-                {   // releases any system resources associated with the stream
-                    try
+                    if (f.isDirectory())
                     {
-                        if (inStream != null) inStream.close();
-                        if (bis != null) bis.close();
+                        Log.i("web","Converting folder "+f.getAbsolutePath()+" to ZIP.");
+                        zipFileAtPath(f.getAbsolutePath(),f.getAbsolutePath()+".ZIP");
                     }
-                    catch(Exception e){e.printStackTrace();}
                 }
-
-            }
-
-            msg += "<!DOCTYPE HTML>\n" +
-                    "<html>\n" +
-                    "<head>\n" +
-                    "    <meta charset=\"utf-8\">\n" +
-                    "    <title>Kaleidoscope image example</title>\n" +
-                    "    <script type=\"text/javascript\" charset=\"utf-8\" >"+ js_lib + "</script>\n" +
-                    "</head>\n" +
-                    "<body>\n" +
-                    "    <div id=\"container360\"></div>\n" +
-                    "    <script type=\"text/javascript\" charset=\"utf-8\">\n" +
-                    "   var image = new Image();\n" +
-                    "   image.src = 'data:image/png;base64,"+encodedImage+"';" +
-                    "   (function() {\n" +
-                    "    var viewer = new Kaleidoscope.Image({\n" +
-                    "        source: image,\n" +
-                    "        containerId: '#container360',\n" +
-                    "        height: window.innerHeight,\n" +
-                    "        width: window.innerWidth,\n" +
-                    "    });\n" +
-                    "    viewer.render();\n" +
-                    "    window.onresize = function() {\n" +
-                    "        viewer.setSize({height: window.innerHeight, width: window.innerWidth});\n" +
-                    "    };\n" +
-                    "})();\n" +
-                    "    </script>\n" +
-                    "</body>\n" +
-                    "</html>";
-            return newFixedLengthResponse(msg);
-
-
-        }
-        else if (uri.contains("/download="))
-        {
-            String name = uri.split("=")[1];
-            Log.i("web","Download file is : "+name);
-            FileInputStream fis = null;
-            String path = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/"+name;
-            File file = new File(path);
-
-            if (file.isDirectory())
-            {
-                Log.i("web","Converting folder "+file.getAbsolutePath()+" to ZIP.");
-                zipFileAtPath(file.getAbsolutePath(),file.getAbsolutePath()+".ZIP");
-                file = new File(file.getAbsolutePath()+".ZIP");
-            }
-            try
-            {
-                if (file.exists())
-                {
-                    Log.d("web", "Downloading " + file.getName());
-                    fis = new FileInputStream(file);
-                }
-                else
-                {
-                    Log.d("web", "File Not exists: ");
-                    Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
-                    r.addHeader("Location", "http://192.168.1.1:8888/files");
-                    return r;
-                }
-
-            }
-            catch (FileNotFoundException e)
-            {
-                e.printStackTrace();
-            }
-
-            String extension ="";
-            int i = path.lastIndexOf('.');
-            if (i > 0)
-            {
-                extension = path.substring(i+1);
-            }
-
-            String mimetype = "application/octet-stream";
-            if (extension.toLowerCase() == "jpg" || extension.toLowerCase() == "jpeg")
-            {
-                mimetype = "image/jpeg";
-            }
-            else if (extension.toLowerCase() == "zip" )
-            {
-                mimetype = "application/zip";
-            }
-            else if (extension.toLowerCase() == "mp4" )
-            {
-                mimetype = "video/mp4";
-            }
-
-            return newFixedLengthResponse(Response.Status.OK, mimetype, fis, file.length());
-
-        }
-        else if (uri.equals("/pic"))
-        {
-            if (parms.get("brackets") == null || parms.get("brackets").isEmpty()
-               || parms.get("denoise") == null || parms.get("denoise").isEmpty()
-               || parms.get("stopjump") == null || parms.get("stopjump").isEmpty())
-            {
-                Log.i("web", "Taking picture. With brackets at 1 and denoise at 1. Web simple.");
-                numberOfPictures = 1;
-                number_of_noise_pics = 1;
-                stopjump ="auto";
-                sound = true;
-                MergeHDRI = true;
-            }
-            else
-            {
-                Log.i("web", "Taking picture. With brackets at " + parms.get("brackets") + " and denoise at " + parms.get("denoise") + " Sound: " + parms.get("sound") + " and merge: " + parms.get("merge"));
-                numberOfPictures = Integer.parseInt(parms.get("brackets"));
-                number_of_noise_pics = Integer.parseInt(parms.get("denoise"));
-                stopjump = parms.get("stopjump");
-
-                if (parms.get("merge") == null || parms.get("merge").isEmpty() || !Boolean.parseBoolean(parms.get("merge")))
-                {
-                    MergeHDRI = false;
-                    Log.i("web","turned HDRI merging off.");
-                }
-
-                if (parms.get("sound") == null || parms.get("sound").isEmpty()||(!parms.get("sound").equals("true")))
-                {
-                    sound =false;
-                    Log.i("web","turned sound off.");
-                }
-            }
-            if (!taking_pics)
-            {
-                makePicture();
-                taking_pics = true;
-                message_log = "";
-                msg = "<meta http-equiv='refresh' content='0.5; URL=http://192.168.1.1:8888/refresh'>"+
-                        "<html><body style='background-color:black;color:white; font-family:arial;' ><h1>Busy taking pictures</h1><br>Doing:<br>" ;
-                //"<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form></font></body></html>";
-                return newFixedLengthResponse(msg );
-            }
-
-            else
-            {
                 Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
-                r.addHeader("Location", "http://192.168.1.1:8888/refresh");
+                r.addHeader("Location", "http://192.168.1.1:8888/files");
+                return r;
+
+            }
+            else if (uri.equals("/abort"))
+            {
+                abort = true;
+                taking_pics = false;
+                // stop potential long exposure
+                Camera.Parameters params = mCamera.getParameters();
+                params.set("RIC_CAPTURE_BREAK", "RicStillCaptureBreak");
+                mCamera.setParameters(params);
+                log(TAG, "------------- ABORT WAS PRESSED!!! --------------");
+
+                Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
+                r.addHeader("Location", "http://192.168.1.1:8888");
                 return r;
             }
-        }
-        else if (uri.equals("/save_default"))
-        {
-
-            if (parms.get("brackets") == null || parms.get("brackets").isEmpty()
-                    || parms.get("denoise") == null || parms.get("denoise").isEmpty()
-                    || parms.get("stopjump") == null || parms.get("stopjump").isEmpty())
+            else if (uri.equals("/files"))
             {
-                Log.i(TAG, "Saving default. With brackets at 1 and denoise at 1.");
-                numberOfPictures = 1;
-                number_of_noise_pics = 1;
-                stopjump ="auto";
-                sound = true;
-                MergeHDRI = true;
-            }
-            else
-            {
-                Log.i(TAG, "Saving default. With brackets at " + parms.get("brackets") + " and denoise at " + parms.get("denoise") + " Sound: " + parms.get("sound") + " and merge: " + parms.get("merge"));
-                numberOfPictures = Integer.parseInt(parms.get("brackets"));
-                number_of_noise_pics = Integer.parseInt(parms.get("denoise"));
-                stopjump = parms.get("stopjump");
-
-                if (parms.get("merge") == null || parms.get("merge").isEmpty() || !Boolean.parseBoolean(parms.get("merge")))
-                {
-                    MergeHDRI = false;
-                    Log.i(TAG,"turned HDRI merging off.");
-                }
-                else
-                {
-                    MergeHDRI = true;
-                }
-
-                if (parms.get("sound") == null || parms.get("sound").isEmpty()||(!parms.get("sound").equals("true")))
-                {
-                    sound =false;
-                    Log.i(TAG,"turned sound off.");
-                }
-                else
-                {
-                    sound = true;
-                }
-            }
-
-            editor.putBoolean("MergeHDRI", MergeHDRI);
-            editor.putBoolean("sound", sound);
-            editor.putString("stopjump", stopjump);
-            editor.putInt("numberOfPictures", numberOfPictures);
-            editor.putInt("number_of_noise_pics", number_of_noise_pics);
-            editor.commit(); // commit changes
-
-            msg = "<html><head>" +
-                    "<script type='text/javascript'>" +
-                    "alert('Saved default settings');" +
-                    "window.location = 'http://192.168.1.1:8888';"+
-                    "</script></head>";
-            log(TAG, msg);
-            msg += "<body style='background-color:black;'><font color='white'>></body></html>";
-            return newFixedLengthResponse(msg);
-
-        }
-        else if (uri.equals("/refresh"))
-        {
-            if (taking_pics)
-            {
-                done_taking_pics = true;
-                //Log.i("web", "refresh taking pics is true");
-
-
-                msg = "<meta http-equiv='refresh' content='1; URL=http://192.168.1.1:8888/refresh'>" +
+                File[] contents = new File("/storage/emulated/0/DCIM/100RICOH/").listFiles();
+                Arrays.sort(contents);
+                Log.i("web","number of files found: "+contents.length);
+                msg = "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">"+
                         "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n" +
                         "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n" +
                         "<meta http-equiv=\"Expires\" content=\"0\" />"+
-                        "<head>\n" +
+                        "<html>"+
                         "<style>.abutton {" +
                         "background-color: #555555;" +
                         "border: 0;" +
                         "border-radius: 0px;"+
                         "color: black;" +
-                        "padding: 10px 20px;" +
+                        "padding: 5px 10px;" +
                         "text-align: center;" +
                         "text-decoration: none;" +
                         "display: inline-block;" +
-                        "font-size: 14px;" +
+                        "font-size: 10px;" +
                         "margin: 2px 1px;" +
                         "cursor: pointer;" +
                         "}</style>" +
-                        "<style>.green {" +
-                        "color: green;" +
-                        "}"+
-                        "<style>.gray {" +
-                        "color: gray;" +
-                        "}"+
-                        "<style>.white {" +
-                        "color: white;" +
-                        "}"+
-
-                        "table, tr {\n" +
-                        "  border: 1px solid white; color: white;\n" +
-                        "}\n" +
-                        "</style>"+
-                        "<html><body style='background-color:black;color:white; font-family:arial;' >"+
-                        "<center><h1>Busy taking pictures<br><br>";
-                if (!Processing)
+                        "<body style='background-color:black;color:white; font-family:arial;' ><center><h1>Manage Files</h1></center>";
+                String txt_color = "white";
+                if (free_disk()<250000000)
                 {
-                    msg += "<span style='color:red;'>Taking pictures,<br> do not move the camera!</span><br></h1>";
+                    txt_color = "red";
+                }
+                msg += "<span style='color:"+txt_color+";'><center>Available disk space is "+ bytesToHuman(free_disk())+"</center></span><br><hr>";
+                String previous_file = "";
+                String previous_date = "";
+                SimpleDateFormat formatter= new SimpleDateFormat("EEEE dd MMMM yyyy");
+
+                for (File f: contents)
+                {
+                    Log.d("web","File found: "+f.getName());
+                    String size_dir_text ="";
+                    if (f.isDirectory())
+                    {
+                        size_dir_text = "folder";
+                    }
+                    else
+                    {
+                        long size = f.length();
+                        if (size > 1000000000) {
+                            // Gigabyte
+                            size_dir_text = java.lang.Math.floor(size / 1000000000) + " Gb";
+                        } else if (size > 1000000) {
+                            // Megabyte
+                            size_dir_text = java.lang.Math.floor(size / 1000000) + " Mb";
+                        } else if (size > 1000) {
+                            // Kilobyte
+                            size_dir_text = java.lang.Math.floor(size / 1000000000) + " Kb";
+                        } else {
+                            // byte
+                            size_dir_text = java.lang.Math.floor(size) + " b";
+                        }
+                    }
+                    if (previous_file != "")
+                    {
+                        String core_name = f.getName().split("\\.")[0];
+                        Log.d("web","Core name: "+core_name);
+                        if (!core_name.equals(previous_file))
+                        {
+                            // different file so lets add break
+                            msg += "<hr>";
+                        }
+                    }
+                    if (previous_date == "" || !previous_date.equals(formatter.format(new Date(f.lastModified()))))
+                    {
+                        msg += formatter.format(new Date(f.lastModified())) + "<hr>";
+                    }
+
+                    // add 360 button for jpg files
+                    String extension ="";
+                    int i = f.getName().lastIndexOf('.');
+                    if (i > 0)  extension = f.getName().substring(i+1).toLowerCase();
+                    Log.d("web","extension is  "+extension);
+
+                    String button ="";
+                    if (extension !="" && (extension.equals("jpg") ||  extension.equals("jpeg")))// add special 360 viewer
+                    {
+                        button ="<button class='abutton' type=\"v360\" formaction=\"http://192.168.1.1:8888/v360="+f.getName()+"\">"+f.getName()+"</button>";
+                    }
+                    else // not jpg
+                    {
+                        button = f.getName();
+                    }
+
+                    msg += "<form action=\"http://192.168.1.1:8888/download="+f.getName()+"\" method=\"get\">" +
+                    "  <button class='abutton' type=\"Download\">Download</button>" + button +
+                    "  <button class='abutton' type=\"Delete\" formaction=\"http://192.168.1.1:8888/delete="+f.getName()+"\">Delete</button>" + size_dir_text+
+                    "</form>";
+
+                    previous_file = f.getName();
+                    previous_file = previous_file.split("\\.")[0];
+                    Log.d("web","previous_file "+previous_file);
+
+                    previous_date = formatter.format(new Date(f.lastModified()));
+
+                }
+
+                msg += "<br><br><center><a href='http://192.168.1.1:8888'> <input type='button' class='abutton' value='Return'></center><br><br>" +
+                        "</font></body></html>";
+
+                return newFixedLengthResponse(msg );
+            }
+            else if (uri.contains("/delete="))
+            {
+                String name = uri.split("=")[1];
+                Log.i("web","Selected file is of files found: "+name);
+                msg =   "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">" +
+                        "<style>.abutton {" +
+                        "background-color: #555555;" +
+                        "border: 0;" +
+                        "border-radius: 0px;"+
+                        "color: black;" +
+                        "padding: 15px 30px;" +
+                        "text-align: center;" +
+                        "text-decoration: none;" +
+                        "display: inline-block;" +
+                        "font-size: 18px;" +
+                        "margin: 4px 2px;" +
+                        "cursor: pointer;" +
+                        "}</style>" +
+
+                        "<html><body style='background-color:black;color:white; font-family:arial;' >"+
+                        "<center><h1>Delete:</h1>"+ name +"?<br><br><br>"+
+                "<a href='http://192.168.1.1:8888/delyes=" + name + "'> <input type='button' class='abutton' value='YES'>" +
+                "<a href='http://192.168.1.1:8888/files'> <input type='button' class='abutton' value='NO'>" +
+                "</center></font></body></html>";
+
+                return newFixedLengthResponse(msg );
+
+            }
+            else if (uri.contains("/delyes="))
+            {
+                String name = uri.split("=")[1];
+                Log.i("web", "Deleting: " + name);
+                File file = new File("/storage/emulated/0/DCIM/100RICOH/" + name);
+                if (file.isDirectory())
+                {
+                    deleteDir(file);
                 }
                 else
                 {
-                    msg += "<span style='color:green;'>Processing pictures,<br> you may now move the camera.</span><br></h1>";
+                    file.delete();
                 }
-                msg+= "<font size='5'><table style='width:100%' >";
-                if (auto_pic != "" && encodedImage != "")
-                {
-                    msg += "<img src='data:image/jpg;base64," + encodedImage + "'><br>";
-                }
-                //msg += "<form action='http://192.168.1.1:8888/abort'> <input type='submit' class='abutton' value='ABORT'></form>";
-                /*msg += "\n<button class='abutton' onclick=\"myFunction()\">Abort</button>\n" +
-                        "<script>\n" +
-                        "function myFunction() {" +
-                        "  var txt;" +
-                        "  if (confirm('Abort Process?')) {" +
-                        "    window.location = 'http://192.168.1.1:8888/abort';" +
-                        "  } else {\n" +
-                        "    txt = \"You pressed Cancel!\";\n" +
-                        "  }\n" +
-                        "}\n" +
-                        "</script><br>";
-                */
-                for (int i=0;i<numberOfPictures;i++)
-                {
-                    //shots_table[i][0][0] = sign+Integer.toString(bracket_array[i][2].intValue());// stops number
-                    //shots_table[i][1][0] = iso_lut.get(bracket_array[i][0])+iso_space; // iso value
-                    //shots_table[i][2][0] = shutter_lut.get(bracket_array[i][1]); // shutter value
-                    //shots_table[i][3][1] = "0";
-                    //shots_table[i][3][0] = shots_table[i][3][1]+" of "+number_of_noise_pics; // number of noise pictures taken
-                    //shots_table[i][0][1] = "gray";
-                    //shots_table[i][1][1] = "gray";
-                    //shots_table[i][2][1] = "gray";
-                    //shots_table[i][]
-                    //msg += "<span style='color:"+shots_table[i][0][1]+";'>" +
-                            msg +=  "<tr><th class='"+shots_table[i][0][1]+"'>Picture: "  +Integer.toString(i+1)+
-                                    "</th><th class='"+shots_table[i][0][1]+"'>stops: "   +shots_table[i][0][0]+
-                                    "</th><th class='"+shots_table[i][0][1]+"'>iso: "     +shots_table[i][1][0]+
-                                    "</th><th class='"+shots_table[i][0][1]+"'>shutter: " +shots_table[i][2][0]+
-                                    "</th><th class='"+shots_table[i][0][1]+"'>denoise: " +shots_table[i][3][0]+"</th></tr>" ;
-                                    //"</span>";
-
-
-                }
-                msg += "</table></font></center><br><br><font size='1'>"+message_log + "</font></font></body></html>";
-                return newFixedLengthResponse(msg);
+                Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
+                r.addHeader("Location", "http://192.168.1.1:8888/files");
+                return r;
             }
-            else if (done_taking_pics)
+            else if (uri.contains("/v360="))
             {
-                done_taking_pics = false;
-                long duration = (endTime - startTime);
-                String dur_string =millisToShortDHMS( duration );
-                log(TAG,"time taken "+dur_string);
+                String name = uri.split("=")[1];
+                Log.i("web", "v360 file is : " + name);
+                String file_uri = Uri.parse(Environment.getExternalStorageDirectory().getPath()+"/DCIM/100RICOH/" + name).toString();
+                Log.i("web", "v360 file uri is : " + file_uri);
+                FileInputStream fis = null;
+                String path = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + name;
+                File file = new File(path);
+                String js_lib ="";
+
+                try
+                {
+                    // setup js library
+                    //InputStream is = this.getResources().openRawResource(R.raw.kaleidoscope);
+                    AssetManager am = context.getAssets();
+                    InputStream inStream = am.open("kaleidoscope.min.js");
+                    //String path_k = "android.resource://" + getPackageName() + "/" + R.raw.kaleidoscope;
+                    //InputStream inStream = new FileInputStream(path_k);
+                    BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
+                    String readLine = null;
+                    while ((readLine = br.readLine()) != null){ js_lib += readLine;}
+                } catch (IOException e) {e.printStackTrace();}
+
+                Log.d("web","begin of js lib is "+js_lib.substring(0,30));
+
+                // setup jpg read
+                if (file.exists())
+                {
+                    /*
+                    Log.i(TAG,"before jpg read.");
+                    Mat t_pic = new Mat();
+                    t_pic = imread(path);
+
+                    Imgproc.resize(t_pic, t_pic, new Size(cols*0.15,rows*0.15),Imgproc.INTER_LINEAR);
+                    compressParams_jpg = new MatOfInt(org.opencv.imgcodecs.Imgcodecs.IMWRITE_JPEG_QUALITY , 60);
+                    String  new_name = auto_pic.substring(0,auto_pic.length()-4)+"_small.jpg";
+                    Log.i(TAG,"after jpg read."+new_name);
+                    imwrite(new_name, t_pic,compressParams_jpg);
+                    compressParams_jpg = new MatOfInt(org.opencv.imgcodecs.Imgcodecs.IMWRITE_JPEG_QUALITY , 100);
+                    t_pic.release();
+                    Log.i(TAG,"after jpg read."+new_name);
+                    */
+
+                    InputStream inStream = null;
+                    BufferedInputStream bis = null;
+                    try
+                    {
+                        inStream = new FileInputStream(path);
+                        bis = new BufferedInputStream(inStream);
+                        byte[] imageBytes = new byte[0];
+                        for (byte[] ba = new byte[bis.available()];
+                             bis.read(ba) != -1; ) {
+                            byte[] baTmp = new byte[imageBytes.length + ba.length];
+                            System.arraycopy(imageBytes, 0, baTmp, 0, imageBytes.length);
+                            System.arraycopy(ba, 0, baTmp, imageBytes.length, ba.length);
+                            imageBytes = baTmp;
+                        }
+                        encodedImage = encodeArray(imageBytes);
+                    }
+                    catch(Exception e){ e.printStackTrace();}
+                    finally
+                    {   // releases any system resources associated with the stream
+                        try
+                        {
+                            if (inStream != null) inStream.close();
+                            if (bis != null) bis.close();
+                        }
+                        catch(Exception e){e.printStackTrace();}
+                    }
+
+                }
+
+                msg += "<!DOCTYPE HTML>\n" +
+                        "<html>\n" +
+                        "<head>\n" +
+                        "    <meta charset=\"utf-8\">\n" +
+                        "    <title>Kaleidoscope image example</title>\n" +
+                        "    <script type=\"text/javascript\" charset=\"utf-8\" >"+ js_lib + "</script>\n" +
+                        "</head>\n" +
+                        "<body>\n" +
+                        "    <div id=\"container360\"></div>\n" +
+                        "    <script type=\"text/javascript\" charset=\"utf-8\">\n" +
+                        "   var image = new Image();\n" +
+                        "   image.src = 'data:image/png;base64,"+encodedImage+"';" +
+                        "   (function() {\n" +
+                        "    var viewer = new Kaleidoscope.Image({\n" +
+                        "        source: image,\n" +
+                        "        containerId: '#container360',\n" +
+                        "        height: window.innerHeight,\n" +
+                        "        width: window.innerWidth,\n" +
+                        "    });\n" +
+                        "    viewer.render();\n" +
+                        "    window.onresize = function() {\n" +
+                        "        viewer.setSize({height: window.innerHeight, width: window.innerWidth});\n" +
+                        "    };\n" +
+                        "})();\n" +
+                        "    </script>\n" +
+                        "</body>\n" +
+                        "</html>";
+                return newFixedLengthResponse(msg);
+
+
+            }
+            else if (uri.contains("/download="))
+            {
+                String name = uri.split("=")[1];
+                Log.i("web","Download file is : "+name);
+                FileInputStream fis = null;
+                String path = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/"+name;
+                File file = new File(path);
+
+                if (file.isDirectory())
+                {
+                    Log.i("web","Converting folder "+file.getAbsolutePath()+" to ZIP.");
+                    zipFileAtPath(file.getAbsolutePath(),file.getAbsolutePath()+".ZIP");
+                    file = new File(file.getAbsolutePath()+".ZIP");
+                }
+                try
+                {
+                    if (file.exists())
+                    {
+                        Log.d("web", "Downloading " + file.getName());
+                        fis = new FileInputStream(file);
+                    }
+                    else
+                    {
+                        Log.d("web", "File Not exists: ");
+                        Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
+                        r.addHeader("Location", "http://192.168.1.1:8888/files");
+                        return r;
+                    }
+
+                }
+                catch (FileNotFoundException e)
+                {
+                    e.printStackTrace();
+                }
+
+                String extension ="";
+                int i = path.lastIndexOf('.');
+                if (i > 0)
+                {
+                    extension = path.substring(i+1);
+                }
+
+                String mimetype = "application/octet-stream";
+                if (extension.toLowerCase() == "jpg" || extension.toLowerCase() == "jpeg")
+                {
+                    mimetype = "image/jpeg";
+                }
+                else if (extension.toLowerCase() == "zip" )
+                {
+                    mimetype = "application/zip";
+                }
+                else if (extension.toLowerCase() == "mp4" )
+                {
+                    mimetype = "video/mp4";
+                }
+
+                return newFixedLengthResponse(Response.Status.OK, mimetype, fis, file.length());
+
+            }
+            else if (uri.equals("/pic"))
+            {
+                if (parms.get("brackets") == null || parms.get("brackets").isEmpty()
+                   || parms.get("denoise") == null || parms.get("denoise").isEmpty()
+                   || parms.get("stopjump") == null || parms.get("stopjump").isEmpty())
+                {
+                    Log.i("web", "Taking picture. With brackets at 1 and denoise at 1. Web simple.");
+                    numberOfPictures = 1;
+                    number_of_noise_pics = 1;
+                    stopjump ="auto";
+                    sound = true;
+                    MergeHDRI = true;
+                    SaveDNG = true;
+
+                }
+                else
+                {
+                    Log.i("web", "Taking picture. With brackets at " + parms.get("brackets")
+                            + " and denoise at " + parms.get("denoise")
+                            + " Sound: "         + parms.get("sound")
+                            + " and merge: "     + parms.get("merge")
+                            + " and dng: "       + parms.get("dng"));
+                    numberOfPictures = Integer.parseInt(parms.get("brackets"));
+                    number_of_noise_pics = Integer.parseInt(parms.get("denoise"));
+                    stopjump = parms.get("stopjump");
+
+                    if (parms.get("merge") == null || parms.get("merge").isEmpty() || !Boolean.parseBoolean(parms.get("merge")))
+                    {
+                        MergeHDRI = false;
+                        Log.i("web","turned HDRI merging off.");
+                    }
+
+                    if (parms.get("sound") == null || parms.get("sound").isEmpty()||(!parms.get("sound").equals("true")))
+                    {
+                        sound =false;
+                        Log.i("web","turned sound off.");
+                    }
+
+                    if (parms.get("dng") == null || parms.get("dng").isEmpty() || !Boolean.parseBoolean(parms.get("dng")))
+                    {
+                        SaveDNG = false;
+                        Log.i("web","turned DNG save off.");
+                    }
+                }
+                if (!taking_pics)
+                {
+                    makePicture();
+                    taking_pics = true;
+                    message_log = "";
+                    msg = "<meta http-equiv='refresh' content='0.5; URL=http://192.168.1.1:8888/refresh'>"+
+                            "<html><body style='background-color:black;color:white; font-family:arial;' ><h1>Busy taking pictures</h1><br>Doing:<br>" ;
+                    //"<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form></font></body></html>";
+                    return newFixedLengthResponse(msg );
+                }
+
+                else
+                {
+                    Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
+                    r.addHeader("Location", "http://192.168.1.1:8888/refresh");
+                    return r;
+                }
+            }
+            else if (uri.equals("/save_default"))
+            {
+
+                if (parms.get("brackets") == null || parms.get("brackets").isEmpty()
+                        || parms.get("denoise") == null || parms.get("denoise").isEmpty()
+                        || parms.get("stopjump") == null || parms.get("stopjump").isEmpty())
+                {
+                    Log.i(TAG, "Saving default. With brackets at 1 and denoise at 1.");
+                    numberOfPictures = 1;
+                    number_of_noise_pics = 1;
+                    stopjump ="auto";
+                    sound = true;
+                    MergeHDRI = true;
+                    SaveDNG = true;
+                }
+                else
+                {
+                    Log.i(TAG, "Saving default. With brackets at " + parms.get("brackets") + " and denoise at " + parms.get("denoise") + " Sound: " + parms.get("sound") + " and merge: " + parms.get("merge"));
+                    numberOfPictures = Integer.parseInt(parms.get("brackets"));
+                    number_of_noise_pics = Integer.parseInt(parms.get("denoise"));
+                    stopjump = parms.get("stopjump");
+
+                    if (parms.get("merge") == null || parms.get("merge").isEmpty() || !Boolean.parseBoolean(parms.get("merge")))
+                    {
+                        MergeHDRI = false;
+                        Log.i(TAG,"turned HDRI merging off.");
+                    }
+                    else
+                    {
+                        MergeHDRI = true;
+                    }
+
+                    if (parms.get("sound") == null || parms.get("sound").isEmpty()||(!parms.get("sound").equals("true")))
+                    {
+                        sound =false;
+                        Log.i(TAG,"turned sound off.");
+                    }
+                    else
+                    {
+                        sound = true;
+                    }
+
+                    if (parms.get("dng") == null || parms.get("dng").isEmpty() || !Boolean.parseBoolean(parms.get("dng")))
+                    {
+                        SaveDNG = false;
+                        Log.i(TAG,"turned DNG save off.");
+                    }
+                    else
+                    {
+                        SaveDNG = true;
+                    }
+                }
+
+                editor.putBoolean("MergeHDRI", MergeHDRI);
+                editor.putBoolean("SaveDNG", SaveDNG);
+                editor.putBoolean("sound", sound);
+                editor.putString("stopjump", stopjump);
+                editor.putInt("numberOfPictures", numberOfPictures);
+                editor.putInt("number_of_noise_pics", number_of_noise_pics);
+                editor.commit(); // commit changes
+
                 msg = "<html><head>" +
                         "<script type='text/javascript'>" +
-                        "alert('Done taking pictures!\\nProcessing time was: "+dur_string+"');" +
+                        "alert('Saved default settings');" +
                         "window.location = 'http://192.168.1.1:8888';"+
                         "</script></head>";
-                //"<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form>";
                 log(TAG, msg);
                 msg += "<body style='background-color:black;'><font color='white'>></body></html>";
                 return newFixedLengthResponse(msg);
-            }
-            else
-            {
-                Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
-                r.addHeader("Location", "http://192.168.1.1:8888");
-                return r;
-            }
 
-        }
-        else // Main page
-        {
-            if (taking_pics)
+            }
+            else if (uri.equals("/refresh"))
             {
-                try // wait 0.5 sec
+                if (taking_pics)
                 {
-                    sleep(500);
+                    done_taking_pics = true;
+                    //Log.i("web", "refresh taking pics is true");
+
+
+                    msg = "<meta http-equiv='refresh' content='1; URL=http://192.168.1.1:8888/refresh'>" +
+                            "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n" +
+                            "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n" +
+                            "<meta http-equiv=\"Expires\" content=\"0\" />"+
+                            "<head>\n" +
+                            "<style>.abutton {" +
+                            "background-color: #555555;" +
+                            "border: 0;" +
+                            "border-radius: 0px;"+
+                            "color: black;" +
+                            "padding: 10px 20px;" +
+                            "text-align: center;" +
+                            "text-decoration: none;" +
+                            "display: inline-block;" +
+                            "font-size: 14px;" +
+                            "margin: 2px 1px;" +
+                            "cursor: pointer;" +
+                            "}</style>" +
+                            "<style>.green {" +
+                            "color: green;" +
+                            "}"+
+                            "<style>.gray {" +
+                            "color: gray;" +
+                            "}"+
+                            "<style>.white {" +
+                            "color: white;" +
+                            "}"+
+
+                            "table, tr {\n" +
+                            "  border: 1px solid white; color: white;\n" +
+                            "}\n" +
+                            "</style>"+
+                            "<html><body style='background-color:black;color:white; font-family:arial;' >"+
+                            "<center><h1>Busy taking pictures<br><br>";
+                    if (!Processing)
+                    {
+                        msg += "<span style='color:red;'>Taking pictures,<br> do not move the camera!</span><br></h1>";
+                    }
+                    else
+                    {
+                        msg += "<span style='color:green;'>Processing pictures,<br> you may now move the camera.</span><br></h1>";
+                    }
+                    msg+= "<font size='5'><table style='width:100%' >";
+                    if (auto_pic != "" && encodedImage != "")
+                    {
+                        msg += "<img src='data:image/jpg;base64," + encodedImage + "'><br>";
+                    }
+                    //msg += "<form action='http://192.168.1.1:8888/abort'> <input type='submit' class='abutton' value='ABORT'></form>";
+                    /*msg += "\n<button class='abutton' onclick=\"myFunction()\">Abort</button>\n" +
+                            "<script>\n" +
+                            "function myFunction() {" +
+                            "  var txt;" +
+                            "  if (confirm('Abort Process?')) {" +
+                            "    window.location = 'http://192.168.1.1:8888/abort';" +
+                            "  } else {\n" +
+                            "    txt = \"You pressed Cancel!\";\n" +
+                            "  }\n" +
+                            "}\n" +
+                            "</script><br>";
+                    */
+                    for (int i=0;i<numberOfPictures;i++)
+                    {
+                        //shots_table[i][0][0] = sign+Integer.toString(bracket_array[i][2].intValue());// stops number
+                        //shots_table[i][1][0] = iso_lut.get(bracket_array[i][0])+iso_space; // iso value
+                        //shots_table[i][2][0] = shutter_lut.get(bracket_array[i][1]); // shutter value
+                        //shots_table[i][3][1] = "0";
+                        //shots_table[i][3][0] = shots_table[i][3][1]+" of "+number_of_noise_pics; // number of noise pictures taken
+                        //shots_table[i][0][1] = "gray";
+                        //shots_table[i][1][1] = "gray";
+                        //shots_table[i][2][1] = "gray";
+                        //shots_table[i][]
+                        //msg += "<span style='color:"+shots_table[i][0][1]+";'>" +
+                                msg +=  "<tr><th class='"+shots_table[i][0][1]+"'>Picture: "  +Integer.toString(i+1)+
+                                        "</th><th class='"+shots_table[i][0][1]+"'>stops: "   +shots_table[i][0][0]+
+                                        "</th><th class='"+shots_table[i][0][1]+"'>iso: "     +shots_table[i][1][0]+
+                                        "</th><th class='"+shots_table[i][0][1]+"'>shutter: " +shots_table[i][2][0]+
+                                        "</th><th class='"+shots_table[i][0][1]+"'>denoise: " +shots_table[i][3][0]+"</th></tr>" ;
+                                        //"</span>";
+
+
+                    }
+                    msg += "</table></font></center><br><br><font size='1'>"+message_log + "</font></font></body></html>";
+                    return newFixedLengthResponse(msg);
                 }
-                catch (InterruptedException e)
+                else if (done_taking_pics)
                 {
-                    //e.printStackTrace();
-                    Log.i(TAG,"Sleep error.");
+                    done_taking_pics = false;
+                    long duration = (endTime - startTime);
+                    String dur_string =millisToShortDHMS( duration );
+                    log(TAG,"time taken "+dur_string);
+                    msg = "<html><head>" +
+                            "<script type='text/javascript'>" +
+                            "alert('Done taking pictures!\\nProcessing time was: "+dur_string+"');" +
+                            "window.location = 'http://192.168.1.1:8888';"+
+                            "</script></head>";
+                    //"<form action='http://192.168.1.1:8888/refresh'> <input type='submit' value='Refresh'></form>";
+                    log(TAG, msg);
+                    msg += "<body style='background-color:black;'><font color='white'>></body></html>";
+                    return newFixedLengthResponse(msg);
                 }
-                Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
-                r.addHeader("Location", "http://192.168.1.1:8888/refresh");
-                return r;
-            }
-            msg = "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">" +
-            "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n" +
-            "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n" +
-            "<meta http-equiv=\"Expires\" content=\"0\" />"+
-            "<html>" +
-            "<style>.abutton {" +
-            "background-color: #555555;" +
-            "border: 0;" +
-            "border-radius: 0px;"+
-            "color: black;" +
-            "padding: 10px 20px;" +
-            "text-align: center;" +
-            "text-decoration: none;" +
-            "display: inline-block;" +
-            "font-size: 14px;" +
-            "margin: 2px 1px;" +
-            "cursor: pointer;" +
-            "}</style>" +
-            "<body style='background-color:black;color:white; font-family:arial;' >"+
-            "<center><h1>Authydra</h1>"+
-            "<svg version='1.1' width='60%'" +
-            "viewBox='0 0 885.22 720' style='enable-background:new 0 0 885.22 720;' xml:space='preserve'>" +
-            "<style type='text/css'>" +
-            ".st0{fill:#FFFFFF;}" +
-            "</style>" +
-            "<g>" +
+                else
+                {
+                    Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
+                    r.addHeader("Location", "http://192.168.1.1:8888");
+                    return r;
+                }
 
-            //region logo
-            "\t<path class=\"st0\" d=\"M37.44,695.38c-3,1.99-6.25,3.12-7.78,5.4c-2.31,3.45-2.32,7.45,3.26,8.13c10.66,1.32,20.55-1.42,29.49-7.05\n" +
-            "\t\tc2.04-1.29,3.44-4.48,4.02-7.05c2.15-9.4,2.82-9.69,11.93-5.98c8.73,3.56,17.46,7.8,26.6,9.48c7.23,1.33,15.33,0.12,22.57-1.76\n" +
-            "\t\tc3.47-0.9,6.47-5.65,8.41-9.33c0.73-1.39-1.93-6.58-3.37-6.73c-3.92-0.4-8.33,0.27-11.96,1.86c-3.51,1.54-6.29,4.75-9.5,7.31\n" +
-            "\t\tc5.81-24.99,31.29-44.14,56.38-37.85c4.16,1.04,7.79,4.41,11.53,6.89c9,5.97,17.89,12.1,26.91,18.03c1.38,0.91,3.18,1.48,4.84,1.61\n" +
-            "\t\tc6.61,0.52,14.28,1.69,17.45-5.68c3.05-7.08-3.34-11.4-7.95-15.45c-3.38-2.97-7.45-5.15-12.08-8.26c14.56-7.76,28.25-5.14,42.7-1.6\n" +
-            "\t\tc-3.9-2.82-7.72-5.77-11.73-8.44c-4.28-2.86-8.54-5.88-13.15-8.11c-39.88-19.32-61.41-52.91-69.87-94.61\n" +
-            "\t\tc-4.12-20.3-2.87-41.77,8.34-60.99c10.25-17.57,15.35-36.19,11.82-56.81c-3.49-20.42-21.7-31.64-40.72-24.46\n" +
-            "\t\tc-11.2,4.23-14.91,12.61-10.67,24.11c5.67,15.38,4.64,16.67-9.77,24.49c-13,7.05-25.74,14.77-37.73,23.41\n" +
-            "\t\tc-10.7,7.72-14.66,20.07-16.97,32.56c-15.93-1.54-26.55-10.11-29.8-24.57c-0.71-3.18,0.51-7.46,2.27-10.36\n" +
-            "\t\tc2.79-4.6,6.93-8.36,10.23-12.68c6.61-8.66,13.89-17.21,11.84-29.29c-2.75-16.18,4.99-28.11,15.25-39.17\n" +
-            "\t\tc13.01-14.04,20.85-30.84,24.49-49.38c2.72-13.88-4.06-23.55-17.07-29.54c9.92-2.53,24.74,2.57,29.78,12.65\n" +
-            "\t\tc4.75,9.5,6.22,20.65,9.05,30.8c19.46-21.38,44.61-34.48,75.35-36.41c-13.94,8.96-31.2,12.9-41.68,27.42\n" +
-            "\t\tc43.27-2.45,65.96,6,88.65,33.48c-15.24-5.19-28.79-13.72-45.36-11.25c35.13,4.93,50.41,31.18,66.39,59.95\n" +
-            "\t\tc-9.6-6.36-17.34-11.49-25.07-16.61c-0.7,0.53-1.4,1.07-2.1,1.6c2.51,4.82,4.93,9.68,7.55,14.44c16.08,29.15,13,57.17-4.9,84.32\n" +
-            "\t\tc-0.86,1.3-2.15,2.31-3.01,3.22c0.93-12.62,1.85-25.16,2.93-39.81c-3.15,2.17-4.42,2.57-4.79,3.38\n" +
-            "\t\tc-9.98,21.81-15.16,44.22-4.43,67.12c7.87,16.79,22.98,26.1,39.5,32.69c30.71,12.26,63.33,15.59,95.83,19.12\n" +
-            "\t\tc8.45,0.92,10.33-5.49,11.32-12.08c2.33-15.45-4-27.26-15.6-36.83c-13.68-11.29-28.17-21.77-40.85-34.09\n" +
-            "\t\tc-35.19-34.2-53.46-76.47-57.57-125.26c-3.16-37.6,6.65-72.55,19.32-107.3c7.58-20.8,12.19-42.42,8.44-64.95\n" +
-            "\t\tc-6.24-37.53-40-60.83-76.14-59.41c-2.89,0.11-5.95,1.75-8.5,3.37c-3.37,2.14-6.24,5.04-9.45,7.45\n" +
-            "\t\tc-10.97,8.26-18.73,7.43-28.15-2.14c-9.65-9.8-19.15-19.87-29.71-28.62c-13.04-10.79-27.92-17.94-45.69-16.47\n" +
-            "\t\tc-4.24,0.35-8.54,0.05-12.68,0.05c-4.62-17.54,3.15-36.01,19.31-42.84c4.98-2.11,12.36-0.94,17.84,1\n" +
-            "\t\tc12.9,4.58,24.94,11.91,39.4,10.51c2.53-0.24,5.48-0.17,7.44-1.45c16.73-10.96,33.57-7.91,49.76,0.3\n" +
-            "\t\tc23.79,12.07,46.22,7.19,68.19-4.1c5.62-2.89,10.03-8.16,15.24-12.54c1.84,17.67-10.15,32.96-34.23,42.8\n" +
-            "\t\tc6.85,2.51,12.43,4.62,18.06,6.61c25.63,9.03,51.27,18.01,76.88,27.09c2,0.71,3.78,2.03,5.85,3.16\n" +
-            "\t\tc-15.57-1.48-30.62-2.92-45.67-4.35c-0.35,1.03-0.7,2.07-1.06,3.1c34.59,15.3,60.49,38.76,72.38,75.55\n" +
-            "\t\tc-11.33-14.52-21.44-30.77-43.74-29.39c14.31,12.23,28.01,24.85,31.03,44.38c2.83,18.26,1.62,36.5-3.5,56.78\n" +
-            "\t\tc-4.52-16.46-3.77-32.53-14.31-45.32c1.22,18.93,3.26,36.95,3.31,54.97c0.04,18.47-6.61,35.08-19.36,50.27c0-15.47,0-29.74,0-44.42\n" +
-            "\t\tc-0.86,0.51-1.88,0.74-2.09,1.29c-13.18,34.73-20.71,70.04-7.81,106.52c10.82,30.59,31.18,54.54,58.2,71.41\n" +
-            "\t\tc28.31,17.68,58.43,32.47,88.58,47.48c-1.97-29.92-22.36-48.81-37.37-70.68c-1.12,0.27-2.24,0.54-3.36,0.81\n" +
-            "\t\tc2.52,16,5.04,32.01,7.45,47.33c-11.53-6.17-25.75-37.81-28.27-66.03c-2.33-26.13,10.68-48.05,20.62-71.27\n" +
-            "\t\tc-13.69,4.51-23.43,14.36-34.41,22.75c9.89-22.2,22.53-42.34,40.07-59.5c17.82-17.44,39.31-27.25,63.28-32.69\n" +
-            "\t\tc0.24-0.92,0.49-1.85,0.73-2.77c-5.07-1.98-10-5.05-15.24-5.74c-17.87-2.36-34.65,2.45-50.92,9.46c-3.09,1.33-6.27,2.42-9.66,3.09\n" +
-            "\t\tc12.85-14.2,30.21-20.39,47.52-26.53c-14.78-14.03-29.33-27.83-43.89-41.65c3.36,15,7.03,31.41,10.72,47.88\n" +
-            "\t\tc-19.58-18.41-32.16-40.82-33.76-68.23c-1.46-24.99,0.78-49.85,7.3-74.18c0.35-1.29,0.19-2.72,0.39-6.31\n" +
-            "\t\tc-13.59,8.01-25.8,15.2-37.39,22.03c16.59-33.46,55.2-80.11,125.46-84.16c-14.55-4.98-29.03-11.01-44.9-9.07\n" +
-            "\t\tc-15.22,1.86-30.3,4.84-44,7.1c19.5-19.79,75.49-27.71,141.06-5.67c2.68-8.97-1.8-15.8-7.4-21.2\n" +
-            "\t\tc-10.02-9.67-20.94-18.4-31.93-27.92c11.71-0.09,21.5,4.97,30.51,11.05c6.78,4.58,13.07,10.28,18.47,16.45\n" +
-            "\t\tc16.71,19.08,37.62,32.31,59.35,44.13c-4.9-14.49-10.7-29.01-14.63-44.02c-3.84-14.67-7.51-29.94,3.22-46.66\n" +
-            "\t\tc-0.79,32.67,13.24,57.5,29.94,80.8c6.45,9,16.08,15.84,24.74,23.11c8.07,6.78,17.59,12.01,24.92,19.46\n" +
-            "\t\tc5.13,5.22,9.93,12.7,10.87,19.72c2.44,18.14,13.16,29.29,27.3,38.52c5.76,3.76,11.72,7.22,17.47,11\n" +
-            "\t\tc11.04,7.27,13.57,13.43,11.01,26.11c-0.45,2.25-1.25,4.46-1.42,6.72c-1.2,15.94-11.6,23.41-26.01,28.17\n" +
-            "\t\tc-10.68-22.92-29.06-37.41-52.85-44.32c-15.34-4.45-31.3-6.92-47.11-9.52c-16.99-2.8-23.67-8.23-21.54-25.21\n" +
-            "\t\tc2.93-23.34-8.61-35.72-27.28-45.21c-19.89-10.11-40.02-14.75-62.08-7.54c-14.37,4.7-24.64,22.62-25.1,35.57\n" +
-            "\t\tc-0.92,25.65,11.6,44.85,26.14,63.59c3.69,4.75,7.4,9.72,12.02,13.45c5.85,4.72,12.2,9.46,19.13,12.1\n" +
-            "\t\tc24.09,9.19,48.38,18.06,74.78,17.79c2.28-0.02,4.57,0.43,6.86,0.58c0.45,0.03,0.93-0.33,1.98-0.73\n" +
-            "\t\tc-15.5-15.14-37.78-26.23-32.91-54.77c14.95,34.43,44.03,43.25,75.76,48.24c11.19,1.76,22.66,3.53,33.12,7.57\n" +
-            "\t\tc6.43,2.48,12.3,8.47,16.45,14.29c6.67,9.37,15.35,14.57,26.1,16.55c10.41,1.92,20.97,3.08,31.49,4.39\n" +
-            "\t\tc11.12,1.38,16.32,5.68,19.2,16.45c0.59,2.21,0.65,4.6,1.46,6.71c5.59,14.64,0.71,26.55-8.86,35.88\n" +
-            "\t\tc-11.63-4.63-22.84-10.7-34.81-13.49c-20.7-4.83-40.98,0.16-60.75,6.78c-5.71,1.91-11.32,4.11-17.04,5.98\n" +
-            "\t\tc-11.49,3.74-18.08,1.39-24.68-8.83c-1.54-2.39-2.71-5.05-3.83-7.68c-8.77-20.49-18.79-26.24-41.68-23.62\n" +
-            "\t\tc4.6,10.14,9.61,20.03,13.64,30.31c7.95,20.27,11.67,41.33,9.83,63.16c-2.9,34.56-4.6,69.28-9.26,103.61\n" +
-            "\t\tc-4.75,35.04-18.39,67.27-38.74,96.43c-1.78,2.54-3.38,5.2-6.22,9.59c8.41-0.82,15.42-0.85,22.13-2.28\n" +
-            "\t\tc17.6-3.75,35.61-6.6,52.47-12.58c25.85-9.16,33.9-29.17,23.96-55.08c-3.1-8.08-7.74-15.57-11.68-23.33\n" +
-            "\t\tc-0.78,0.31-1.56,0.63-2.34,0.94c2.57,11.77,5.14,23.53,8.19,37.51c-26.36-27.21-29.22-56.5-17.88-89.09\n" +
-            "\t\tc-5.49,7.93-10.97,15.85-16.46,23.78c9.27-28.22,20.93-54.75,49.35-69.57c-0.6-0.94-1.19-1.88-1.79-2.82\n" +
-            "\t\tc-11.79,5.44-23.58,10.89-36.58,16.89c17.54-26.33,41.03-39.52,73.3-39.93c-12.63-10.89-26.8-13.37-40.95-17.26\n" +
-            "\t\tc14.32-7.02,38.56,0.35,74.41,22.29c-3.37-12.94-3.93-25.5,5.38-35.04c5.38-5.52,13.33-8.54,20.73-11.65\n" +
-            "\t\tc-15.21,16.11-17.02,26.58-3.94,45.01c8.85,12.47,20.71,22.77,30.02,34.95c4.59,6.01,8.42,13.89,9.13,21.27\n" +
-            "\t\tc1,10.38,5.49,17.78,12.54,24.43c1.46,1.38,3.07,2.59,4.59,3.9c13.79,11.79,15.21,21.41,3.76,35.89\n" +
-            "\t\tc-2.96,3.74-9.17,4.89-13.28,6.93c-5.22-7.7-9.25-15.36-14.88-21.59c-11.45-12.67-27.52-16.97-43.22-21.62\n" +
-            "\t\tc-13.03-3.86-14.51-6.47-11.2-19.64c2.87-11.44-5.48-21.24-18.1-21.21c-15.65,0.04-26.92,11.44-27.38,28.12\n" +
-            "\t\tc-0.41,14.76,3.16,28.81,12.2,40.41c21.53,27.63,20.14,56.08,4.15,85.11c-12.74,23.13-30.32,41.6-54.76,52.79\n" +
-            "\t\tc-2.32,1.06-4.51,2.41-6.38,4.84c3.96-1.27,7.89-2.62,11.88-3.78c4.66-1.37,9.31-2.91,14.07-3.76c4.38-0.78,8.91-0.75,15.67-1.24\n" +
-            "\t\tc-5.04,5.88-9.18,9.71-11.95,14.35c-1.62,2.71-1.03,6.73-1.44,10.17c3.45-0.04,6.95,0.27,10.33-0.26c1.82-0.28,3.73-1.69,5.06-3.1\n" +
-            "\t\tc8.82-9.35,18.15-7.75,28.96-3.19c21.09,8.89,42.47,17.22,64.18,24.43c8.71,2.89,18.6,2.74,27.97,2.94\n" +
-            "\t\tc3.99,0.08,8.45-1.83,11.96-4.01c6.44-4.01,7.04-11.61,0.6-15.47c-5.61-3.37-12.58-4.84-19.16-6.02c-2.14-0.39-6.66,2.49-6.97,4.37\n" +
-            "\t\tc-0.38,2.34,1.93,6.32,4.17,7.46c1.68,0.85,5.12-1.56,7.67-2.76c0.94-0.44,1.54-1.59,2.3-2.42c0.78,0.33,1.55,0.66,2.33,0.99\n" +
-            "\t\tc-1.27,3.04-1.93,8.13-3.93,8.72c-6,1.78-13.33,3.89-18.56,1.85c-4.1-1.6-7-8.91-8.38-14.21c-2.34-9.01,5.68-11.79,11.71-12.79\n" +
-            "\t\tc16.36-2.7,32.04-0.55,44.74,11.72c6.75,6.52,8.94,18.68,5.08,27.87c-4,9.5-10.52,13.67-21.53,13.68\n" +
-            "\t\tc-273.11,0.12-546.23,0.23-819.34,0.3c-5.83,0-12.57,1.49-15.12-6.39c-2.34-7.24,0.91-12.67,5.82-17.61\n" +
-            "\t\tC25.79,690.53,31.22,692.25,37.44,695.38z M548.74,484.04c12.4-20.83,19.35-43.36,21.81-67.68c2.79-27.63-6.42-51.14-22.41-72.66\n" +
-            "\t\tc-1.17-1.57-5.95-2.48-7.48-1.42c-9.62,6.66-19.53,13.19-27.98,21.21c-22.54,21.41-24.37,46.62-5.17,71.26\n" +
-            "\t\tC520.48,451.38,534.56,467.16,548.74,484.04z M688.48,164.44c1.14-8.7-2.84-17.35-13.94-27.41c-3.27-2.97-8.2-4.1-12.38-6.07\n" +
-            "\t\tc-1.77,3.95-3.54,7.9-4.48,10C669,149.59,678.75,157.03,688.48,164.44z M725.37,303.63c-8.04-12.56-18.35-17.89-30.31-20.4\n" +
-            "\t\tc-2.76-0.58-7.15-0.36-8.53,1.34c-1.5,1.83-1.34,6.37-0.05,8.69c1.06,1.9,4.76,2.64,7.44,3.24c4.67,1.05,9.5,1.39,14.18,2.43\n" +
-            "\t\tC713.27,300.08,718.34,301.69,725.37,303.63z M160.12,99c10.98,3.94,20.38,7.76,30.11,10.4c1.86,0.5,5.45-3.33,7.25-5.86\n" +
-            "\t\tc0.59-0.83-1.5-5.15-3.13-5.73C183.4,93.91,172.38,93.46,160.12,99z M69.56,430.09c5.31-7.37,8.58-13.4,13.25-18.02\n" +
-            "\t\tc5.46-5.4,4.36-8.94-1.56-13.38C71.81,406.27,69.21,416.23,69.56,430.09z M813.22,476.58c-2.22-11.74-5.34-20.41-16.77-26.54\n" +
-            "\t\tc-0.46,4.35-2.18,8.54-0.84,10.09C800.33,465.58,806.1,470.11,813.22,476.58z\"/>\n" +
-            //endregion logo
-            "</g>" +
-            "</svg></center><br>"+
+            }
+            else // Main page
+            {
+                if (taking_pics)
+                {
+                    try // wait 0.5 sec
+                    {
+                        sleep(500);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        //e.printStackTrace();
+                        Log.i(TAG,"Sleep error.");
+                    }
+                    Response r = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
+                    r.addHeader("Location", "http://192.168.1.1:8888/refresh");
+                    return r;
+                }
+                msg = "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0;\">" +
+                "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n" +
+                "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n" +
+                "<meta http-equiv=\"Expires\" content=\"0\" />"+
+                "<html>" +
+                "<style>.abutton {" +
+                "background-color: #555555;" +
+                "border: 0;" +
+                "border-radius: 0px;"+
+                "color: black;" +
+                "padding: 10px 20px;" +
+                "text-align: center;" +
+                "text-decoration: none;" +
+                "display: inline-block;" +
+                "font-size: 14px;" +
+                "margin: 2px 1px;" +
+                "cursor: pointer;" +
+                "}</style>" +
+                "<body style='background-color:black;color:white; font-family:arial;' >"+
+                "<center><h1>Authydra</h1>"+
+                "<svg version='1.1' width='60%'" +
+                "viewBox='0 0 885.22 720' style='enable-background:new 0 0 885.22 720;' xml:space='preserve'>" +
+                "<style type='text/css'>" +
+                ".st0{fill:#FFFFFF;}" +
+                "</style>" +
+                "<g>" +
 
-            "<br><form action='/files'>" +
-            "<center><input type='submit' class='abutton' value='Manage Files'></form></center>"+
-            "<center>Please select your settings:</center><br><form action='/pic'>" +
-            "Number of bracket pictures    : <select class = 'abutton' name='brackets'>" +
-            "<option value='1'>1</option>" +
-            "<option value='2'>2</option>" +
-            "<option value='3'>3</option>" +
-            "<option value='4'>4</option>" +
-            "<option value='5'>5</option>" +
-            "<option value='6'>6</option>" +
-            "<option value='7'>7</option>" +
-            "<option value='8'>8</option>" +
-            "<option value='9'>9</option>" +
-            "<option value='10'>10</option>"+
-            "<option value='11'>11</option>"+
-            "<option value='12'>12</option>"+
-            "<option value='13'>13</option>"+
-            "<option value='14'>14</option>"+
-            "<option value='15'>15</option>";
+                //region logo
+                "\t<path class=\"st0\" d=\"M37.44,695.38c-3,1.99-6.25,3.12-7.78,5.4c-2.31,3.45-2.32,7.45,3.26,8.13c10.66,1.32,20.55-1.42,29.49-7.05\n" +
+                "\t\tc2.04-1.29,3.44-4.48,4.02-7.05c2.15-9.4,2.82-9.69,11.93-5.98c8.73,3.56,17.46,7.8,26.6,9.48c7.23,1.33,15.33,0.12,22.57-1.76\n" +
+                "\t\tc3.47-0.9,6.47-5.65,8.41-9.33c0.73-1.39-1.93-6.58-3.37-6.73c-3.92-0.4-8.33,0.27-11.96,1.86c-3.51,1.54-6.29,4.75-9.5,7.31\n" +
+                "\t\tc5.81-24.99,31.29-44.14,56.38-37.85c4.16,1.04,7.79,4.41,11.53,6.89c9,5.97,17.89,12.1,26.91,18.03c1.38,0.91,3.18,1.48,4.84,1.61\n" +
+                "\t\tc6.61,0.52,14.28,1.69,17.45-5.68c3.05-7.08-3.34-11.4-7.95-15.45c-3.38-2.97-7.45-5.15-12.08-8.26c14.56-7.76,28.25-5.14,42.7-1.6\n" +
+                "\t\tc-3.9-2.82-7.72-5.77-11.73-8.44c-4.28-2.86-8.54-5.88-13.15-8.11c-39.88-19.32-61.41-52.91-69.87-94.61\n" +
+                "\t\tc-4.12-20.3-2.87-41.77,8.34-60.99c10.25-17.57,15.35-36.19,11.82-56.81c-3.49-20.42-21.7-31.64-40.72-24.46\n" +
+                "\t\tc-11.2,4.23-14.91,12.61-10.67,24.11c5.67,15.38,4.64,16.67-9.77,24.49c-13,7.05-25.74,14.77-37.73,23.41\n" +
+                "\t\tc-10.7,7.72-14.66,20.07-16.97,32.56c-15.93-1.54-26.55-10.11-29.8-24.57c-0.71-3.18,0.51-7.46,2.27-10.36\n" +
+                "\t\tc2.79-4.6,6.93-8.36,10.23-12.68c6.61-8.66,13.89-17.21,11.84-29.29c-2.75-16.18,4.99-28.11,15.25-39.17\n" +
+                "\t\tc13.01-14.04,20.85-30.84,24.49-49.38c2.72-13.88-4.06-23.55-17.07-29.54c9.92-2.53,24.74,2.57,29.78,12.65\n" +
+                "\t\tc4.75,9.5,6.22,20.65,9.05,30.8c19.46-21.38,44.61-34.48,75.35-36.41c-13.94,8.96-31.2,12.9-41.68,27.42\n" +
+                "\t\tc43.27-2.45,65.96,6,88.65,33.48c-15.24-5.19-28.79-13.72-45.36-11.25c35.13,4.93,50.41,31.18,66.39,59.95\n" +
+                "\t\tc-9.6-6.36-17.34-11.49-25.07-16.61c-0.7,0.53-1.4,1.07-2.1,1.6c2.51,4.82,4.93,9.68,7.55,14.44c16.08,29.15,13,57.17-4.9,84.32\n" +
+                "\t\tc-0.86,1.3-2.15,2.31-3.01,3.22c0.93-12.62,1.85-25.16,2.93-39.81c-3.15,2.17-4.42,2.57-4.79,3.38\n" +
+                "\t\tc-9.98,21.81-15.16,44.22-4.43,67.12c7.87,16.79,22.98,26.1,39.5,32.69c30.71,12.26,63.33,15.59,95.83,19.12\n" +
+                "\t\tc8.45,0.92,10.33-5.49,11.32-12.08c2.33-15.45-4-27.26-15.6-36.83c-13.68-11.29-28.17-21.77-40.85-34.09\n" +
+                "\t\tc-35.19-34.2-53.46-76.47-57.57-125.26c-3.16-37.6,6.65-72.55,19.32-107.3c7.58-20.8,12.19-42.42,8.44-64.95\n" +
+                "\t\tc-6.24-37.53-40-60.83-76.14-59.41c-2.89,0.11-5.95,1.75-8.5,3.37c-3.37,2.14-6.24,5.04-9.45,7.45\n" +
+                "\t\tc-10.97,8.26-18.73,7.43-28.15-2.14c-9.65-9.8-19.15-19.87-29.71-28.62c-13.04-10.79-27.92-17.94-45.69-16.47\n" +
+                "\t\tc-4.24,0.35-8.54,0.05-12.68,0.05c-4.62-17.54,3.15-36.01,19.31-42.84c4.98-2.11,12.36-0.94,17.84,1\n" +
+                "\t\tc12.9,4.58,24.94,11.91,39.4,10.51c2.53-0.24,5.48-0.17,7.44-1.45c16.73-10.96,33.57-7.91,49.76,0.3\n" +
+                "\t\tc23.79,12.07,46.22,7.19,68.19-4.1c5.62-2.89,10.03-8.16,15.24-12.54c1.84,17.67-10.15,32.96-34.23,42.8\n" +
+                "\t\tc6.85,2.51,12.43,4.62,18.06,6.61c25.63,9.03,51.27,18.01,76.88,27.09c2,0.71,3.78,2.03,5.85,3.16\n" +
+                "\t\tc-15.57-1.48-30.62-2.92-45.67-4.35c-0.35,1.03-0.7,2.07-1.06,3.1c34.59,15.3,60.49,38.76,72.38,75.55\n" +
+                "\t\tc-11.33-14.52-21.44-30.77-43.74-29.39c14.31,12.23,28.01,24.85,31.03,44.38c2.83,18.26,1.62,36.5-3.5,56.78\n" +
+                "\t\tc-4.52-16.46-3.77-32.53-14.31-45.32c1.22,18.93,3.26,36.95,3.31,54.97c0.04,18.47-6.61,35.08-19.36,50.27c0-15.47,0-29.74,0-44.42\n" +
+                "\t\tc-0.86,0.51-1.88,0.74-2.09,1.29c-13.18,34.73-20.71,70.04-7.81,106.52c10.82,30.59,31.18,54.54,58.2,71.41\n" +
+                "\t\tc28.31,17.68,58.43,32.47,88.58,47.48c-1.97-29.92-22.36-48.81-37.37-70.68c-1.12,0.27-2.24,0.54-3.36,0.81\n" +
+                "\t\tc2.52,16,5.04,32.01,7.45,47.33c-11.53-6.17-25.75-37.81-28.27-66.03c-2.33-26.13,10.68-48.05,20.62-71.27\n" +
+                "\t\tc-13.69,4.51-23.43,14.36-34.41,22.75c9.89-22.2,22.53-42.34,40.07-59.5c17.82-17.44,39.31-27.25,63.28-32.69\n" +
+                "\t\tc0.24-0.92,0.49-1.85,0.73-2.77c-5.07-1.98-10-5.05-15.24-5.74c-17.87-2.36-34.65,2.45-50.92,9.46c-3.09,1.33-6.27,2.42-9.66,3.09\n" +
+                "\t\tc12.85-14.2,30.21-20.39,47.52-26.53c-14.78-14.03-29.33-27.83-43.89-41.65c3.36,15,7.03,31.41,10.72,47.88\n" +
+                "\t\tc-19.58-18.41-32.16-40.82-33.76-68.23c-1.46-24.99,0.78-49.85,7.3-74.18c0.35-1.29,0.19-2.72,0.39-6.31\n" +
+                "\t\tc-13.59,8.01-25.8,15.2-37.39,22.03c16.59-33.46,55.2-80.11,125.46-84.16c-14.55-4.98-29.03-11.01-44.9-9.07\n" +
+                "\t\tc-15.22,1.86-30.3,4.84-44,7.1c19.5-19.79,75.49-27.71,141.06-5.67c2.68-8.97-1.8-15.8-7.4-21.2\n" +
+                "\t\tc-10.02-9.67-20.94-18.4-31.93-27.92c11.71-0.09,21.5,4.97,30.51,11.05c6.78,4.58,13.07,10.28,18.47,16.45\n" +
+                "\t\tc16.71,19.08,37.62,32.31,59.35,44.13c-4.9-14.49-10.7-29.01-14.63-44.02c-3.84-14.67-7.51-29.94,3.22-46.66\n" +
+                "\t\tc-0.79,32.67,13.24,57.5,29.94,80.8c6.45,9,16.08,15.84,24.74,23.11c8.07,6.78,17.59,12.01,24.92,19.46\n" +
+                "\t\tc5.13,5.22,9.93,12.7,10.87,19.72c2.44,18.14,13.16,29.29,27.3,38.52c5.76,3.76,11.72,7.22,17.47,11\n" +
+                "\t\tc11.04,7.27,13.57,13.43,11.01,26.11c-0.45,2.25-1.25,4.46-1.42,6.72c-1.2,15.94-11.6,23.41-26.01,28.17\n" +
+                "\t\tc-10.68-22.92-29.06-37.41-52.85-44.32c-15.34-4.45-31.3-6.92-47.11-9.52c-16.99-2.8-23.67-8.23-21.54-25.21\n" +
+                "\t\tc2.93-23.34-8.61-35.72-27.28-45.21c-19.89-10.11-40.02-14.75-62.08-7.54c-14.37,4.7-24.64,22.62-25.1,35.57\n" +
+                "\t\tc-0.92,25.65,11.6,44.85,26.14,63.59c3.69,4.75,7.4,9.72,12.02,13.45c5.85,4.72,12.2,9.46,19.13,12.1\n" +
+                "\t\tc24.09,9.19,48.38,18.06,74.78,17.79c2.28-0.02,4.57,0.43,6.86,0.58c0.45,0.03,0.93-0.33,1.98-0.73\n" +
+                "\t\tc-15.5-15.14-37.78-26.23-32.91-54.77c14.95,34.43,44.03,43.25,75.76,48.24c11.19,1.76,22.66,3.53,33.12,7.57\n" +
+                "\t\tc6.43,2.48,12.3,8.47,16.45,14.29c6.67,9.37,15.35,14.57,26.1,16.55c10.41,1.92,20.97,3.08,31.49,4.39\n" +
+                "\t\tc11.12,1.38,16.32,5.68,19.2,16.45c0.59,2.21,0.65,4.6,1.46,6.71c5.59,14.64,0.71,26.55-8.86,35.88\n" +
+                "\t\tc-11.63-4.63-22.84-10.7-34.81-13.49c-20.7-4.83-40.98,0.16-60.75,6.78c-5.71,1.91-11.32,4.11-17.04,5.98\n" +
+                "\t\tc-11.49,3.74-18.08,1.39-24.68-8.83c-1.54-2.39-2.71-5.05-3.83-7.68c-8.77-20.49-18.79-26.24-41.68-23.62\n" +
+                "\t\tc4.6,10.14,9.61,20.03,13.64,30.31c7.95,20.27,11.67,41.33,9.83,63.16c-2.9,34.56-4.6,69.28-9.26,103.61\n" +
+                "\t\tc-4.75,35.04-18.39,67.27-38.74,96.43c-1.78,2.54-3.38,5.2-6.22,9.59c8.41-0.82,15.42-0.85,22.13-2.28\n" +
+                "\t\tc17.6-3.75,35.61-6.6,52.47-12.58c25.85-9.16,33.9-29.17,23.96-55.08c-3.1-8.08-7.74-15.57-11.68-23.33\n" +
+                "\t\tc-0.78,0.31-1.56,0.63-2.34,0.94c2.57,11.77,5.14,23.53,8.19,37.51c-26.36-27.21-29.22-56.5-17.88-89.09\n" +
+                "\t\tc-5.49,7.93-10.97,15.85-16.46,23.78c9.27-28.22,20.93-54.75,49.35-69.57c-0.6-0.94-1.19-1.88-1.79-2.82\n" +
+                "\t\tc-11.79,5.44-23.58,10.89-36.58,16.89c17.54-26.33,41.03-39.52,73.3-39.93c-12.63-10.89-26.8-13.37-40.95-17.26\n" +
+                "\t\tc14.32-7.02,38.56,0.35,74.41,22.29c-3.37-12.94-3.93-25.5,5.38-35.04c5.38-5.52,13.33-8.54,20.73-11.65\n" +
+                "\t\tc-15.21,16.11-17.02,26.58-3.94,45.01c8.85,12.47,20.71,22.77,30.02,34.95c4.59,6.01,8.42,13.89,9.13,21.27\n" +
+                "\t\tc1,10.38,5.49,17.78,12.54,24.43c1.46,1.38,3.07,2.59,4.59,3.9c13.79,11.79,15.21,21.41,3.76,35.89\n" +
+                "\t\tc-2.96,3.74-9.17,4.89-13.28,6.93c-5.22-7.7-9.25-15.36-14.88-21.59c-11.45-12.67-27.52-16.97-43.22-21.62\n" +
+                "\t\tc-13.03-3.86-14.51-6.47-11.2-19.64c2.87-11.44-5.48-21.24-18.1-21.21c-15.65,0.04-26.92,11.44-27.38,28.12\n" +
+                "\t\tc-0.41,14.76,3.16,28.81,12.2,40.41c21.53,27.63,20.14,56.08,4.15,85.11c-12.74,23.13-30.32,41.6-54.76,52.79\n" +
+                "\t\tc-2.32,1.06-4.51,2.41-6.38,4.84c3.96-1.27,7.89-2.62,11.88-3.78c4.66-1.37,9.31-2.91,14.07-3.76c4.38-0.78,8.91-0.75,15.67-1.24\n" +
+                "\t\tc-5.04,5.88-9.18,9.71-11.95,14.35c-1.62,2.71-1.03,6.73-1.44,10.17c3.45-0.04,6.95,0.27,10.33-0.26c1.82-0.28,3.73-1.69,5.06-3.1\n" +
+                "\t\tc8.82-9.35,18.15-7.75,28.96-3.19c21.09,8.89,42.47,17.22,64.18,24.43c8.71,2.89,18.6,2.74,27.97,2.94\n" +
+                "\t\tc3.99,0.08,8.45-1.83,11.96-4.01c6.44-4.01,7.04-11.61,0.6-15.47c-5.61-3.37-12.58-4.84-19.16-6.02c-2.14-0.39-6.66,2.49-6.97,4.37\n" +
+                "\t\tc-0.38,2.34,1.93,6.32,4.17,7.46c1.68,0.85,5.12-1.56,7.67-2.76c0.94-0.44,1.54-1.59,2.3-2.42c0.78,0.33,1.55,0.66,2.33,0.99\n" +
+                "\t\tc-1.27,3.04-1.93,8.13-3.93,8.72c-6,1.78-13.33,3.89-18.56,1.85c-4.1-1.6-7-8.91-8.38-14.21c-2.34-9.01,5.68-11.79,11.71-12.79\n" +
+                "\t\tc16.36-2.7,32.04-0.55,44.74,11.72c6.75,6.52,8.94,18.68,5.08,27.87c-4,9.5-10.52,13.67-21.53,13.68\n" +
+                "\t\tc-273.11,0.12-546.23,0.23-819.34,0.3c-5.83,0-12.57,1.49-15.12-6.39c-2.34-7.24,0.91-12.67,5.82-17.61\n" +
+                "\t\tC25.79,690.53,31.22,692.25,37.44,695.38z M548.74,484.04c12.4-20.83,19.35-43.36,21.81-67.68c2.79-27.63-6.42-51.14-22.41-72.66\n" +
+                "\t\tc-1.17-1.57-5.95-2.48-7.48-1.42c-9.62,6.66-19.53,13.19-27.98,21.21c-22.54,21.41-24.37,46.62-5.17,71.26\n" +
+                "\t\tC520.48,451.38,534.56,467.16,548.74,484.04z M688.48,164.44c1.14-8.7-2.84-17.35-13.94-27.41c-3.27-2.97-8.2-4.1-12.38-6.07\n" +
+                "\t\tc-1.77,3.95-3.54,7.9-4.48,10C669,149.59,678.75,157.03,688.48,164.44z M725.37,303.63c-8.04-12.56-18.35-17.89-30.31-20.4\n" +
+                "\t\tc-2.76-0.58-7.15-0.36-8.53,1.34c-1.5,1.83-1.34,6.37-0.05,8.69c1.06,1.9,4.76,2.64,7.44,3.24c4.67,1.05,9.5,1.39,14.18,2.43\n" +
+                "\t\tC713.27,300.08,718.34,301.69,725.37,303.63z M160.12,99c10.98,3.94,20.38,7.76,30.11,10.4c1.86,0.5,5.45-3.33,7.25-5.86\n" +
+                "\t\tc0.59-0.83-1.5-5.15-3.13-5.73C183.4,93.91,172.38,93.46,160.12,99z M69.56,430.09c5.31-7.37,8.58-13.4,13.25-18.02\n" +
+                "\t\tc5.46-5.4,4.36-8.94-1.56-13.38C71.81,406.27,69.21,416.23,69.56,430.09z M813.22,476.58c-2.22-11.74-5.34-20.41-16.77-26.54\n" +
+                "\t\tc-0.46,4.35-2.18,8.54-0.84,10.09C800.33,465.58,806.1,470.11,813.22,476.58z\"/>\n" +
+                //endregion logo
+                "</g>" +
+                "</svg></center><br>"+
 
-            msg += "<option selected='selected' value='"+numberOfPictures+"'>"+numberOfPictures+"</option>" ;
-            msg+= "</select><br><br>" +
-            "Number of denoise pictures: <select class='abutton' name='denoise'>" +
-            "<option value='1'>1</option>" +
-            "<option value='2'>2</option>" +
-            "<option value='3'>3</option>" +
-            "<option value='4'>4</option>" +
-            "<option value='5'>5</option>" +
-            "<option selected='selected' value='"+number_of_noise_pics+"'>"+number_of_noise_pics+"</option>"+
-            "</select><br><br>" +
-            "Number stop jumps between brackets: <select class='abutton' name='stopjump'>" +
-            "<option value='auto'>auto</option>" +
-            "<option value='0.5'>0.5</option>" +
-            "<option value='1.0'>1.0</option>" +
-            "<option value='1.5'>1.5</option>" +
-            "<option value='2.0'>2.0</option>" +
-            "<option value='2.5'>2.5</option>" +
-            "<option selected='selected' value='"+stopjump+"'>"+stopjump+"</option>"+
+                "<br><form action='/files'>" +
+                "<center><input type='submit' class='abutton' value='Manage Files'></form></center>"+
+                "<center>Please select your settings:</center><br><form action='/pic'>" +
+                "Number of bracket pictures    : <select class = 'abutton' name='brackets'>" +
+                "<option value='1'>1</option>" +
+                "<option value='2'>2</option>" +
+                "<option value='3'>3</option>" +
+                "<option value='4'>4</option>" +
+                "<option value='5'>5</option>" +
+                "<option value='6'>6</option>" +
+                "<option value='7'>7</option>" +
+                "<option value='8'>8</option>" +
+                "<option value='9'>9</option>" +
+                "<option value='10'>10</option>"+
+                "<option value='11'>11</option>"+
+                "<option value='12'>12</option>"+
+                "<option value='13'>13</option>"+
+                "<option value='14'>14</option>"+
+                "<option value='15'>15</option>";
 
-            "</select><br><br>";
-            if (sound)
-            {
-                msg += "<input type='checkbox' class='abutton' name='sound' value='true' checked> Play sound"+"<br>";
+                msg += "<option selected='selected' value='"+numberOfPictures+"'>"+numberOfPictures+"</option>" ;
+                msg+= "</select><br><br>" +
+                "Number of denoise pictures: <select class='abutton' name='denoise'>" +
+                "<option value='1'>1</option>" +
+                "<option value='2'>2</option>" +
+                "<option value='3'>3</option>" +
+                "<option value='4'>4</option>" +
+                "<option value='5'>5</option>" +
+                "<option selected='selected' value='"+number_of_noise_pics+"'>"+number_of_noise_pics+"</option>"+
+                "</select><br><br>" +
+                "Number stop jumps between brackets: <select class='abutton' name='stopjump'>" +
+                "<option value='auto'>auto</option>" +
+                "<option value='0.5'>0.5</option>" +
+                "<option value='1.0'>1.0</option>" +
+                "<option value='1.5'>1.5</option>" +
+                "<option value='2.0'>2.0</option>" +
+                "<option value='2.5'>2.5</option>" +
+                "<option selected='selected' value='"+stopjump+"'>"+stopjump+"</option>"+
+
+                "</select><br><br>";
+                if (sound)
+                {
+                    msg += "<input type='checkbox' class='abutton' name='sound' value='true' checked> Play sound"+"<br>";
+                }
+                else
+                {
+                    msg += "<input type='checkbox' class='abutton' name='sound' value='true' > Play sound"+"<br>";// is not a boolean but a string the value
+                }
+                if (MergeHDRI)
+                {
+                    msg +="<input type='checkbox' class='abutton' name='merge' value='true' checked> Merge HDRI";
+                }
+                else
+                {
+                    msg +="<input type='checkbox' class='abutton' name='merge' value='true' > Merge HDRI"; // is not a boolean but a string the value
+                }
+                if (Build.MODEL.equals("RICOH THETA Z1"))
+                {
+                    if (SaveDNG)
+                    {
+                        msg += "<br>"+"<input type='checkbox' class='abutton' name='dng' value='true' checked> Save DNG";
+                    }
+                    else
+                    {
+                        msg += "<br>"+"<input type='checkbox' class='abutton' name='dng' value='true' >  Save DNG"; // is not a boolean but a string the value
+                    }
+                }
+
+                msg+= "<br>"+
+                "<center><input type='submit' class='abutton' value='Take picture'></center>"+
+                "<br>"+
+                "<br>"+
+                "<right><input type='submit' class='abutton' formaction='/save_default' value='Save settings as default'></right></form>";
+                if (free_disk()<250000000)
+                {   // below 250 mb give warning
+                    msg += "<h1> You are running out of diskspace!</h1>";
+                }
+                msg+="</font></body></html>";
+                return newFixedLengthResponse(msg);
             }
-            else
-            {
-                msg += "<input type='checkbox' class='abutton' name='sound' value='true' > Play sound"+"<br>";// is not a boolean but a string the value
-            }
-            if (MergeHDRI)
-            {
-                msg +="<input type='checkbox' class='abutton' name='merge' value='true' checked> Merge HDRI";
-            }
-            else
-            {
-                msg +="<input type='checkbox' class='abutton' name='merge' value='true' > Merge HDRI"; // is not a boolean but a string the value
-            }
-            msg+= "<br>"+
-            "<center><input type='submit' class='abutton' value='Take picture'></center>"+
-            "<br>"+
-            "<br>"+
-            "<right><input type='submit' class='abutton' formaction='/save_default' value='Save settings as default'></right></form>";
-            if (free_disk()<250000000)
-            {   // below 250 mb give warning
-                msg += "<h1> You are running out of diskspace!</h1>";
-            }
-            msg+="</font></body></html>";
-            return newFixedLengthResponse(msg);
         }
     }
-}
 
     private static void encodeFile(File inputFile, File outputFile) throws IOException
     {
@@ -1787,7 +1825,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     private void customShutter()
     {
 
-        if (sound) sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SH_OPEN"));
+
 
         Camera.Parameters params = mCamera.getParameters();
         //Log.d("shooting mode", params.flatten());
@@ -1831,16 +1869,16 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
         if (Build.MODEL.equals("RICOH THETA Z1"))
         {
-
-            params.set("RIC_DNG_OUTPUT_ENABLED",1);
-            params.set("rawsave-mode", 1);
-            raw_fname = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/"+session_name+"/test.dng";
-            log(TAG,raw_fname);
-            params.set("rawfname",raw_fname ); // may have to set this for every frame captured
-            log(TAG,"Setting raw file stuff "+raw_fname);
-            //params.setPictureFormat(ImageFormat.RAW_SENSOR);
-            cols = 6720;
-            rows = 3360;
+            if (SaveDNG)
+            {
+                params.set("RIC_DNG_OUTPUT_ENABLED", 1);
+                params.set("rawsave-mode", 1);
+                raw_fname = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name + "/test.dng";
+                log(TAG, raw_fname);
+                params.set("rawfname", raw_fname); // may have to set this for every frame captured
+                log(TAG, "Setting raw file stuff " + raw_fname);
+                //params.setPictureFormat(ImageFormat.RAW_SENSOR);
+            }
 
             //sensor_pick_resolution: Matched pick_w:3776, pick_h:3710, pick_fps:29.430000, pick_clk:444000000, pick_mode:1
             //2019-10-18 13:21:55.022 E/mm-camera: <SENSOR><ERROR> 4572: sensor_get_raw_dimension: raw w 3776 h 3710
@@ -1855,7 +1893,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         //Log.d("get", params.get("RIC_MANUAL_EXPOSURE_ISO_BACK"));
         params.setPictureSize(cols, rows);
         mCamera.setParameters(params);
-        if (sound) sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER"));
+        if (sound) sendBroadcast(shutter);
 
         mCamera.takePicture(null,null, null, pictureListener);
     }
@@ -1870,10 +1908,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             // So here we take our first picture on full auto settings to get
             // proper lighting settings to use a our middle exposure value
             params.set("RIC_EXPOSURE_MODE", "RicAutoExposureP");
-            //if (Build.MODEL.equals("RICOH THETA Z1"))
-            //{
-                //params.set("RIC_DNG_OUTPUT_ENABLED",1);
-            //}
+
         }
         else // in bracket loop
         {
@@ -1896,12 +1931,15 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             if (Build.MODEL.equals("RICOH THETA Z1"))
             {
 
-                params.set("RIC_DNG_OUTPUT_ENABLED",1);
-                params.set("rawsave-mode", 1);
-                raw_fname = Environment.getExternalStorageDirectory().getPath()+ "/DCIM/100RICOH/"+session_name+"/test.dng";
-                log(TAG,raw_fname);
-                params.set("rawfname",raw_fname ); // may have to set this for every frame captured
-                log(TAG,"Setting raw file stuff "+raw_fname);
+                if (SaveDNG)
+                {
+                    params.set("RIC_DNG_OUTPUT_ENABLED", 1);
+                    params.set("rawsave-mode", 1);
+                    raw_fname = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name + "/test.dng";
+                    log(TAG, raw_fname);
+                    params.set("rawfname", raw_fname); // may have to set this for every frame captured
+                    log(TAG, "Setting raw file stuff " + raw_fname);
+                }
                 //params.setPictureFormat(ImageFormat.RAW_SENSOR);
                 //cols = 6720;
                 //rows = 3360;
@@ -1922,9 +1960,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         if (bracket_array[current_count][4] == 1.0)
         {
             mCamera.setParameters(params);
-            if (sound) sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SHUTTER"));
+            if (sound) sendBroadcast(shutter);
 
-            if (!abort) mCamera.takePicture(null, null, null, pictureListener);
+            mCamera.takePicture(null, null, null, pictureListener);
         }
         else // full white going on
         {
@@ -1932,8 +1970,6 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             pictureListener.onPictureTaken(saved_white_data, mCamera);
         }
     }
-
-
 
     String get_mem()
     {
@@ -1971,10 +2007,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         if (b_s.length() == 1){ b_s = "00"+b_s; }
 
         return (gb_s+"."+mb_s+"."+b_s);
-
     }
 
-   void HDR_processing()
+    void HDR_processing()
     {
         //////////////////////////////////////////////////////////////////////////
         //                                                                      //
@@ -1984,13 +2019,14 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
         log(TAG,"Done with picture taking, let's start with the HDR merge.");
 
+        /*
         Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 
         for (Iterator<Thread> it = threadSet.iterator(); it.hasNext(); )
         {
             Thread f = it.next();
             log(TAG,"thread: "+f.getName());
-        }
+        }*/
 
         Processing = true;
         middleTime = System.currentTimeMillis();
@@ -2082,13 +2118,14 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             }
         }
 
+        /*
         threadSet = Thread.getAllStackTraces().keySet();
 
         for (Iterator<Thread> it = threadSet.iterator(); it.hasNext(); )
         {
             Thread f = it.next();
             log(TAG,"thread: "+f.getName());
-        }
+        }*/
 
 
         /*
@@ -2398,7 +2435,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         return(result);
     }
 
-    private static void copyFileUsingStream(File source, File dest) throws IOException {
+    private static void copyFileUsingStream(File source, File dest) throws IOException
+    {
         InputStream is = null;
         OutputStream os = null;
         try {
@@ -2429,11 +2467,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     String tname = getNowDate();
                     String extra;
 
-
-
                     if ( m_is_auto_pic)
                     {
-
                         // get picture info, iso and shutter
                         Camera.Parameters params = mCamera.getParameters();
                         String flattened = params.flatten();
@@ -2509,7 +2544,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                         log(TAG,"Stop jumps are set to ----> "+Double.toString(stop_jumps) + ".");
                         log(TAG,"Picture A | stops:  a | iso: "+cur_iso+" | shutter: "+shutter_lut.get(find_closest_shutter(new_shutter)));
 
-                        // iso is always the lowest for now maybe alter we can implement a fast option with higher iso
+                        // iso is always the lowest for now maybe later we can implement a fast option with higher iso
                         // bracket_array =
                         // {{iso,shutter,bracketpos, shutter_length_real, go_ahead },{iso,shutter,bracketpos,shutter_length_real, go_ahead },{iso,shutter,bracketpos,shutter_length_real, go_ahead },....}
                         // {{50, 1/50, 0},{50, 1/25, +1},{50,1/100,-1},{50,1/13,+2},....}
@@ -2701,17 +2736,20 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     new File(opath).renameTo(new File(opath_new));
                     log(TAG,"Saving file " + opath_new);
 
-                    raw_fname = opath_new.substring(0, opath_new.length() - 3)+"dng";
-                    File f = new File(raw_fname);
-                    if (!f.exists())
+                    if (SaveDNG)
                     {
-                        String temp = Environment.getExternalStorageDirectory().getPath()+"/temp.dng";
-                        File temp_file = new File(temp);
-                        if (temp_file.exists())
+                        raw_fname = opath_new.substring(0, opath_new.length() - 3) + "dng";
+                        File f = new File(raw_fname);
+                        if (!f.exists())
                         {
-                            log(TAG,"Moved dng file to "+raw_fname+" from "+temp);
-                            //temp_file.renameTo(f);
-                            copyFileUsingStream(temp_file,f);
+                            String temp = Environment.getExternalStorageDirectory().getPath() + "/temp.dng";
+                            File temp_file = new File(temp);
+                            if (temp_file.exists())
+                            {
+                                log(TAG, "Moved dng file to " + raw_fname + " from " + temp);
+                                //temp_file.renameTo(f);
+                                copyFileUsingStream(temp_file, f);
+                            }
                         }
                     }
 
@@ -2836,8 +2874,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     notificationLedShow(LedTarget.LED3);
                     notificationLed3Show(LedColor.MAGENTA);
 
-                    if (sound)
-                        sendBroadcast(new Intent("com.theta360.plugin.ACTION_AUDIO_SH_CLOSE"));
+                    if (sound) sendBroadcast(sh_close);
                     sound = true;
                 }
             }

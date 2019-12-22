@@ -19,7 +19,7 @@
   </component>
   <component name="AndroidLogFilters">
     <option name="TOOL_WINDOW_LOG_LEVEL" value="info" />
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Authydra" />
     <option name="LOGCAT_FORMAT_STRING" value="%1$s %4$c/%5$s: %6$s" />
   </component>
   <component name="AvailableLibraryUpdateStorage">
@@ -76,7 +76,8 @@
     <last-search-timestamp>1560509122299</last-search-timestamp>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4aa2ed84-c706-4c54-a4e8-ce1094f29c54" name="Default Changelist" comment="changed strings and cradle for submit to store">
+    <list default="true" id="4aa2ed84-c706-4c54-a4e8-ce1094f29c54" name="Default Changelist" comment="Added own version of merge fucntion. Better memory management. Quite a bit of tweaking.">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" afterDir="false" />
@@ -84,11 +85,12 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/debug/app-debug.apk" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/outputs/apk/debug/app-debug.apk" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -125,65 +127,86 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="332">
-              <caret line="1651" column="60" lean-forward="true" selection-start-line="1651" selection-start-column="60" selection-end-line="1651" selection-end-column="60" />
+            <state relative-caret-position="252">
+              <caret line="14" column="2" selection-start-line="14" selection-start-column="2" selection-end-line="14" selection-end-column="2" />
               <folding>
-                <element signature="e#0#117900#0" expanded="true" />
-                <element signature="e#7892#11536#0" />
-                <element signature="e#11597#12548#0" />
+                <element signature="e#8971#12615#0" />
+                <element signature="e#12676#13627#0" />
                 <element signature="initializer##0;class#MainActivity#0" />
-                <element signature="e#12873#13101#0" />
-                <element signature="e#13107#14380#0" />
-                <element signature="e#14386#15548#0" />
-                <element signature="e#15554#15823#0" />
-                <element signature="e#15829#16165#0" />
-                <element signature="e#16171#16510#0" />
-                <element signature="e#16516#16975#0" />
-                <element signature="e#17093#17945#0" />
-                <element signature="e#17951#19059#0" />
-                <element signature="e#19065#19917#0" />
-                <element signature="e#19923#20116#0" />
-                <element signature="e#20122#20876#0" />
-                <element signature="e#20168#20869#0" />
-                <element signature="e#20882#21037#0" />
-                <element signature="e#21043#21197#0" />
-                <element signature="e#23184#23631#0" />
-                <element signature="e#23637#23696#0" />
-                <element signature="e#23702#24444#0" />
-                <element signature="e#24450#24933#0" />
-                <element signature="e#24939#25638#0" />
-                <element signature="e#25644#26533#0" />
-                <element signature="e#26664#26762#0" />
-                <element signature="e#27340#27978#1" />
-                <element signature="e#28026#28568#1" />
-                <element signature="e#28616#33646#1" />
-                <element signature="e#33698#34984#1" />
-                <element signature="e#35036#35573#1" />
-                <element signature="e#35623#40543#1" />
-                <element signature="e#40597#42594#1" />
-                <element signature="e#42640#44654#1" />
-                <element signature="e#44704#50732#1" />
-                <element signature="e#65096#65618#0" />
-                <element signature="e#65624#65984#0" />
-                <element signature="e#65990#66189#0" />
-                <element signature="e#66195#66328#0" />
-                <element signature="e#66334#66859#0" />
-                <element signature="e#66865#67163#0" />
-                <element signature="e#67169#69211#0" />
-                <element signature="e#69217#70293#0" />
-                <element signature="e#70299#70586#0" />
-                <element signature="e#70592#70798#0" />
-                <element signature="e#70804#71026#0" />
-                <element signature="e#71032#71724#0" />
-                <element signature="e#76096#89646#0" />
-                <element signature="class#89570:108857" />
+                <element signature="e#13952#14180#0" />
+                <element signature="e#14186#15459#0" />
+                <element signature="e#15465#16657#0" />
+                <element signature="e#16663#16932#0" />
+                <element signature="e#16938#17274#0" />
+                <element signature="e#17280#17619#0" />
+                <element signature="e#17625#18084#0" />
+                <element signature="e#18202#19054#0" />
+                <element signature="e#19060#20168#0" />
+                <element signature="e#20174#21026#0" />
+                <element signature="e#21032#21225#0" />
+                <element signature="e#21231#21989#0" />
+                <element signature="e#21995#22154#0" />
+                <element signature="e#22160#22313#0" />
+                <element signature="e#25675#26122#0" />
+                <element signature="e#26128#26187#0" />
+                <element signature="e#26193#26935#0" />
+                <element signature="e#26941#27424#0" />
+                <element signature="e#27430#28129#0" />
+                <element signature="e#28135#29024#0" />
+                <element signature="e#29167#29281#0" />
+                <element signature="e#29291#76157#0" />
+                <element signature="e#30093#30787#1" />
+                <element signature="e#30843#31429#1" />
+                <element signature="e#31485#36903#1" />
+                <element signature="e#36963#38341#1" />
+                <element signature="e#38401#38998#1" />
+                <element signature="e#39056#44348#1" />
+                <element signature="e#44410#46611#1" />
+                <element signature="e#46665#49680#1" />
+                <element signature="e#49743#52884#1" />
+                <element signature="e#52942#59404#1" />
+                <element signature="e#59447#76147#1" />
+                <element signature="e#76169#76695#0" />
+                <element signature="e#76701#77065#0" />
+                <element signature="e#77071#77274#0" />
+                <element signature="e#77280#77417#0" />
+                <element signature="e#77423#77952#0" />
+                <element signature="e#77958#78260#0" />
+                <element signature="e#78266#80792#0" />
+                <element signature="e#80798#81927#0" />
+                <element signature="e#81933#82220#0" />
+                <element signature="e#82226#82432#0" />
+                <element signature="e#82438#82660#0" />
+                <element signature="e#82666#83358#0" />
+                <element signature="e#83364#86429#0" />
+                <element signature="e#86435#89665#0" />
+                <element signature="e#89671#91004#0" />
+                <element signature="e#91010#103540#0" />
+                <element signature="e#103546#110268#0" />
+                <element signature="e#110274#110794#0" />
                 <element signature="class#Base64Coder#0" />
-                <marker date="1571170413107" expanded="false" signature="6627:8080" ph="..." />
-                <marker date="1571170413107" expanded="false" signature="52788:62931" ph="..." />
+                <marker date="1577021638720" expanded="false" signature="7778:9223" ph="..." />
+                <marker date="1577021638720" expanded="true" signature="88754:90091" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/app.iml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2943" />
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/build.gradle">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="162">
+              <caret line="9" column="26" selection-start-line="9" selection-start-column="26" selection-end-line="9" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -192,36 +215,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>zip</find>
-      <find>stop_jumps</find>
-      <find>taking_pics</find>
-      <find>ColorThread</find>
-      <find>---&gt;</find>
-      <find>Average</find>
-      <find>sec</find>
-      <find>Y</find>
-      <find>ACTION_AUDIO_SH_OPEN</find>
-      <find>KEYCODE_CAMERA</find>
-      <find>KeyReceiver</find>
-      <find>Array</find>
-      <find>shutter_lut</find>
-      <find>compressParams</find>
-      <find>opath</find>
-      <find>TAG</find>
-      <find>compressParams_jpg</find>
-      <find>decodedBytes</find>
-      <find>fos</find>
-      <find>temp_pic</find>
-      <find>temp_pic.</find>
       <find>split(</find>
       <find>endTime</find>
-      <find>AUDIO</find>
       <find>abort</find>
-      <find>cols</find>
       <find>strings</find>
       <find>before jpg</find>
       <find>z1</find>
       <find>Z1</find>
+      <find>mcontext</find>
+      <find>images</find>
+      <find>DNG</find>
+      <find>cols</find>
+      <find>length</find>
+      <find>divide</find>
+      <find>second</find>
+      <find>seconds</find>
+      <find>tone_map</find>
+      <find>split</find>
+      <find>.&quot;</find>
+      <find>average_thread</find>
+      <find>dng</find>
+      <find>&quot;\\.&quot;</find>
+      <find>takePicture</find>
+      <find>ACTION_AUDIO</find>
+      <find>MergeHDRI</find>
+      <find>RIC_DNG_OUTPUT_ENABLED</find>
+      <find>AUDIO</find>
+      <find>sound</find>
+      <find>if (sound)</find>
+      <find>sendBroadcast</find>
+      <find>thread</find>
     </findStrings>
     <replaceStrings>
       <replace>log</replace>
@@ -249,42 +272,35 @@
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
-        <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/app/src/main/assets/license.html" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/build.gradle" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="1424" />
-    <option name="y" value="-157" />
-    <option name="width" value="1846" />
-    <option name="height" value="1028" />
+  <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="width" value="1440" />
+    <option name="height" value="900" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
-      <pane id="AndroidView">
-        <subPane>
-          <expand>
-            <path>
-              <item name="Authydra" type="1abcf292:AndroidViewProjectNode" />
-              <item name="app" type="feadf853:AndroidModuleNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
+      <pane id="AndroidView" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
               <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+            </path>
+            <path>
+              <item name="Authydra" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Authydra" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -301,7 +317,7 @@
     <property name="project.structure.last.edited" value="Dependencies" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="instant.run" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Java" />
   </component>
   <component name="PsdUISettings">
     <option name="LAST_EDITED_BUILD_TYPE" value="release" />
@@ -346,7 +362,7 @@
       <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
       <option name="FORCE_STOP_RUNNING_APP" value="true" />
       <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="true" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
       <option name="PREFERRED_AVD" value="" />
       <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
       <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
@@ -557,32 +573,60 @@
       <option name="project" value="LOCAL" />
       <updated>1564727470942</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="mainly some test nothing real">
+      <created>1571172421679</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1571172421679</updated>
+    </task>
+    <task id="LOCAL-00025" summary="made app work again">
+      <created>1571173372838</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1571173372838</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Added own version of merge fucntion. Better memory management. Quite a bit of tweaking.">
+      <created>1571900795516</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1571900795516</updated>
+    </task>
+    <task id="LOCAL-00027" summary="got DNG up and running">
+      <created>1572811902664</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1572811902664</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1424" y="-157" width="1846" height="1028" extended-state="0" />
+    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info content_ui="combo" id="Project" order="1" weight="0.19071837" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.18955651" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" side_tool="true" />
       <window_info id="Image Layers" order="5" />
       <window_info id="Designer" order="6" />
       <window_info id="Capture Tool" order="7" />
-      <window_info id="Resources Explorer" order="8" />
-      <window_info anchor="bottom" id="Run" order="0" weight="0.32694355" />
+      <window_info id="Resources Explorer" order="8" weight="0.016629713" />
+      <window_info anchor="bottom" id="Run" order="0" sideWeight="0.4994641" weight="0.3253012" />
       <window_info anchor="bottom" id="Debug" order="1" weight="0.32891566" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="2" sideWeight="0.49928468" visible="true" weight="0.5448718" />
-      <window_info anchor="bottom" id="Logcat" order="3" sideWeight="0.49963316" weight="0.29166666" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="2" sideWeight="0.49928468" visible="true" weight="0.2939759" />
+      <window_info anchor="bottom" id="Logcat" order="3" sideWeight="0.4989282" weight="0.30843374" />
       <window_info anchor="bottom" id="TODO" order="4" />
-      <window_info anchor="bottom" id="Terminal" order="5" weight="0.3272727" />
-      <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.5007153" side_tool="true" weight="0.30963856" />
-      <window_info anchor="bottom" id="Build" order="7" sideWeight="0.49928468" weight="0.28152865" />
-      <window_info anchor="bottom" id="Device File Explorer" order="8" weight="0.2457265" />
+      <window_info anchor="bottom" id="Terminal" order="5" weight="0.32677597" />
+      <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.5005359" side_tool="true" weight="0.32606438" />
+      <window_info anchor="bottom" id="Build" order="7" sideWeight="0.49928468" weight="0.25301206" />
+      <window_info anchor="bottom" id="Device File Explorer" order="8" weight="0.24939759" />
       <window_info anchor="bottom" id="Find" order="9" />
-      <window_info anchor="right" id="Android Profiler" order="0" sideWeight="0.502693" side_tool="true" visible="true" weight="0.37305987" />
+      <window_info anchor="right" id="Android Profiler" order="0" sideWeight="0.502693" side_tool="true" visible="true" weight="0.3090129" />
       <window_info anchor="right" id="Capture Analysis" order="1" />
       <window_info anchor="right" id="Gradle" order="2" weight="0.3294204" />
       <window_info anchor="right" id="Theme Preview" order="3" />
@@ -653,15 +697,13 @@
     <MESSAGE value="added html no caching and updated readme" />
     <MESSAGE value="changed strings and cradle for submit to store" />
     <MESSAGE value="changed to license file" />
-    <option name="LAST_COMMIT_MESSAGE" value="changed to license file" />
+    <MESSAGE value="mainly some test nothing real" />
+    <MESSAGE value="made app work again" />
+    <MESSAGE value="Added own version of merge fucntion. Better memory management. Quite a bit of tweaking." />
+    <MESSAGE value="got DNG up and running" />
+    <option name="LAST_COMMIT_MESSAGE" value="got DNG up and running" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_v-00114247/DCIM/0/DCIM/100RICOH/S190413_2016_tonemap.jpg" />
-    <entry file="file://$PROJECT_DIR$/HDR4EXR.iml" />
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/camera_main.xml">
-      <provider editor-type-id="android-designer2" />
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kasper/hdr4exr/MainActivity.java" />
     <entry file="file://$PROJECT_DIR$/.gitignore" />
     <entry file="file://$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties">
@@ -678,8 +720,8 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/openCVLibrary344/src/main/AndroidManifest.xml">
-      <provider editor-type-id="android-manifest" />
       <provider selected="true" editor-type-id="text-editor" />
+      <provider editor-type-id="android-manifest" />
     </entry>
     <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.nanohttpd/nanohttpd/2.3.1/c820129da77c30b2e4ea1cea619d7f589a17bcdd/nanohttpd-2.3.1-sources.jar!/fi/iki/elonen/NanoHTTPD.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -749,15 +791,12 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/pluginlibrary/src/main/AndroidManifest.xml">
-      <provider editor-type-id="android-manifest" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="54">
           <caret line="3" column="41" selection-start-line="3" selection-start-column="41" selection-end-line="3" selection-end-column="41" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/app.iml">
-      <provider selected="true" editor-type-id="text-editor" />
+      <provider editor-type-id="android-manifest" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/proguard-rules.pro">
       <provider selected="true" editor-type-id="text-editor" />
@@ -784,14 +823,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_v-00114247/DCIM/0/DCIM/100RICOH/shots_log.txt" />
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="1" column="36" selection-start-line="1" selection-start-column="36" selection-end-line="1" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1188">
@@ -800,19 +831,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
-      <provider editor-type-id="android-manifest" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
           <caret line="9" column="80" selection-start-line="9" selection-start-column="80" selection-end-line="9" selection-end-column="80" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="9" column="26" selection-start-line="9" selection-start-column="26" selection-end-line="9" selection-end-column="26" />
-        </state>
-      </provider>
+      <provider editor-type-id="android-manifest" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/assets/license.html">
       <provider selected="true" editor-type-id="text-editor">
@@ -821,85 +845,99 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-49/i02_m1_c1_iso64_shttr00.07692s.jpg">
-      <provider selected="true" editor-type-id="images" />
+    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-49/i02_m1_c1_iso64_shttr00.07692s.jpg" />
+    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-49/i01_p1_c1_iso320_shttr00.62500s.jpg" />
+    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-49/i00_m0_c1_iso64_shttr00.50000s.jpg" />
+    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-49/auto_pic_iso800_shttr00.02500s.jpg" />
+    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-54/i05_p3_c1_iso6400_shttr00.62500s.jpg" />
+    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-54/i06_m3_c1_iso64_shttr00.00250s.jpg" />
+    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-54/i00_m0_c1_iso64_shttr00.50000s.jpg" />
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="1" column="36" selection-start-line="1" selection-start-column="36" selection-end-line="1" selection-end-column="36" />
+        </state>
+      </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-49/i01_p1_c1_iso320_shttr00.62500s.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-49/i00_m0_c1_iso64_shttr00.50000s.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-49/auto_pic_iso800_shttr00.02500s.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-54/i05_p3_c1_iso6400_shttr00.62500s.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-54/i06_m3_c1_iso64_shttr00.00250s.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-15_21-54/i00_m0_c1_iso64_shttr00.50000s.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-17_22-44/i00_m0_c4_iso64_shttr00.50000s.jpg" />
+    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_v-00114247/DCIM/0/DCIM/100RICOH/shots_log.txt" />
+    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-23_20-55.JPG" />
+    <entry file="file://$PROJECT_DIR$/../../AndroidStudio/DeviceExplorer/qualcomm-ricoh_theta_z1-10104212/DCIM/0/DCIM/100RICOH/HDR10-23_21-10.JPG" />
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kasper/authydra/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="332">
-          <caret line="1651" column="60" lean-forward="true" selection-start-line="1651" selection-start-column="60" selection-end-line="1651" selection-end-column="60" />
+        <state relative-caret-position="252">
+          <caret line="14" column="2" selection-start-line="14" selection-start-column="2" selection-end-line="14" selection-end-column="2" />
           <folding>
-            <element signature="e#0#117900#0" expanded="true" />
-            <element signature="e#7892#11536#0" />
-            <element signature="e#11597#12548#0" />
+            <element signature="e#8971#12615#0" />
+            <element signature="e#12676#13627#0" />
             <element signature="initializer##0;class#MainActivity#0" />
-            <element signature="e#12873#13101#0" />
-            <element signature="e#13107#14380#0" />
-            <element signature="e#14386#15548#0" />
-            <element signature="e#15554#15823#0" />
-            <element signature="e#15829#16165#0" />
-            <element signature="e#16171#16510#0" />
-            <element signature="e#16516#16975#0" />
-            <element signature="e#17093#17945#0" />
-            <element signature="e#17951#19059#0" />
-            <element signature="e#19065#19917#0" />
-            <element signature="e#19923#20116#0" />
-            <element signature="e#20122#20876#0" />
-            <element signature="e#20168#20869#0" />
-            <element signature="e#20882#21037#0" />
-            <element signature="e#21043#21197#0" />
-            <element signature="e#23184#23631#0" />
-            <element signature="e#23637#23696#0" />
-            <element signature="e#23702#24444#0" />
-            <element signature="e#24450#24933#0" />
-            <element signature="e#24939#25638#0" />
-            <element signature="e#25644#26533#0" />
-            <element signature="e#26664#26762#0" />
-            <element signature="e#27340#27978#1" />
-            <element signature="e#28026#28568#1" />
-            <element signature="e#28616#33646#1" />
-            <element signature="e#33698#34984#1" />
-            <element signature="e#35036#35573#1" />
-            <element signature="e#35623#40543#1" />
-            <element signature="e#40597#42594#1" />
-            <element signature="e#42640#44654#1" />
-            <element signature="e#44704#50732#1" />
-            <element signature="e#65096#65618#0" />
-            <element signature="e#65624#65984#0" />
-            <element signature="e#65990#66189#0" />
-            <element signature="e#66195#66328#0" />
-            <element signature="e#66334#66859#0" />
-            <element signature="e#66865#67163#0" />
-            <element signature="e#67169#69211#0" />
-            <element signature="e#69217#70293#0" />
-            <element signature="e#70299#70586#0" />
-            <element signature="e#70592#70798#0" />
-            <element signature="e#70804#71026#0" />
-            <element signature="e#71032#71724#0" />
-            <element signature="e#76096#89646#0" />
-            <element signature="class#89570:108857" />
+            <element signature="e#13952#14180#0" />
+            <element signature="e#14186#15459#0" />
+            <element signature="e#15465#16657#0" />
+            <element signature="e#16663#16932#0" />
+            <element signature="e#16938#17274#0" />
+            <element signature="e#17280#17619#0" />
+            <element signature="e#17625#18084#0" />
+            <element signature="e#18202#19054#0" />
+            <element signature="e#19060#20168#0" />
+            <element signature="e#20174#21026#0" />
+            <element signature="e#21032#21225#0" />
+            <element signature="e#21231#21989#0" />
+            <element signature="e#21995#22154#0" />
+            <element signature="e#22160#22313#0" />
+            <element signature="e#25675#26122#0" />
+            <element signature="e#26128#26187#0" />
+            <element signature="e#26193#26935#0" />
+            <element signature="e#26941#27424#0" />
+            <element signature="e#27430#28129#0" />
+            <element signature="e#28135#29024#0" />
+            <element signature="e#29167#29281#0" />
+            <element signature="e#29291#76157#0" />
+            <element signature="e#30093#30787#1" />
+            <element signature="e#30843#31429#1" />
+            <element signature="e#31485#36903#1" />
+            <element signature="e#36963#38341#1" />
+            <element signature="e#38401#38998#1" />
+            <element signature="e#39056#44348#1" />
+            <element signature="e#44410#46611#1" />
+            <element signature="e#46665#49680#1" />
+            <element signature="e#49743#52884#1" />
+            <element signature="e#52942#59404#1" />
+            <element signature="e#59447#76147#1" />
+            <element signature="e#76169#76695#0" />
+            <element signature="e#76701#77065#0" />
+            <element signature="e#77071#77274#0" />
+            <element signature="e#77280#77417#0" />
+            <element signature="e#77423#77952#0" />
+            <element signature="e#77958#78260#0" />
+            <element signature="e#78266#80792#0" />
+            <element signature="e#80798#81927#0" />
+            <element signature="e#81933#82220#0" />
+            <element signature="e#82226#82432#0" />
+            <element signature="e#82438#82660#0" />
+            <element signature="e#82666#83358#0" />
+            <element signature="e#83364#86429#0" />
+            <element signature="e#86435#89665#0" />
+            <element signature="e#89671#91004#0" />
+            <element signature="e#91010#103540#0" />
+            <element signature="e#103546#110268#0" />
+            <element signature="e#110274#110794#0" />
             <element signature="class#Base64Coder#0" />
-            <marker date="1571170413107" expanded="false" signature="6627:8080" ph="..." />
-            <marker date="1571170413107" expanded="false" signature="52788:62931" ph="..." />
+            <marker date="1577021638720" expanded="false" signature="7778:9223" ph="..." />
+            <marker date="1577021638720" expanded="true" signature="88754:90091" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/app.iml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2943" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="9" column="26" selection-start-line="9" selection-start-column="26" selection-end-line="9" selection-end-column="26" />
         </state>
       </provider>
     </entry>
