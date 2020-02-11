@@ -9,21 +9,19 @@
  * curl -X POST 192.168.1.1/osc/commands/execute --data '{"name":"camera._listPlugins"}' -H 'content-type: application/json'
  *
  *
- * TODO v2.1
- *
- *
- *
- *
+ * TODO v2.1.1
+ * dng zip in thread
+ * add button for stiching on/off
+ * countdown and finish sound
  *
  * TODO v2.2
+ * predict length
  * fix black hole sun (either by comp or in merge function)
+ * z1 -> aperture support
+ * z1 -> do something with display
+ *
  * z1 -> raw processing * ?dng support -> split in two exposures
  * raw stichting with opencv
- * z1 -> do something with display
- * test: option for spherical pics faster?
- * z1 -> aperture support
- * z1 dng remove from zip??
- *
  *
  *
  * TODO ideas
@@ -38,20 +36,21 @@
  *
  *
  * TODO Done:
+ * battery status
+ * battery use per pass in log
+ * move ipv copy -> https://stackoverflow.com/questions/34733765/java-nio-file-files-move-is-copying-instead-of-moving
+ * use android.media for playback of sound? ->https://stackoverflow.com/questions/18459122/play-sound-on-button-click-android
  * z1 better memory -> nomore crashes
  * fix time on only pic
  * z1 -> raw enable
  * option for saving as default
  * fixed sound error
  * z1 save raw option in webinterface
- *
- *
  * no caching added
  * better font
  * added divider per day in file menu
  * sound on/off fix
  * z1 9 bracket
- *
  * simpel 360 viewer on jpg
  * added nice icon
  * added a sound checkbox
@@ -70,16 +69,22 @@
 
 package com.kasper.authydra;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -118,8 +123,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.String;
 import java.net.URI;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Base64;
@@ -164,6 +171,8 @@ import java.io.BufferedOutputStream;
 import android.content.Context;
 import java.text.DecimalFormat;
 import android.app.ActivityManager;
+
+import static java.nio.file.StandardCopyOption.*;
 
 
 public class MainActivity extends PluginActivity implements SurfaceHolder.Callback
@@ -217,6 +226,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     Boolean taking_pics =false;
     Boolean done_taking_pics = false;
     String message_log ="";
+    int start_battery = 0;
+    int end_battery = 0;
 
     long startTime;
     long middleTime;
@@ -242,6 +253,10 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     Intent sh_open = new Intent("com.theta360.plugin.ACTION_AUDIO_SH_OPEN");
     Intent sh_close = new Intent("com.theta360.plugin.ACTION_AUDIO_SH_CLOSE");
     Intent sh_self = new Intent("com.theta360.plugin.ACTION_AUDIO_SELF");
+
+    MediaPlayer mp_open;
+    MediaPlayer mp_close;
+
 
 
     Double shutter_table[][] =
@@ -547,6 +562,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         //images_before_avg = new ArrayList<Mat>(numberOfPictures * number_of_noise_pics);
 
         startTime = System.currentTimeMillis();
+        start_battery =  getBattery_percentage();
+        log(TAG,"Current Battery is: " + getBattery_percentage() + "%.");
         customShutter();
     }
 
@@ -600,6 +617,41 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
          }
     }
 
+    int getBattery_percentage()
+    {
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = getApplicationContext().registerReceiver(null, ifilter);
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        float batteryPct = level / (float)scale;
+        float p = batteryPct * 100;
+
+        return(Math.round(p));
+    }
+
+    void setup_sound()
+    {
+        Object audio_service = this.mcontext.getSystemService(AUDIO_SERVICE);
+        if (audio_service == null)
+        {
+            log(TAG,"audio error");
+        }
+        else
+        {
+            AudioManager audioManager = (AudioManager) audio_service;
+            int maxVol = audioManager.getStreamMaxVolume(2);
+            audioManager.setStreamVolume(2, maxVol, 0);
+            AudioAttributes attributes = (new AudioAttributes.Builder()).setUsage(1).setContentType(2).setLegacyStreamType(2).build();
+
+            mp_open = MediaPlayer.create(this, R.raw.open, attributes, audioManager.generateAudioSessionId());
+            mp_open.setVolume(1.0F, 1.0F);
+
+            mp_close = MediaPlayer.create(this, R.raw.close, attributes, audioManager.generateAudioSessionId());
+            mp_close.setVolume(1.0F, 1.0F);
+
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -632,7 +684,10 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         numberOfPictures = pref.getInt("numberOfPictures", 9);
         number_of_noise_pics = pref.getInt("number_of_noise_pics", 3);
 
-        log(TAG,"Available disk space is: "+bytesToHuman(free_disk())+" " +free_disk());
+        setup_sound();
+
+        log(TAG,"Available disk space is: " + bytesToHuman(free_disk()) + " " + free_disk());
+        log(TAG,"Current Battery is: " + getBattery_percentage() + "%.");
 
         SurfaceView preview = (SurfaceView)findViewById(R.id.preview_id);
         SurfaceHolder holder = preview.getHolder();
@@ -1541,7 +1596,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 "\t\tc-0.46,4.35-2.18,8.54-0.84,10.09C800.33,465.58,806.1,470.11,813.22,476.58z\"/>\n" +
                 //endregion logo
                 "</g>" +
-                "</svg></center><br>"+
+                "</svg><br>" +
+                "<small>Battery:"+ getBattery_percentage() + "%</small></center>"+
+
 
                 "<br><form action='/files'>" +
                 "<center><input type='submit' class='abutton' value='Manage Files'></form></center>"+
@@ -1831,8 +1888,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         //Log.d("shooting mode", params.flatten());
         params.set("RIC_SHOOTING_MODE", "RicStillCaptureStd");
 
-
-        //params.set("RIC_PROC_STITCHING", "RicNonStitching");
+        params.set("RIC_PROC_STITCHING", "RicNonStitching");
         //params.setPictureSize(5792, 2896); // no stiching
 
         params.setPictureFormat(ImageFormat.JPEG);
@@ -1893,7 +1949,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         //Log.d("get", params.get("RIC_MANUAL_EXPOSURE_ISO_BACK"));
         params.setPictureSize(cols, rows);
         mCamera.setParameters(params);
-        if (sound) sendBroadcast(shutter);
+
+        if (sound) mp_open.start();
 
         mCamera.takePicture(null,null, null, pictureListener);
     }
@@ -1902,6 +1959,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     {
         Camera.Parameters params = mCamera.getParameters();
         params.set("RIC_SHOOTING_MODE", "RicStillCaptureStd");
+        params.set("RIC_PROC_STITCHING", "RicNonStitching");
         //shutterSpeedValue = shutterSpeedValue + shutterSpeedSpacing;
         if (m_is_auto_pic)  //taking auto picture
         {
@@ -1960,7 +2018,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         if (bracket_array[current_count][4] == 1.0)
         {
             mCamera.setParameters(params);
-            if (sound) sendBroadcast(shutter);
+            if (sound) mp_open.start();
+
 
             mCamera.takePicture(null, null, null, pictureListener);
         }
@@ -2279,6 +2338,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         log(TAG, "File compress/cleanup done.");
 
         //hdrDebevecY.release();
+        end_battery = getBattery_percentage();
+        log(TAG,"Current Battery is: " + getBattery_percentage() + "%.");
+        log(TAG,"Battery Delta is: " + (start_battery - end_battery) +"%.");
 
 
         log(TAG, "----- JOB DONE -----");
@@ -2455,11 +2517,13 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
     private Camera.PictureCallback pictureListener = new Camera.PictureCallback()
     {
+
         @Override
         public void onPictureTaken(byte[] data, Camera camera)
         {
             //save image to storage
             Log.d(TAG,"onpicturetaken called ok");
+            if (sound) mp_close.start();
             if (data != null && !abort)
             {
                 try
@@ -2746,9 +2810,17 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                             File temp_file = new File(temp);
                             if (temp_file.exists())
                             {
-                                log(TAG, "Moved dng file to " + raw_fname + " from " + temp);
+                                log(TAG, "Copied dng file to " + raw_fname + " from " + temp);
                                 //temp_file.renameTo(f);
-                                copyFileUsingStream(temp_file, f);
+                                //copyFileUsingStream(temp_file, f);
+
+                                if(temp_file.renameTo(f))
+                                {
+                                    // if file copied successfully then delete the original file
+                                    temp_file.delete();
+
+                                }
+
                             }
                         }
                     }
@@ -2857,7 +2929,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                         String out_times = "Merge: " +MergeHDRI +" | pics: " + numberOfPictures + " | denoise: " + number_of_noise_pics + " | stops: " + stop_jumps +
                                 " | pic part: " + millisToShortDHMS(middleTime - startTime) +
                                 " | HDR part: " + millisToShortDHMS(endTime - middleTime) +
-                                " | total part: " + millisToShortDHMS(endTime - startTime);
+                                " | total part: " + millisToShortDHMS(endTime - startTime)+
+                                " | battery used: " +(start_battery - end_battery)+"%";
                         out.println(out_times);
                         log(TAG,out_times);
                         out.close();
