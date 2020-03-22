@@ -11,8 +11,9 @@
  *
  * TODO v2.1.1
  * dng zip in thread
- * add button for stiching on/off
  * countdown and finish sound
+ * stich in log file
+ *
  *
  * TODO v2.2
  * predict length
@@ -22,9 +23,11 @@
  *
  * z1 -> raw processing * ?dng support -> split in two exposures
  * raw stichting with opencv
+ * proper file names when downloading
  *
  *
  * TODO ideas
+ * stich disable 360 view?
  * export default python script to recreate hdri offline?
  * support opencv 4
  * support tonemapped jpg in theta default app
@@ -36,6 +39,7 @@
  *
  *
  * TODO Done:
+ * add button for stiching on/off
  * battery status
  * battery use per pass in log
  * move ipv copy -> https://stackoverflow.com/questions/34733765/java-nio-file-files-move-is-copying-instead-of-moving
@@ -212,6 +216,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     Boolean sound = true;
     Boolean MergeHDRI = true;
     Boolean SaveDNG = true;
+    Boolean stich = true;
 
     String auto_pic = "";
     String encodedImage = "";
@@ -1232,6 +1237,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     number_of_noise_pics = 1;
                     stopjump ="auto";
                     sound = true;
+                    stich = true;
                     MergeHDRI = true;
                     SaveDNG = true;
 
@@ -1241,6 +1247,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     Log.i("web", "Taking picture. With brackets at " + parms.get("brackets")
                             + " and denoise at " + parms.get("denoise")
                             + " Sound: "         + parms.get("sound")
+                            + " stich: "         + parms.get("stich")
                             + " and merge: "     + parms.get("merge")
                             + " and dng: "       + parms.get("dng"));
                     numberOfPictures = Integer.parseInt(parms.get("brackets"));
@@ -1257,6 +1264,12 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     {
                         sound =false;
                         Log.i("web","turned sound off.");
+                    }
+
+                    if (parms.get("stich") == null || parms.get("stich").isEmpty()||(!parms.get("stich").equals("true")))
+                    {
+                        stich = false;
+                        Log.i("web","turned stich off.");
                     }
 
                     if (parms.get("dng") == null || parms.get("dng").isEmpty() || !Boolean.parseBoolean(parms.get("dng")))
@@ -1295,6 +1308,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     number_of_noise_pics = 1;
                     stopjump ="auto";
                     sound = true;
+                    stich = true;
                     MergeHDRI = true;
                     SaveDNG = true;
                 }
@@ -1325,6 +1339,16 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                         sound = true;
                     }
 
+                    if (parms.get("stich") == null || parms.get("stich").isEmpty()||(!parms.get("stich").equals("true")))
+                    {
+                        stich =false;
+                        Log.i(TAG,"turned stich off.");
+                    }
+                    else
+                    {
+                        stich = true;
+                    }
+
                     if (parms.get("dng") == null || parms.get("dng").isEmpty() || !Boolean.parseBoolean(parms.get("dng")))
                     {
                         SaveDNG = false;
@@ -1339,6 +1363,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 editor.putBoolean("MergeHDRI", MergeHDRI);
                 editor.putBoolean("SaveDNG", SaveDNG);
                 editor.putBoolean("sound", sound);
+                editor.putBoolean("stich", stich);
                 editor.putString("stopjump", stopjump);
                 editor.putInt("numberOfPictures", numberOfPictures);
                 editor.putInt("number_of_noise_pics", number_of_noise_pics);
@@ -1650,11 +1675,19 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 }
                 if (MergeHDRI)
                 {
-                    msg +="<input type='checkbox' class='abutton' name='merge' value='true' checked> Merge HDRI";
+                    msg +="<input type='checkbox' class='abutton' name='merge' value='true' checked> Merge HDRI"+"<br>";
                 }
                 else
                 {
-                    msg +="<input type='checkbox' class='abutton' name='merge' value='true' > Merge HDRI"; // is not a boolean but a string the value
+                    msg +="<input type='checkbox' class='abutton' name='merge' value='true' > Merge HDRI"+"<br>"; // is not a boolean but a string the value
+                }
+                if (stich)
+                {
+                    msg +="<input type='checkbox' class='abutton' name='stich' value='true' checked> Stich images";
+                }
+                else
+                {
+                    msg +="<input type='checkbox' class='abutton' name='stich' value='true' > Stich images"; // is not a boolean but a string the value
                 }
                 if (Build.MODEL.equals("RICOH THETA Z1"))
                 {
@@ -1881,14 +1914,18 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
     private void customShutter()
     {
-
-
-
         Camera.Parameters params = mCamera.getParameters();
         //Log.d("shooting mode", params.flatten());
         params.set("RIC_SHOOTING_MODE", "RicStillCaptureStd");
 
-        params.set("RIC_PROC_STITCHING", "RicNonStitching");
+        if (stich)
+        {
+            params.set("RIC_PROC_STITCHING", "RicStaticStitching");
+        }
+        else
+        {
+            params.set("RIC_PROC_STITCHING", "RicNonStitching");
+        }
         //params.setPictureSize(5792, 2896); // no stiching
 
         params.setPictureFormat(ImageFormat.JPEG);
@@ -1897,8 +1934,6 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         //params.set("RIC_JPEG_COMP_FILESIZE",12582912);
 
         //params.setPictureSize(5376, 2688); // stiched
-
-
 
         // https://api.ricoh/docs/theta-plugin-reference/camera-api/
         //Shutter speed. To convert this value to ordinary 'Shutter Speed';
@@ -1939,7 +1974,6 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             //sensor_pick_resolution: Matched pick_w:3776, pick_h:3710, pick_fps:29.430000, pick_clk:444000000, pick_mode:1
             //2019-10-18 13:21:55.022 E/mm-camera: <SENSOR><ERROR> 4572: sensor_get_raw_dimension: raw w 3776 h 3710
 
-
             //cols = 5376;
             //rows = 2688;
 
@@ -1959,7 +1993,17 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     {
         Camera.Parameters params = mCamera.getParameters();
         params.set("RIC_SHOOTING_MODE", "RicStillCaptureStd");
-        params.set("RIC_PROC_STITCHING", "RicNonStitching");
+        if (stich)
+        {
+            params.set("RIC_PROC_STITCHING", "RicStaticStitching");
+        }
+        else
+        {
+            params.set("RIC_PROC_STITCHING", "RicNonStitching");
+        }
+
+
+
         //shutterSpeedValue = shutterSpeedValue + shutterSpeedSpacing;
         if (m_is_auto_pic)  //taking auto picture
         {
