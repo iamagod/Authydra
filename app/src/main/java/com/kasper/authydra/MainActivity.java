@@ -9,24 +9,19 @@
  * curl -X POST 192.168.1.1/osc/commands/execute --data '{"name":"camera._listPlugins"}' -H 'content-type: application/json'
  *
  *
- * TODO v2.1.1
- * dng zip in thread
- * countdown and finish sound
- * stich in log file
- *
- *
  * TODO v2.2
+ * add own curve voor z1
  * predict length
  * fix black hole sun (either by comp or in merge function)
  * z1 -> aperture support
  * z1 -> do something with display
- *
  * z1 -> raw processing * ?dng support -> split in two exposures
  * raw stichting with opencv
  * proper file names when downloading
  *
  *
  * TODO ideas
+ * countdown and finish sound
  * stich disable 360 view?
  * export default python script to recreate hdri offline?
  * support opencv 4
@@ -39,6 +34,8 @@
  *
  *
  * TODO Done:
+ * stich in log file
+ * dng zip in thread
  * add button for stiching on/off
  * battery status
  * battery use per pass in log
@@ -217,6 +214,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
     Boolean MergeHDRI = true;
     Boolean SaveDNG = true;
     Boolean stich = true;
+    Boolean files_zipped = false;
 
     String auto_pic = "";
     String encodedImage = "";
@@ -261,6 +259,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
 
     MediaPlayer mp_open;
     MediaPlayer mp_close;
+    MediaPlayer mp_countdown;
 
 
 
@@ -622,6 +621,12 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
          }
     }
 
+    class start_zip implements Runnable
+    {
+        @Override
+        public void run() {zip_files();}
+    }
+
     int getBattery_percentage()
     {
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -654,6 +659,9 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
             mp_close = MediaPlayer.create(this, R.raw.close, attributes, audioManager.generateAudioSessionId());
             mp_close.setVolume(1.0F, 1.0F);
 
+            mp_countdown = MediaPlayer.create(this, R.raw.countdown, attributes, audioManager.generateAudioSessionId());
+            mp_countdown.setVolume(1.0F, 1.0F);
+
         }
     }
 
@@ -664,8 +672,6 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_main);
         mcontext = this;
-
-
 
         this.webServer = new WebServer(this.mcontext);
         try
@@ -711,7 +717,8 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     //5sec delay timer to run away
                     try
                     {
-                        if (sound) sendBroadcast(sh_self);
+                        //if (sound) sendBroadcast(sh_self);
+                        if (sound) mp_countdown.start();
 
                         sleep(5000);
 
@@ -1836,6 +1843,17 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         log("avg","---> Done denoise on image "+Integer.toString(i+1));
     }
 
+    private void zip_files()
+    {
+        log(TAG, "Compressing files into one zip file...");
+        files_zipped = false;
+        zipFileAtPath(Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name,
+                Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name + ".ZIP");
+        log(TAG, "Done compressing files.");
+        files_zipped = true;
+
+    }
+
     private void tone_map(Mat hdrDebevecY)
     {
         log(TAG,"Starting Tonemapping.");
@@ -2132,7 +2150,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         }*/
 
         Processing = true;
-        middleTime = System.currentTimeMillis();
+
         //Log.d(TAG,"images is: "+Integer.toString(images_before_avg.size()) );
         Log.d(TAG,"times length is: " + Long.toString(times.total()));
         ColorThread = true;
@@ -2220,6 +2238,14 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 }
             }
         }
+
+
+        // All files are created we can kick off the zipping thread so it will run it the background
+        // can take very long if dng's are used
+        files_zipped = false;
+        new Thread(new start_zip()).start();
+
+
 
         /*
         threadSet = Thread.getAllStackTraces().keySet();
@@ -2371,23 +2397,32 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
         tone_map(hdrDebevec);
         hdrDebevec.release();
 
-        log(TAG, "Compressing files into one zip file...");
+        //log(TAG, "Compressing files into one zip file...");
 
-        zipFileAtPath(Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name,
-                Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name + ".ZIP");
-        log(TAG, "Cleaning up...");
+        //zipFileAtPath(Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name,
+        //        Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name + ".ZIP");
+
+        while (! files_zipped)
+        {
+            log(TAG, "files not zipped, we wait half a second");
+            try
+            {
+                Thread.sleep(500);
+            } catch (InterruptedException ex)
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        log(TAG, "Files zipped, cleaning up...");
+
         deleteDir(new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/" + session_name));
 
 
         log(TAG, "File compress/cleanup done.");
 
         //hdrDebevecY.release();
-        end_battery = getBattery_percentage();
-        log(TAG,"Current Battery is: " + getBattery_percentage() + "%.");
-        log(TAG,"Battery Delta is: " + (start_battery - end_battery) +"%.");
 
-
-        log(TAG, "----- JOB DONE -----");
 
     }
 
@@ -2951,6 +2986,7 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                 }
                 else // Doing processing HDR merge etc
                 {
+                    middleTime = System.currentTimeMillis();
                     if(MergeHDRI)
                     {
                         HDR_processing();
@@ -2959,6 +2995,12 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     {
                         Log.i(TAG, "Skipped processing of HDR due to flag");
                     }
+                    end_battery = getBattery_percentage();
+                    log(TAG,"Current Battery is: " + getBattery_percentage() + "%.");
+                    log(TAG,"Battery Delta is: " + (start_battery - end_battery) +"%.");
+
+
+                    log(TAG, "----- JOB DONE -----");
 
                     taking_pics = false;
                     Processing = false;
@@ -2970,11 +3012,12 @@ public class MainActivity extends PluginActivity implements SurfaceHolder.Callba
                     {// we write out the times data to a file
                         String filename = Environment.getExternalStorageDirectory().getPath() + "/DCIM/100RICOH/shots_log.txt";
                         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filename, true)));
-                        String out_times = "Merge: " +MergeHDRI +" | pics: " + numberOfPictures + " | denoise: " + number_of_noise_pics + " | stops: " + stop_jumps +
+                        String out_times = session_name + ": | Merge: " +MergeHDRI +" | Stich: " + stich +" |pics: " + numberOfPictures + " | denoise: " + number_of_noise_pics + " | stops: " + stop_jumps +
                                 " | pic part: " + millisToShortDHMS(middleTime - startTime) +
                                 " | HDR part: " + millisToShortDHMS(endTime - middleTime) +
                                 " | total part: " + millisToShortDHMS(endTime - startTime)+
                                 " | battery used: " +(start_battery - end_battery)+"%";
+                        out.println(" ");
                         out.println(out_times);
                         log(TAG,out_times);
                         out.close();
